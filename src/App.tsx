@@ -1,11 +1,33 @@
-import {Routes, Route, Link, Navigate, BrowserRouter} from 'react-router-dom';
-import Login from "./pages/Auth/Login.tsx";
-import Register from "./pages/Auth/Register.tsx";
+import { Routes, Route, Navigate, BrowserRouter, Link } from 'react-router-dom';
+import {PrimeReactContext, PrimeReactProvider} from 'primereact/api';
+import { useContext, useState } from 'react';
+import { Button } from 'primereact/button';
+import Login from "./pages/Auth/Login/Login.tsx";
+import Register from "./pages/Auth/Register/Register.tsx";
 import Main from "./pages/Main.tsx";
 
-function App() {
+function AppContent() {
+    const [theme, setTheme] = useState<'light' | 'dark'>('light');
+    const { changeTheme } = useContext(PrimeReactContext);
+
+    const changeMyTheme = () => {
+        const newTheme = theme === 'dark' ? 'light' : 'dark';
+        changeTheme!(
+            `bootstrap4-${theme}-purple`,
+            `bootstrap4-${newTheme}-purple`,
+            'app-theme',
+            () => setTheme(newTheme)
+        );
+    };
+
     return (
-        <BrowserRouter>
+        <>
+            <Button
+                onClick={changeMyTheme}
+                // icon={theme === 'dark' ? 'pi pi-sun' : 'pi pi-moon'}
+                label={theme === 'dark' ? 'Светлая тема' : 'Темная тема'}
+            />
+
             <nav>
                 <Link to="/login">Login</Link> |
                 <Link to="/register">Register</Link>
@@ -18,7 +40,17 @@ function App() {
                 <Route path="/" element={<Navigate to="/main"/>}/>
                 <Route path="*" element={<div>404 Not Found</div>} />
             </Routes>
-        </BrowserRouter>
+        </>
+    );
+}
+
+function App() {
+    return (
+        <PrimeReactProvider>
+            <BrowserRouter>
+                <AppContent />
+            </BrowserRouter>
+        </PrimeReactProvider>
     );
 }
 

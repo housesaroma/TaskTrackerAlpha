@@ -1,0 +1,57 @@
+.formContainer {
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 2rem;
+
+  .title {
+    font: var(--text-32-bold);
+    margin-bottom: 0;
+  }
+
+  .subtitle {
+    font: var(--text-16-regular);
+    margin-top: 0;
+    margin-bottom: 60px;
+  }
+
+  .inputSubtitle {
+    font: var(--text-16-regular);
+    margin: 0;
+  }
+
+  .inputWrapper {
+    margin-bottom: 1rem;
+  }
+
+  .buttonWrapper {
+    margin-top: 3rem;
+  }
+
+  .showIcon, .hideIcon {
+    width: 24px;
+    height: 20px;
+  }
+
+  .divider {
+    margin: 3rem auto 0;
+    width: 80%;
+
+    &:before {
+      border-top-width: 2px !important;
+      border-radius: 20px;
+    }
+  }
+
+  .bottomWrapper {
+    font: var(--text-16-regular);
+    margin-top: 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+
+    .loginLink{
+      font: var(--text-16-semi-bold);
+    }
+  }
+}
