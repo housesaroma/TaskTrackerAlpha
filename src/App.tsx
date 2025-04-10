@@ -7,6 +7,7 @@ import Register from "./pages/Auth/Register/Register.tsx";
 import Main from "./pages/Main/Main.tsx";
 import {Provider, useDispatch, useSelector} from "react-redux";
 import {RootState, store, toggleTheme} from "./store.ts";
+import "primeicons/primeicons.css";
 
 function AppContent() {
     const dispatch = useDispatch();
@@ -24,10 +25,13 @@ function AppContent() {
 
     return (
         <>
-            <Button
-                onClick={handleThemeChange}
-                label={currentTheme === 'dark' ? 'Светлая тема' : 'Темная тема'}
-            />
+
+            <Button onClick={handleThemeChange}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <i className={currentTheme === 'dark' ? 'pi pi-moon' : 'pi pi-sun'}></i>
+                    Тема
+                </div>
+            </Button>
 
             <Routes>
                 <Route path="/main" element={<Main/>}/>

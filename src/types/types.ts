@@ -4,6 +4,7 @@ export interface ICard {
     description?: string;
     priority?: number;
     dates?: string;
+    isDone?: boolean;
 }
 
 export interface IColumn {

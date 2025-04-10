@@ -1,9 +1,10 @@
-import {useSortable} from '@dnd-kit/sortable';
-import {CSS} from '@dnd-kit/utilities';
-import {ICard} from '../../types/types.ts';
+import { useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+import { ICard } from '../../types/types';
 import styles from './BoardCard.module.scss';
+import "primeicons/primeicons.css";
 
-const BoardCard = ({card}: { card: ICard }) => {
+const BoardCard = ({ card, onCheckClick }: { card: ICard; onCheckClick?: (id: string, isDone: boolean) => void }) => {
     const {
         attributes,
         listeners,
@@ -12,17 +13,19 @@ const BoardCard = ({card}: { card: ICard }) => {
         transition,
         isDragging,
     } = useSortable({
-        id: card.id, transition: {
-            duration: 150, // Плавность анимации
-            easing: 'cubic-bezier(0.25, 1, 0.5, 1)',
-        },
+        id: card.id,
     });
+
+    const handleIconClick = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        e.preventDefault();
+        onCheckClick?.(card.id, !card.isDone);
+    };
 
     const style = {
         transform: CSS.Transform.toString(transform),
-        transition: transition as string,
+        transition: transition || undefined,
         opacity: isDragging ? 0.5 : 1,
-        cursor: isDragging ? 'grabbing' : 'grab',
     };
 
     return (
@@ -34,8 +37,16 @@ const BoardCard = ({card}: { card: ICard }) => {
             className={styles.draggableWrapper}
         >
             <div className={styles.card}>
-                <div className="flex align-items-center justify-content-between">
-                    <h3 className="">{card.title}</h3>
+                <div className={styles.cardName}>
+                    <i
+                        className={`pi pi-check-circle ${card.isDone ? styles.checkedIcon : ''}`}
+                        onClick={handleIconClick}
+                        style={{
+                            cursor: 'pointer',
+                            pointerEvents: 'auto'
+                        }}
+                    />
+                    <h3>{card.title}</h3>
                     {card.priority && (
                         <span className={`priority-badge priority-${card.priority}`}>
                             {card.priority}

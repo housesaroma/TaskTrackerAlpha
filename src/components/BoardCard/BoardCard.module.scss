@@ -2,7 +2,7 @@
   background: var(--surface-overlay);
   border-radius: 8px;
   cursor: grab;
-  padding: 8px;
+  padding: 4px 12px;
 
 
   &:active {
@@ -16,5 +16,18 @@
   h3{
     margin: 0;
     font: var(--text-14-medium);
+  }
+
+  i{
+    margin-right: 8px;
+  }
+
+  .cardName{
+    display: flex;
+    align-items: center;
+  }
+
+  .checkedIcon {
+    color: #22C55E; // Зеленый цвет для иконки
   }
 }

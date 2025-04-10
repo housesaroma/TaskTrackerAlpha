@@ -4,7 +4,12 @@ import { IColumn } from '../../types/types.ts';
 import styles from './Column.module.scss';
 import BoardCard from "../BoardCard/BoardCard.tsx";
 
-const Column = ({ column }: { column: IColumn }) => {
+interface ColumnProps {
+    column: IColumn;
+    onCheckClick?: (id: string, isDone: boolean) => void;
+}
+
+const Column = ({ column, onCheckClick }: ColumnProps) => {
     const { setNodeRef } = useDroppable({
         id: column.id,
     });
@@ -23,7 +28,11 @@ const Column = ({ column }: { column: IColumn }) => {
                 <div className={styles.cardsList}>
                     {column.cards.length > 0 ? (
                         column.cards.map(card => (
-                            <BoardCard key={card.id} card={card} />
+                            <BoardCard
+                                key={card.id}
+                                card={card}
+                                onCheckClick={onCheckClick}
+                            />
                         ))
                     ) : (
                         <div className={styles.emptyColumn}>
