@@ -1,7 +1,7 @@
 import {InputText} from "primereact/inputtext";
 import {Password} from "primereact/password";
 import {Button} from "primereact/button";
-import styles from "./Register.module.scss";
+import styles from "../Auth.module.scss";
 import {Divider} from "primereact/divider";
 import {Link} from "react-router-dom";
 
@@ -15,7 +15,7 @@ const Register = () => {
             <div className="p-fluid">
                 <p className={styles.inputSubtitle}>Введите ФИО</p>
                 <div className={styles.inputWrapper}>
-                    <InputText placeholder="Иванов Иван Иванович" pt={{
+                    <InputText placeholder="Иванов Иван Иванович" type={"text"} pt={{
                         root: {
                             style: {
                                 borderRadius: '12px',
@@ -27,7 +27,7 @@ const Register = () => {
 
                 <p className={styles.inputSubtitle}>Введите E-mail</p>
                 <div className={styles.inputWrapper}>
-                    <InputText placeholder="pochtа@mail.ru" pt={{
+                    <InputText placeholder="pochtа@mail.ru" type={"email"} pt={{
                         root: {
                             style: {
                                 borderRadius: '12px',
@@ -39,7 +39,7 @@ const Register = () => {
 
                 <p className={styles.inputSubtitle}>Введите пароль</p>
                 <div className={styles.inputWrapper}>
-                    <Password placeholder="Пароль" toggleMask feedback={false}
+                    <Password placeholder="Пароль" toggleMask feedback={false} type={"password"}
                               pt={{
                                   input: {className: styles.passwordInput, style: {borderRadius: '12px'}},
                                   showIcon: {className: styles.showIcon},
@@ -55,7 +55,12 @@ const Register = () => {
 
 
                 <div className={styles.buttonWrapper}>
-                    <Button label="Зарегистрироваться"/>
+                    <Button label="Зарегистрироваться" pt={{root: {
+                            style: {
+                                borderRadius: '12px',
+
+                            }
+                        }}}/>
                 </div>
 
                 <Divider className={styles.divider}> </Divider>
