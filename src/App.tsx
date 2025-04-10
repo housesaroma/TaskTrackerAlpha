@@ -1,31 +1,32 @@
 import {BrowserRouter, Navigate, Route, Routes} from 'react-router-dom';
 import {PrimeReactContext, PrimeReactProvider} from 'primereact/api';
-import {useContext, useState} from 'react';
+import {useContext} from 'react';
 import {Button} from 'primereact/button';
 import Login from "./pages/Auth/Login/Login.tsx";
 import Register from "./pages/Auth/Register/Register.tsx";
-import Main from "./pages/Main.tsx";
+import Main from "./pages/Main/Main.tsx";
+import {Provider, useDispatch, useSelector} from "react-redux";
+import {RootState, store, toggleTheme} from "./store.ts";
 
 function AppContent() {
-    const [theme, setTheme] = useState<'light' | 'dark'>('light');
+    const dispatch = useDispatch();
+    const currentTheme = useSelector((state: RootState) => state.theme.currentTheme);
     const {changeTheme} = useContext(PrimeReactContext);
 
-    const changeMyTheme = () => {
-        const newTheme = theme === 'dark' ? 'light' : 'dark';
+    const handleThemeChange = () => {
+        dispatch(toggleTheme());
         changeTheme!(
-            `bootstrap4-${theme}-purple`,
-            `bootstrap4-${newTheme}-purple`,
-            'app-theme',
-            () => setTheme(newTheme)
+            `bootstrap4-${currentTheme}-purple`,
+            `bootstrap4-${currentTheme === 'dark' ? 'light' : 'dark'}-purple`,
+            'app-theme'
         );
     };
 
     return (
         <>
             <Button
-                onClick={changeMyTheme}
-                // icon={theme === 'dark' ? 'pi pi-sun' : 'pi pi-moon'}
-                label={theme === 'dark' ? 'Светлая тема' : 'Темная тема'}
+                onClick={handleThemeChange}
+                label={currentTheme === 'dark' ? 'Светлая тема' : 'Темная тема'}
             />
 
             <Routes>
@@ -41,11 +42,13 @@ function AppContent() {
 
 function App() {
     return (
-        <PrimeReactProvider>
-            <BrowserRouter>
-                <AppContent/>
-            </BrowserRouter>
-        </PrimeReactProvider>
+        <Provider store={store}>
+            <PrimeReactProvider>
+                <BrowserRouter>
+                    <AppContent/>
+                </BrowserRouter>
+            </PrimeReactProvider>
+        </Provider>
     );
 }
 

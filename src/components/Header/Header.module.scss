@@ -1,0 +1,22 @@
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 28px 48px;
+  margin: 0;
+
+  p{
+    margin: 0;
+  }
+
+  .left, .right {
+    font: var(--text-22-bold);
+  }
+
+  .right{
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+}
+

@@ -1,9 +1,9 @@
 import {StrictMode} from 'react'
 import {createRoot} from 'react-dom/client'
 import './index.css'
-import './styles/globals.css'
+import './styles/globals.scss'
 import App from './App.tsx'
-import './styles/typography.css';
+import './styles/typography.scss';
 // import 'primereact/resources/themes/bootstrap4-light-purple/theme.css';
 
 import '@fontsource/poppins/300.css'; // Light

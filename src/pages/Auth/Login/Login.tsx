@@ -43,7 +43,7 @@ const Register = () => {
 
 
                 <div className={styles.buttonWrapper}>
-                    <Button label="Зарегистрироваться" pt={{
+                    <Button label="Войти" pt={{
                         root: {
                             style: {
                                 borderRadius: '12px',
