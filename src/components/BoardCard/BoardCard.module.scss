@@ -1,0 +1,20 @@
+.card {
+  background: var(--surface-overlay);
+  border-radius: 8px;
+  cursor: grab;
+  padding: 8px;
+
+
+  &:active {
+    cursor: grabbing;
+  }
+
+  &:hover {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  h3{
+    margin: 0;
+    font: var(--text-14-medium);
+  }
+}
