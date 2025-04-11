@@ -36,7 +36,7 @@ const Column = ({ column, onCheckClick }: ColumnProps) => {
                         ))
                     ) : (
                         <div className={styles.emptyColumn}>
-                            <p>Перетащите задачи сюда</p>
+                            <p className={styles.emptyColumnText}>Перетащите задачи сюда</p>
                         </div>
                     )}
                 </div>

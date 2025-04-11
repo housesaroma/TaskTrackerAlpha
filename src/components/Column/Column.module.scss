@@ -28,6 +28,15 @@
     border-radius: 8px;
   }
 
+  .emptyColumnText {
+    user-select: none; // Запрет выделения текста
+    -webkit-user-select: none; // Для Safari
+    -moz-user-select: none; // Для Firefox
+    -ms-user-select: none; // Для IE/Edge
+    pointer-events: none; // Запрет всех взаимодействий
+    cursor: default; // Убираем курсор-указатель
+  }
+
   .columnTitle {
     user-select: none; // Запрет выделения текста
     -webkit-user-select: none; // Для Safari
