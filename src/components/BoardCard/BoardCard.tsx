@@ -1,10 +1,11 @@
-import { useSortable } from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
-import { ICard } from '../../types/types';
+import {useSortable} from '@dnd-kit/sortable';
+import {CSS} from '@dnd-kit/utilities';
+import {ICard} from '../../types/types';
 import styles from './BoardCard.module.scss';
 import "primeicons/primeicons.css";
+import React from "react";
 
-const BoardCard = ({ card, onCheckClick }: { card: ICard; onCheckClick?: (id: string, isDone: boolean) => void }) => {
+const BoardCard = ({card, onCheckClick}: { card: ICard; onCheckClick?: (id: string, isDone: boolean) => void }) => {
     const {
         attributes,
         listeners,

@@ -11,6 +11,12 @@ header {
 
   .left, .right {
     font: var(--text-22-bold);
+    user-select: none; // Запрет выделения текста
+    -webkit-user-select: none; // Для Safari
+    -moz-user-select: none; // Для Firefox
+    -ms-user-select: none; // Для IE/Edge
+    //pointer-events: none; // Запрет всех взаимодействий
+    cursor: pointer; // Убираем курсор-указатель
   }
 
   .right{

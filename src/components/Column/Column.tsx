@@ -20,7 +20,7 @@ const Column = ({ column, onCheckClick }: ColumnProps) => {
             className={styles.column}
             style={{ backgroundColor: column.color }}
         >
-            <h2>{column.title}</h2>
+            <h2 className={styles.columnTitle}>{column.title}</h2>
             <SortableContext
                 items={column.cards.map(card => card.id)}
                 strategy={verticalListSortingStrategy}
