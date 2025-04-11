@@ -11,5 +11,5 @@ export interface IColumn {
     id: string;
     title: string;
     cards: ICard[];
-    color?: string;
+    color: string;
 }

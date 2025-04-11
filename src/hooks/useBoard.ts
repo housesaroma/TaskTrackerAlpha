@@ -107,11 +107,53 @@ export const useBoard = () => {
         });
     };
 
+    const handleChangeColumnColor = (columnId: string, newColor: string) => {
+        setColumns(prev =>
+            prev.map(column =>
+                column.id === columnId
+                    ? { ...column, color: newColor }
+                    : column
+            )
+        );
+    };
+
+    const handleDeleteColumn = (columnId: string) => {
+        setColumns(prev => {
+            // Нельзя удалить колонки с фиксированными ID
+            if (columnId === 'to-do' || columnId === 'in-work' || columnId === 'done') {
+                return prev;
+            }
+
+            // Перемещаем все карточки из удаляемой колонки в "To Do"
+            const columns = [...prev];
+            const columnToDeleteIndex = columns.findIndex(c => c.id === columnId);
+
+            if (columnToDeleteIndex === -1) return prev;
+
+            const cardsToMove = columns[columnToDeleteIndex].cards;
+            const toDoColumnIndex = columns.findIndex(c => c.id === 'to-do');
+
+            if (toDoColumnIndex !== -1) {
+                columns[toDoColumnIndex].cards.push(...cardsToMove);
+            }
+
+            return columns.filter(column => column.id !== columnId);
+        });
+    };
+
+    const handleRenameColumn = () => {
+
+    };
+
+
     return {
         columns,
         activeCard,
         handleDragStart,
         handleDragEnd,
-        handleCheckClick
+        handleCheckClick,
+        handleChangeColumnColor,
+        handleDeleteColumn,
+        handleRenameColumn
     };
 };

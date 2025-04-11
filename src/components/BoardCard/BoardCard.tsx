@@ -47,7 +47,7 @@ const BoardCard = ({card, onCheckClick}: { card: ICard; onCheckClick?: (id: stri
                             pointerEvents: 'auto'
                         }}
                     />
-                    <h3>{card.title}</h3>
+                    <h3 className={`${card.isDone ? styles.checkedText : ''}`}>{card.title}</h3>
                     {card.priority && (
                         <span className={`priority-badge priority-${card.priority}`}>
                             {card.priority}

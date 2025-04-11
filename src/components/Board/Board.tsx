@@ -20,7 +20,10 @@ const Board = () => {
         activeCard,
         handleDragStart,
         handleDragEnd,
-        handleCheckClick
+        handleCheckClick,
+        handleRenameColumn,
+        handleChangeColumnColor,
+        handleDeleteColumn
     } = useBoard();
 
     return (
@@ -36,6 +39,9 @@ const Board = () => {
                             key={column.id}
                             column={column}
                             onCheckClick={handleCheckClick}
+                            onRenameColumn={handleRenameColumn}
+                            onChangeColor={handleChangeColumnColor}
+                            onDeleteColumn={handleDeleteColumn}
                         />
                     ))}
                 </div>

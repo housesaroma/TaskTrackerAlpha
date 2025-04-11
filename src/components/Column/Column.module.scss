@@ -45,5 +45,15 @@
     pointer-events: none; // Запрет всех взаимодействий
     cursor: default; // Убираем курсор-указатель
   }
+
+  .columnTitleWrapper{
+    display: flex;
+    align-self: center;
+    justify-content: space-between;
+  }
+
+  .titleIcon{
+    margin-top: 10px;
+  }
 }
 
