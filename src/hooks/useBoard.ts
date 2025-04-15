@@ -7,7 +7,7 @@ export const useBoard = () => {
     const [columns, setColumns] = useState<IColumn[]>(INITIAL_COLUMNS);
     const [activeCard, setActiveCard] = useState<ICard | null>(null);
 
-    const handleDragStart = (event: any) => {
+    const handleDragStart = ({event}: { event: any }) => {
         const {active} = event;
         for (const column of columns) {
             const card = column.cards.find(c => c.id === active.id);
@@ -107,11 +107,58 @@ export const useBoard = () => {
         });
     };
 
+    const handleRenameColumn = (columnId: string, newTitle: string) => {
+        setColumns(prev =>
+            prev.map(column =>
+                column.id === columnId
+                    ? { ...column, title: newTitle }
+                    : column
+            )
+        );
+    };
+
+    const handleChangeColumnColor = (columnId: string, newColor: string) => {
+        setColumns(prev =>
+            prev.map(column =>
+                column.id === columnId
+                    ? { ...column, color: newColor }
+                    : column
+            )
+        );
+    };
+
+    const handleDeleteColumn = (columnId: string) => {
+        setColumns(prev => {
+            // Нельзя удалить колонки с фиксированными ID
+            if (columnId === 'to-do' || columnId === 'in-work' || columnId === 'done') {
+                return prev;
+            }
+
+            // Перемещаем все карточки из удаляемой колонки в "To Do"
+            const columns = [...prev];
+            const columnToDeleteIndex = columns.findIndex(c => c.id === columnId);
+
+            if (columnToDeleteIndex === -1) return prev;
+
+            const cardsToMove = columns[columnToDeleteIndex].cards;
+            const toDoColumnIndex = columns.findIndex(c => c.id === 'to-do');
+
+            if (toDoColumnIndex !== -1) {
+                columns[toDoColumnIndex].cards.push(...cardsToMove);
+            }
+
+            return columns.filter(column => column.id !== columnId);
+        });
+    };
+
     return {
         columns,
         activeCard,
         handleDragStart,
         handleDragEnd,
-        handleCheckClick
+        handleCheckClick,
+        handleRenameColumn,
+        handleChangeColumnColor,
+        handleDeleteColumn
     };
 };
