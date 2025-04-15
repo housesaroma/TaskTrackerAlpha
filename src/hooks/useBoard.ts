@@ -125,17 +125,17 @@ export const useBoard = () => {
             }
 
             // Перемещаем все карточки из удаляемой колонки в "To Do"
-            const columns = [...prev];
-            const columnToDeleteIndex = columns.findIndex(c => c.id === columnId);
-
-            if (columnToDeleteIndex === -1) return prev;
-
-            const cardsToMove = columns[columnToDeleteIndex].cards;
-            const toDoColumnIndex = columns.findIndex(c => c.id === 'to-do');
-
-            if (toDoColumnIndex !== -1) {
-                columns[toDoColumnIndex].cards.push(...cardsToMove);
-            }
+            // const columns = [...prev];
+            // const columnToDeleteIndex = columns.findIndex(c => c.id === columnId);
+            //
+            // if (columnToDeleteIndex === -1) return prev;
+            //
+            // const cardsToMove = columns[columnToDeleteIndex].cards;
+            // const toDoColumnIndex = columns.findIndex(c => c.id === 'to-do');
+            //
+            // if (toDoColumnIndex !== -1) {
+            //     columns[toDoColumnIndex].cards.push(...cardsToMove);
+            // }
 
             return columns.filter(column => column.id !== columnId);
         });

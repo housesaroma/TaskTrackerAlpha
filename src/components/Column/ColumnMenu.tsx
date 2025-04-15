@@ -1,7 +1,7 @@
-import { Menu } from 'primereact/menu';
-import { ColorPicker } from 'primereact/colorpicker';
-import { MenuItem } from 'primereact/menuitem';
-import { useRef } from 'react';
+import {Menu} from 'primereact/menu';
+import {ColorPicker} from 'primereact/colorpicker';
+import {MenuItem} from 'primereact/menuitem';
+import {useRef} from 'react';
 import styles from "./Column.module.scss";
 
 interface ColumnMenuProps {
@@ -19,7 +19,7 @@ export const ColumnMenu = ({
 
     // Функция для нормализации цвета (удаление # если есть)
     const normalizeColor = (color: string) => {
-        return color.startsWith('#') ? color.slice(1,7) : color;
+        return color.startsWith('#') ? color.slice(1, 7) : color;
     };
 
     const items: MenuItem[] = [
@@ -38,9 +38,10 @@ export const ColumnMenu = ({
                             <p>Цвет колонки</p>
                             <ColorPicker
                                 value={normalizeColor(columnColor)}
-                                onChange={(e) => onColorChange(`#${e.value}`)}
+                                onChange={(e) => onColorChange(`#${e.value}80`)}
                                 format="hex"
                             />
+                            <p>{columnColor}</p>
                         </div>
                     )
                 },
@@ -59,7 +60,7 @@ export const ColumnMenu = ({
                 className={`pi pi-ellipsis-v cursor-pointer p-1 hover:bg-gray-200 rounded ${styles.titleIcon}`}
                 onClick={(e) => menuRef.current?.toggle(e)}
             />
-            <Menu model={items} popup ref={menuRef} id="column_menu" />
+            <Menu model={items} popup ref={menuRef} id="column_menu"/>
         </>
     );
 };

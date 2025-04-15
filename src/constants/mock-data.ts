@@ -12,7 +12,7 @@ export const INITIAL_COLUMNS: IColumn[] = [
         ]
     },
     {
-        id: 'new-tasks',
+        id: 'to-do',
         title: 'Новые задачи',
         color: '#EF312480',
         cards: [
@@ -30,7 +30,7 @@ export const INITIAL_COLUMNS: IColumn[] = [
     {
         id: 'done',
         title: 'Готово',
-        color: '#A8F0004D',
+        color: '#A8F00080',
         cards: [
             {id: '6', title: 'Правки по дизайну мобильной версии', isDone: true},
         ]
