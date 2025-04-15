@@ -141,8 +141,14 @@ export const useBoard = () => {
         });
     };
 
-    const handleRenameColumn = () => {
-
+    const handleRenameColumn = (columnId: string, newTitle: string) => {
+        setColumns(prev =>
+            prev.map(column =>
+                column.id === columnId
+                    ? { ...column, title: newTitle }
+                    : column
+            )
+        );
     };
 
 

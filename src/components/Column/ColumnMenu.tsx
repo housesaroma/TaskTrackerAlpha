@@ -7,17 +7,18 @@ import styles from "./Column.module.scss";
 interface ColumnMenuProps {
     columnColor: string;
     onColorChange: (color: string) => void;
+    onRename: () => void;
     onDelete: () => void;
 }
 
 export const ColumnMenu = ({
                                columnColor,
                                onColorChange,
-                               onDelete
+                               onDelete,
+                               onRename
                            }: ColumnMenuProps) => {
     const menuRef = useRef<Menu>(null);
 
-    // Функция для нормализации цвета (удаление # если есть)
     const normalizeColor = (color: string) => {
         return color.startsWith('#') ? color.slice(1, 7) : color;
     };
@@ -29,6 +30,7 @@ export const ColumnMenu = ({
                 {
                     label: 'Переименовать',
                     icon: 'pi pi-pencil',
+                    command: onRename
                 },
                 {
                     label: 'Цвет колонки',
@@ -57,7 +59,7 @@ export const ColumnMenu = ({
     return (
         <>
             <i
-                className={`pi pi-ellipsis-v cursor-pointer p-1 hover:bg-gray-200 rounded ${styles.titleIcon}`}
+                className={`pi pi-ellipsis-v  ${styles.titleIcon}`}
                 onClick={(e) => menuRef.current?.toggle(e)}
             />
             <Menu model={items} popup ref={menuRef} id="column_menu"/>

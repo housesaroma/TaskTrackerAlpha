@@ -1,9 +1,11 @@
-import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
-import { useDroppable } from '@dnd-kit/core';
-import { IColumn } from '../../types/types.ts';
+import {SortableContext, verticalListSortingStrategy} from '@dnd-kit/sortable';
+import {useDroppable} from '@dnd-kit/core';
+import {IColumn} from '../../types/types.ts';
 import styles from './Column.module.scss';
 import BoardCard from "../BoardCard/BoardCard.tsx";
 import {ColumnMenu} from "./ColumnMenu.tsx";
+import {useEffect, useRef, useState} from "react";
+import {InputText} from "primereact/inputtext";
 
 interface ColumnProps {
     column: IColumn;
@@ -13,20 +15,64 @@ interface ColumnProps {
     onDeleteColumn: (id: string) => void;
 }
 
-const Column = ({ column, onCheckClick, onChangeColor, onDeleteColumn }: ColumnProps) => {
-    const { setNodeRef } = useDroppable({
+const Column = ({column, onCheckClick, onChangeColor, onRenameColumn, onDeleteColumn}: ColumnProps) => {
+    const {setNodeRef} = useDroppable({
         id: column.id,
     });
+
+    const [isEditing, setIsEditing] = useState(false);
+    const [newTitle, setNewTitle] = useState(column.title);
+    const inputRef = useRef<HTMLInputElement>(null);
+
+    useEffect(() => {
+        if (isEditing && inputRef.current) {
+            inputRef.current.focus();
+        }
+    }, [isEditing]);
+
+    const handleRenameClick = () => {
+        setIsEditing(true);
+    };
+
+    const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setNewTitle(e.target.value);
+    };
+
+    const handleTitleBlur = () => {
+        if (newTitle.trim() && newTitle !== column.title) {
+            onRenameColumn(column.id, newTitle);
+        } else {
+            setNewTitle(column.title);
+        }
+        setIsEditing(false);
+    };
+
+    const handleKeyDown = (e: React.KeyboardEvent) => {
+        if (e.key === 'Enter') {
+            handleTitleBlur();
+        }
+    };
 
     return (
         <div
             ref={setNodeRef}
             className={styles.column}
-            style={{ backgroundColor: column.color }}
+            style={{backgroundColor: column.color}}
         >
             <div className={styles.columnTitleWrapper}>
-            <h2 className={styles.columnTitle}>{column.title}</h2>
-                <ColumnMenu columnColor={column.color} onColorChange={(color) => onChangeColor(column.id, color)}
+                {isEditing ? (
+                    <InputText
+                        value={newTitle}
+                        onChange={handleTitleChange}
+                        onBlur={handleTitleBlur}
+                        onKeyDown={handleKeyDown}
+                        ref={inputRef}
+                        className={styles.titleInput}
+                    />
+                ) : (
+                    <h2 className={styles.columnTitle}>{column.title}</h2>
+                )}
+                <ColumnMenu columnColor={column.color} onColorChange={(color) => onChangeColor(column.id, color)} onRename={handleRenameClick}
                             onDelete={() => onDeleteColumn(column.id)}></ColumnMenu>
             </div>
             <SortableContext
