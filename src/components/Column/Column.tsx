@@ -1,18 +1,27 @@
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { useDroppable } from '@dnd-kit/core';
-import { IColumn } from '../../types/types.ts';
+import { IColumn } from '../../types/types';
 import styles from './Column.module.scss';
-import BoardCard from "../BoardCard/BoardCard.tsx";
+import BoardCard from "../BoardCard/BoardCard";
+import { ColumnMenu } from './ColumnMenu';
+import { EditableTitle } from './EditableTitle';
 
 interface ColumnProps {
     column: IColumn;
     onCheckClick?: (id: string, isDone: boolean) => void;
+    onRenameColumn: (id: string, newTitle: string) => void;
+    onChangeColor: (id: string, newColor: string) => void;
+    onDeleteColumn: (id: string) => void;
 }
 
-const Column = ({ column, onCheckClick }: ColumnProps) => {
-    const { setNodeRef } = useDroppable({
-        id: column.id,
-    });
+export const Column = ({
+                           column,
+                           onCheckClick,
+                           onRenameColumn,
+                           onChangeColor,
+                           onDeleteColumn
+                       }: ColumnProps) => {
+    const { setNodeRef } = useDroppable({ id: column.id });
 
     return (
         <div
@@ -20,7 +29,21 @@ const Column = ({ column, onCheckClick }: ColumnProps) => {
             className={styles.column}
             style={{ backgroundColor: column.color }}
         >
-            <h2 className={styles.columnTitle}>{column.title}</h2>
+            <div className={styles.columnTitleWrapper}>
+                <EditableTitle
+                    title={column.title}
+                    onSave={(newTitle) => onRenameColumn(column.id, newTitle)}
+                    className={styles.columnTitle}
+                />
+
+                <ColumnMenu
+                    columnColor={column.color}
+                    onRename={() => onRenameColumn(column.id, column.title)}
+                    onColorChange={(color) => onChangeColor(column.id, color)}
+                    onDelete={() => onDeleteColumn(column.id)}
+                />
+            </div>
+
             <SortableContext
                 items={column.cards.map(card => card.id)}
                 strategy={verticalListSortingStrategy}
@@ -44,5 +67,3 @@ const Column = ({ column, onCheckClick }: ColumnProps) => {
         </div>
     );
 };
-
-export default Column;

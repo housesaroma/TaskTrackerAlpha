@@ -1,7 +1,7 @@
-import {closestCenter, defaultDropAnimationSideEffects, DndContext, DragOverlay} from '@dnd-kit/core';
+import { closestCenter, defaultDropAnimationSideEffects, DndContext, DragOverlay } from '@dnd-kit/core';
 import styles from './Board.module.scss';
-import Column from '../Column/Column';
-import {useBoard} from '../../hooks/useBoard';
+import { Column } from '../Column/Column.tsx';
+import { useBoard } from '../../hooks/useBoard';
 import DragOverlayContent from '../../utils/DragOverlayContent/DragOverlayContent.tsx';
 
 const dropAnimationConfig = {
@@ -20,7 +20,10 @@ const Board = () => {
         activeCard,
         handleDragStart,
         handleDragEnd,
-        handleCheckClick
+        handleCheckClick,
+        handleRenameColumn,
+        handleChangeColumnColor,
+        handleDeleteColumn
     } = useBoard();
 
     return (
@@ -36,6 +39,9 @@ const Board = () => {
                             key={column.id}
                             column={column}
                             onCheckClick={handleCheckClick}
+                            onRenameColumn={handleRenameColumn}
+                            onChangeColor={handleChangeColumnColor}
+                            onDeleteColumn={handleDeleteColumn}
                         />
                     ))}
                 </div>
