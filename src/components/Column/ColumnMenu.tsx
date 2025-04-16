@@ -9,13 +9,15 @@ interface ColumnMenuProps {
     onColorChange: (color: string) => void;
     onRename: () => void;
     onDelete: () => void;
+    onDuplicate: () => void;
 }
 
 export const ColumnMenu = ({
                                columnColor,
                                onColorChange,
                                onDelete,
-                               onRename
+                               onRename,
+                                onDuplicate
                            }: ColumnMenuProps) => {
     const menuRef = useRef<Menu>(null);
 
@@ -33,6 +35,11 @@ export const ColumnMenu = ({
                     command: onRename
                 },
                 {
+                    label: 'Дублировать',
+                    icon: 'pi pi-copy',
+                    command: onDuplicate
+                },
+                {
                     label: 'Цвет колонки',
                     icon: 'pi pi-palette',
                     template: () => (
@@ -48,8 +55,8 @@ export const ColumnMenu = ({
                     )
                 },
                 {
-                    label: 'Удалить',
-                    icon: 'pi pi-trash',
+                    label: 'Убрать в архив',
+                    icon: 'pi pi-box',
                     command: onDelete
                 }
             ]

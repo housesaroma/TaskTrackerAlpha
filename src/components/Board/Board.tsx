@@ -23,7 +23,8 @@ const Board = () => {
         handleCheckClick,
         handleRenameColumn,
         handleChangeColumnColor,
-        handleDeleteColumn
+        handleDeleteColumn,
+        handleAddColumn,
     } = useBoard();
 
     return (
@@ -53,6 +54,11 @@ const Board = () => {
                     />
                 </DragOverlay>
             </DndContext>
+            <i
+                className={'pi pi-plus-circle'}
+                style={{cursor: 'pointer'}}
+                onClick={handleAddColumn}
+            ></i>
         </div>
     );
 };

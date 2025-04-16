@@ -111,7 +111,7 @@ export const useBoard = () => {
         setColumns(prev =>
             prev.map(column =>
                 column.id === columnId
-                    ? { ...column, color: newColor }
+                    ? {...column, color: newColor}
                     : column
             )
         );
@@ -145,10 +145,21 @@ export const useBoard = () => {
         setColumns(prev =>
             prev.map(column =>
                 column.id === columnId
-                    ? { ...column, title: newTitle }
+                    ? {...column, title: newTitle}
                     : column
             )
         );
+    };
+
+    const handleAddColumn = () => {
+        const newColumn: IColumn = {
+            id: `column-${Date.now()}`, // уникальный ID
+            title: 'Новая колонка',
+            cards: [],
+            color: '#e3e3e380' // прозрачный серый по умолчанию
+        };
+
+        setColumns(prev => [...prev, newColumn]);
     };
 
 
@@ -160,6 +171,7 @@ export const useBoard = () => {
         handleCheckClick,
         handleChangeColumnColor,
         handleDeleteColumn,
-        handleRenameColumn
+        handleRenameColumn,
+        handleAddColumn
     };
 };
