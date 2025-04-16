@@ -13,9 +13,17 @@ interface ColumnProps {
     onRenameColumn: (id: string, newTitle: string) => void;
     onChangeColor: (id: string, newColor: string) => void;
     onDeleteColumn: (id: string) => void;
+    onDuplicateColumn: (id: string) => void;
 }
 
-const Column = ({column, onCheckClick, onChangeColor, onRenameColumn, onDeleteColumn}: ColumnProps) => {
+const Column = ({
+                    column,
+                    onCheckClick,
+                    onChangeColor,
+                    onRenameColumn,
+                    onDeleteColumn,
+                    onDuplicateColumn
+                }: ColumnProps) => {
     const {setNodeRef} = useDroppable({
         id: column.id,
     });
@@ -72,8 +80,10 @@ const Column = ({column, onCheckClick, onChangeColor, onRenameColumn, onDeleteCo
                 ) : (
                     <h2 className={styles.columnTitle}>{column.title}</h2>
                 )}
-                <ColumnMenu columnColor={column.color} onColorChange={(color) => onChangeColor(column.id, color)} onRename={handleRenameClick}
-                            onDelete={() => onDeleteColumn(column.id)}></ColumnMenu>
+                <ColumnMenu columnColor={column.color} onColorChange={(color) => onChangeColor(column.id, color)}
+                            onRename={handleRenameClick}
+                            onDelete={() => onDeleteColumn(column.id)}
+                            onDuplicate={() => onDuplicateColumn(column.id)}></ColumnMenu>
             </div>
             <SortableContext
                 items={column.cards.map(card => card.id)}

@@ -162,6 +162,30 @@ export const useBoard = () => {
         setColumns(prev => [...prev, newColumn]);
     };
 
+    const handleDuplicateColumn = (columnId: string) => {
+        setColumns(prev => {
+            const columnToDuplicate = prev.find(col => col.id === columnId);
+            if (!columnToDuplicate) return prev;
+
+            // Создаем глубокую копию колонки и ее карточек
+            const duplicatedColumn: IColumn = {
+                ...columnToDuplicate,
+                id: `column-${Date.now()}`, // новый уникальный ID
+                title: `${columnToDuplicate.title} (копия)`,
+                cards: columnToDuplicate.cards.map(card => ({
+                    ...card,
+                    id: `card-${Date.now()}-${Math.random().toString(36).substr(2, 9)}` // новые ID для карточек
+                }))
+            };
+
+            // Вставляем после оригинальной колонки
+            const columnIndex = prev.findIndex(col => col.id === columnId);
+            const newColumns = [...prev];
+            newColumns.splice(columnIndex + 1, 0, duplicatedColumn);
+
+            return newColumns;
+        });
+    };
 
     return {
         columns,
@@ -172,6 +196,7 @@ export const useBoard = () => {
         handleChangeColumnColor,
         handleDeleteColumn,
         handleRenameColumn,
-        handleAddColumn
+        handleAddColumn,
+        handleDuplicateColumn
     };
 };
