@@ -8,6 +8,7 @@ import Main from "./pages/Main/Main.tsx";
 import {Provider, useDispatch, useSelector} from "react-redux";
 import {RootState, store, toggleTheme} from "./store.ts";
 import "primeicons/primeicons.css";
+import styles from './App.module.scss'
 
 function AppContent() {
     const dispatch = useDispatch();
@@ -24,10 +25,10 @@ function AppContent() {
     };
 
     return (
-        <>
+        <div>
 
-            <Button onClick={handleThemeChange}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Button onClick={handleThemeChange} className={styles.themeButton}>
+                <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
                     <i className={currentTheme === 'dark' ? 'pi pi-moon' : 'pi pi-sun'}></i>
                     Тема
                 </div>
@@ -40,7 +41,7 @@ function AppContent() {
                 <Route path="/" element={<Navigate to="/main"/>}/>
                 <Route path="*" element={<div>404 Not Found</div>}/>
             </Routes>
-        </>
+        </div>
     );
 }
 

@@ -25,7 +25,8 @@ const Board = () => {
         handleChangeColumnColor,
         handleDeleteColumn,
         handleAddColumn,
-        handleDuplicateColumn
+        handleDuplicateColumn,
+        handleAddCard
     } = useBoard();
 
     return (
@@ -45,6 +46,7 @@ const Board = () => {
                             onChangeColor={handleChangeColumnColor}
                             onDeleteColumn={handleDeleteColumn}
                             onDuplicateColumn={handleDuplicateColumn}
+                            onAddCard={handleAddCard}
                         />
                     ))}
                 </div>

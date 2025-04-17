@@ -1,0 +1,46 @@
+.wrapper {
+  display: flex;
+  > [class~="p-button-text"]{
+    padding: 0;
+    margin-right: 10px;
+    gap: 4px;
+    color: var(--text-color);
+  > [class~="p-button-icon"]{
+    align-self: center;
+    margin-top: 2px;
+  }
+  }
+}
+
+.selectButton {
+  display: flex;
+  border: 1px solid var(--text-color);
+  border-radius: 12px;
+  padding: 2px;
+  width: fit-content;
+
+  > [class~="p-button-group"] {
+    padding: 2px;
+  }
+
+  > [class~="p-button"] {
+    padding: 2px 4px;
+    border-radius: 8px;
+    border: none;
+    background: rgba(255, 255, 255, 0);
+    color: var(--text-color);
+
+    &:focus {
+      box-shadow: 0 0 0 0 rgba(204, 204, 204, 0.5);
+      background: #1A1A1A80;
+    }
+
+    &:first-of-type {
+      margin-right: 5px;
+    }
+  }
+
+  > [class~="p-highlight"] {
+    background: #1A1A1A80;
+  }
+}

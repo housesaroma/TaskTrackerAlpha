@@ -165,7 +165,7 @@ export const useBoard = () => {
     const handleDuplicateColumn = (columnId: string) => {
         setColumns(prev => {
             const columnToDuplicate = prev.find(col => col.id === columnId);
-            if (!columnToDuplicate) return prev;
+            if (!columnToDuplicate || columnId === 'to-do' || columnId === 'in-work' || columnId === 'done') return prev;
 
             // Создаем глубокую копию колонки и ее карточек
             const duplicatedColumn: IColumn = {
@@ -187,6 +187,18 @@ export const useBoard = () => {
         });
     };
 
+    const handleAddCard = (columnId: string, newCard: ICard) => {
+        setColumns(columns.map(column => {
+            if (column.id === columnId) {
+                return {
+                    ...column,
+                    cards: [...column.cards, newCard]
+                };
+            }
+            return column;
+        }));
+    };
+
     return {
         columns,
         activeCard,
@@ -197,6 +209,7 @@ export const useBoard = () => {
         handleDeleteColumn,
         handleRenameColumn,
         handleAddColumn,
-        handleDuplicateColumn
+        handleDuplicateColumn,
+        handleAddCard
     };
 };

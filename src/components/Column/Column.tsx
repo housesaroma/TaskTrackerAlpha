@@ -1,11 +1,12 @@
 import {SortableContext, verticalListSortingStrategy} from '@dnd-kit/sortable';
 import {useDroppable} from '@dnd-kit/core';
-import {IColumn} from '../../types/types.ts';
+import {ICard, IColumn, IDefect, ITask} from '../../types/types.ts';
 import styles from './Column.module.scss';
 import BoardCard from "../BoardCard/BoardCard.tsx";
 import {ColumnMenu} from "./ColumnMenu.tsx";
-import {useEffect, useRef, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {InputText} from "primereact/inputtext";
+import {SelectTaskType} from "../SelectTaskType/SelectTaskType.tsx";
 
 interface ColumnProps {
     column: IColumn;
@@ -14,6 +15,7 @@ interface ColumnProps {
     onChangeColor: (id: string, newColor: string) => void;
     onDeleteColumn: (id: string) => void;
     onDuplicateColumn: (id: string) => void;
+    onAddCard: (columnId: string, card: ICard) => void;
 }
 
 const Column = ({
@@ -22,7 +24,8 @@ const Column = ({
                     onChangeColor,
                     onRenameColumn,
                     onDeleteColumn,
-                    onDuplicateColumn
+                    onDuplicateColumn,
+                    onAddCard
                 }: ColumnProps) => {
     const {setNodeRef} = useDroppable({
         id: column.id,
@@ -61,6 +64,27 @@ const Column = ({
         }
     };
 
+    const handleAddCard = (type: 'task' | 'defect') => {
+        let newCard: ICard;
+
+        if (type === 'task') {
+            newCard = {
+                id: `task-${Date.now()}`,
+                title: 'Новая задача',
+                isDone: false,
+                type: 'task'
+            } as ITask;
+        } else {
+            newCard = {
+                id: `defect-${Date.now()}`,
+                title: 'Новый дефект',
+                isDone: false,
+                type: 'defect'
+            } as IDefect;
+        }
+
+        onAddCard(column.id, newCard);
+    };
     return (
         <div
             ref={setNodeRef}
@@ -85,6 +109,10 @@ const Column = ({
                             onDelete={() => onDeleteColumn(column.id)}
                             onDuplicate={() => onDuplicateColumn(column.id)}></ColumnMenu>
             </div>
+
+
+            <SelectTaskType onAdd={handleAddCard}></SelectTaskType>
+
             <SortableContext
                 items={column.cards.map(card => card.id)}
                 strategy={verticalListSortingStrategy}
