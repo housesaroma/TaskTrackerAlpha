@@ -1,40 +1,44 @@
 .card {
   background: var(--surface-overlay);
   border-radius: 8px;
-  cursor: grab;
-  padding: 4px 12px;
-
-
-  &:active {
-    cursor: grabbing;
-  }
+  padding: 4px 4px 4px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 
   &:hover {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
 
-  h3{
+  h3 {
     margin: 0;
     font: var(--text-14-medium);
   }
 
-  i{
+  i {
     margin-right: 8px;
   }
 
-  .cardName{
+  .dragHandle {
+    cursor: grab;
+    flex-grow: 1;
+
+    &:active {
+      cursor: grabbing;
+    }
+  }
+
+  .cardName {
     display: flex;
     align-items: center;
-    user-select: none; // Запрет выделения текста
-    -webkit-user-select: none; // Для Safari
-    -moz-user-select: none; // Для Firefox
-    -ms-user-select: none; // Для IE/Edge
-    pointer-events: none; // Запрет всех взаимодействий
-    cursor: default; // Убираем курсор-указатель
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
   }
 
   .checkedIcon {
-    color: #22C55E; // Зеленый цвет для иконки
+    color: #22C55E;
   }
 
   .checkedText {

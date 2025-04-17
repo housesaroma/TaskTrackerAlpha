@@ -5,6 +5,7 @@ export interface ITask {
     priority?: number;
     dates?: string;
     isDone?: boolean;
+    color: string;
     type: 'task';
 }
 
@@ -15,6 +16,7 @@ export interface IDefect {
     priority?: number;
     dates?: string;
     isDone?: boolean;
+    color: string;
     type: 'defect';
 }
 

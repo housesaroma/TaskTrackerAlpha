@@ -16,6 +16,10 @@ interface ColumnProps {
     onDeleteColumn: (id: string) => void;
     onDuplicateColumn: (id: string) => void;
     onAddCard: (columnId: string, card: ICard) => void;
+    onRenameCard: (id: string, newTitle: string) => void;
+    onChangeCardColor: (id: string, newColor: string) => void;
+    onDeleteCard: (id: string) => void;
+    onDuplicateCard: (id: string) => void;
 }
 
 export const Column = ({
@@ -26,6 +30,10 @@ export const Column = ({
                            onDeleteColumn,
                            onDuplicateColumn,
                            onAddCard,
+                           onRenameCard,
+                           onChangeCardColor,
+                           onDeleteCard,
+                           onDuplicateCard
                        }: ColumnProps) => {
     const {setNodeRef} = useDroppable({id: column.id});
 
@@ -80,6 +88,10 @@ export const Column = ({
                                 key={card.id}
                                 card={card}
                                 onCheckClick={onCheckClick}
+                                onRenameCard={onRenameCard}
+                                onChangeColor={onChangeCardColor}
+                                onDeleteCard={onDeleteCard}
+                                onDuplicateCard={onDuplicateCard}
                             />
                         ))
                     ) : (

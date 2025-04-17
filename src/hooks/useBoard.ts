@@ -199,6 +199,57 @@ export const useBoard = () => {
         }));
     };
 
+    const handleRenameCard = (cardId: string, newTitle: string) => {
+        setColumns(prev =>
+            prev.map(column => ({
+                ...column,
+                cards: column.cards.map(card =>
+                    card.id === cardId ? {...card, title: newTitle} : card
+                )
+            }))
+        );
+    };
+
+    const handleChangeCardColor = (cardId: string, newColor: string) => {
+        setColumns(prev =>
+            prev.map(column => ({
+                ...column,
+                cards: column.cards.map(card =>
+                    card.id === cardId ? {...card, color: newColor} : card
+                )
+            }))
+        );
+    };
+
+    const handleDeleteCard = (cardId: string) => {
+        setColumns(prev =>
+            prev.map(column => ({
+                ...column,
+                cards: column.cards.filter(card => card.id !== cardId)
+            }))
+        );
+    };
+
+    const handleDuplicateCard = (cardId: string) => {
+        setColumns(prev => {
+            return prev.map(column => {
+                const cardToDuplicate = column.cards.find(card => card.id === cardId);
+                if (!cardToDuplicate) return column;
+
+                const duplicatedCard = {
+                    ...cardToDuplicate,
+                    id: `card-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+                    title: `${cardToDuplicate.title} (копия)`
+                };
+
+                return {
+                    ...column,
+                    cards: [...column.cards, duplicatedCard]
+                };
+            });
+        });
+    };
+
     return {
         columns,
         activeCard,
@@ -210,6 +261,10 @@ export const useBoard = () => {
         handleRenameColumn,
         handleAddColumn,
         handleDuplicateColumn,
-        handleAddCard
+        handleAddCard,
+        handleRenameCard,
+        handleChangeCardColor,
+        handleDuplicateCard,
+        handleDeleteCard
     };
 };
