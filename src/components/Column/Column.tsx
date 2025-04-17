@@ -1,12 +1,12 @@
-import {SortableContext, verticalListSortingStrategy} from '@dnd-kit/sortable';
-import {useDroppable} from '@dnd-kit/core';
-import {ICard, IColumn, IDefect, ITask} from '../../types/types.ts';
-import styles from './Column.module.scss';
-import BoardCard from "../BoardCard/BoardCard.tsx";
-import {ColumnMenu} from "./ColumnMenu.tsx";
-import React, {useEffect, useRef, useState} from "react";
+import {SortableContext, verticalListSortingStrategy} from "@dnd-kit/sortable";
+import {useDroppable} from "@dnd-kit/core";
+import {ICard, IColumn} from "../../types/types";
+import styles from "./Column.module.scss";
+import BoardCard from "../BoardCard/BoardCard";
+import {ColumnMenu} from "./ColumnMenu";
 import {InputText} from "primereact/inputtext";
-import {SelectTaskType} from "../SelectTaskType/SelectTaskType.tsx";
+import {SelectTaskType} from "../SelectTaskType/SelectTaskType";
+import {useColumn} from "../../hooks/useColumn.ts";
 
 interface ColumnProps {
     column: IColumn;
@@ -18,73 +18,27 @@ interface ColumnProps {
     onAddCard: (columnId: string, card: ICard) => void;
 }
 
-const Column = ({
-                    column,
-                    onCheckClick,
-                    onChangeColor,
-                    onRenameColumn,
-                    onDeleteColumn,
-                    onDuplicateColumn,
-                    onAddCard
-                }: ColumnProps) => {
-    const {setNodeRef} = useDroppable({
-        id: column.id,
-    });
+export const Column = ({
+                           column,
+                           onCheckClick,
+                           onChangeColor,
+                           onRenameColumn,
+                           onDeleteColumn,
+                           onDuplicateColumn,
+                           onAddCard,
+                       }: ColumnProps) => {
+    const {setNodeRef} = useDroppable({id: column.id});
 
-    const [isEditing, setIsEditing] = useState(false);
-    const [newTitle, setNewTitle] = useState(column.title);
-    const inputRef = useRef<HTMLInputElement>(null);
-
-    useEffect(() => {
-        if (isEditing && inputRef.current) {
-            inputRef.current.focus();
-        }
-    }, [isEditing]);
-
-    const handleRenameClick = () => {
-        setIsEditing(true);
-    };
-
-    const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setNewTitle(e.target.value);
-    };
-
-    const handleTitleBlur = () => {
-        if (newTitle.trim() && newTitle !== column.title) {
-            onRenameColumn(column.id, newTitle);
-        } else {
-            setNewTitle(column.title);
-        }
-        setIsEditing(false);
-    };
-
-    const handleKeyDown = (e: React.KeyboardEvent) => {
-        if (e.key === 'Enter') {
-            handleTitleBlur();
-        }
-    };
-
-    const handleAddCard = (type: 'task' | 'defect') => {
-        let newCard: ICard;
-
-        if (type === 'task') {
-            newCard = {
-                id: `task-${Date.now()}`,
-                title: 'Новая задача',
-                isDone: false,
-                type: 'task'
-            } as ITask;
-        } else {
-            newCard = {
-                id: `defect-${Date.now()}`,
-                title: 'Новый дефект',
-                isDone: false,
-                type: 'defect'
-            } as IDefect;
-        }
-
-        onAddCard(column.id, newCard);
-    };
+    const {
+        isEditing,
+        newTitle,
+        inputRef,
+        handleRenameClick,
+        handleTitleChange,
+        handleTitleBlur,
+        handleKeyDown,
+        handleAddCard,
+    } = useColumn(column, {onRenameColumn, onAddCard});
     return (
         <div
             ref={setNodeRef}
@@ -110,8 +64,10 @@ const Column = ({
                             onDuplicate={() => onDuplicateColumn(column.id)}></ColumnMenu>
             </div>
 
+            {
+                column.id !== 'done' ? <SelectTaskType onAdd={handleAddCard}></SelectTaskType> : ''
+            }
 
-            <SelectTaskType onAdd={handleAddCard}></SelectTaskType>
 
             <SortableContext
                 items={column.cards.map(card => card.id)}
