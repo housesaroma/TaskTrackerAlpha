@@ -13,12 +13,12 @@ interface BoardCardMenuProps {
 }
 
 export const BoardCardMenu = ({
-                               cardColor,
-                               onColorChange,
-                               onDelete,
-                               onRename,
-                               onDuplicate
-                           }: BoardCardMenuProps) => {
+                                  cardColor,
+                                  onColorChange,
+                                  onDelete,
+                                  onRename,
+                                  onDuplicate
+                              }: BoardCardMenuProps) => {
     const menuRef = useRef<Menu>(null);
 
     const normalizeColor = (color: string) => {

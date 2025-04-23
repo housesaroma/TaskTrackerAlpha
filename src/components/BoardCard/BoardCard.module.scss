@@ -13,6 +13,12 @@
   h3 {
     margin: 0;
     font: var(--text-14-medium);
+
+    cursor: grab;
+
+    &:active {
+      cursor: grabbing;
+    }
   }
 
   i {
@@ -20,12 +26,7 @@
   }
 
   .dragHandle {
-    cursor: grab;
     flex-grow: 1;
-
-    &:active {
-      cursor: grabbing;
-    }
   }
 
   .cardName {

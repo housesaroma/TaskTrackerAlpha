@@ -3,9 +3,10 @@ import {CSS} from '@dnd-kit/utilities';
 import {ICard} from '../../types/types';
 import styles from './BoardCard.module.scss';
 import "primeicons/primeicons.css";
-import React, {useCallback, useEffect, useRef, useState} from "react";
 import {InputText} from "primereact/inputtext";
 import {BoardCardMenu} from "./BoardCardMenu.tsx";
+import {InfoSidebar} from "../InfoSidebar/InfoSidebar.tsx";
+import {useCard} from "../../hooks/useCard";
 
 const BoardCard = ({card, onCheckClick, onRenameCard, onChangeColor, onDeleteCard, onDuplicateCard}: {
     card: ICard;
@@ -26,46 +27,26 @@ const BoardCard = ({card, onCheckClick, onRenameCard, onChangeColor, onDeleteCar
         id: card.id,
     });
 
-    const [isEditing, setIsEditing] = useState(false);
-    const [newTitle, setNewTitle] = useState(card.title);
-    const inputRef = useRef<HTMLInputElement>(null);
-
-    const handleIconClick = (e: React.MouseEvent) => {
-        e.stopPropagation();
-        onCheckClick?.(card.id, !card.isDone);
-    };
-
-    const handleRenameClick = () => {
-        setIsEditing(true);
-    };
-
-    const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setNewTitle(e.target.value);
-    };
-
-    const handleTitleBlur = () => {
-        if (newTitle.trim() && newTitle !== card.title) {
-            onRenameCard(card.id, newTitle);
-        } else {
-            setNewTitle(card.title);
-        }
-        setIsEditing(false);
-    };
-
-    const handleKeyDown = useCallback(
-        (e: React.KeyboardEvent) => {
-            if (e.key === "Enter") {
-                handleTitleBlur();
-            }
-        },
-        [handleTitleBlur]
-    );
-
-    useEffect(() => {
-        if (isEditing && inputRef.current) {
-            inputRef.current.focus();
-        }
-    }, [isEditing]);
+    const {
+        isEditing,
+        newTitle,
+        sidebarVisible,
+        inputRef,
+        handleCardClick,
+        handleIconClick,
+        handleRenameClick,
+        handleTitleChange,
+        handleTitleBlur,
+        handleKeyDown,
+        handleMenuAction,
+        handleSidebarHide,
+    } = useCard(card, {
+        onCheckClick,
+        onRenameCard,
+        onChangeColor,
+        onDeleteCard,
+        onDuplicateCard
+    });
 
     const style = {
         transform: CSS.Transform.toString(transform),
@@ -74,57 +55,65 @@ const BoardCard = ({card, onCheckClick, onRenameCard, onChangeColor, onDeleteCar
     };
 
     return (
-        <div
-            ref={setNodeRef}
-            style={style}
-            {...attributes}
-            className={styles.draggableWrapper}
-        >
-            <div className={styles.card} style={{backgroundColor: card.color}}>
-                <i
-                    className={`pi pi-check-circle ${card.isDone ? styles.checkedIcon : ''}`}
-                    onClick={handleIconClick}
-                    style={{
-                        cursor: 'pointer',
-                        pointerEvents: 'auto'
-                    }}
-                />
+        <>
+            <div
+                ref={setNodeRef}
+                style={style}
+                {...attributes}
+                className={styles.draggableWrapper}
+                onClick={handleCardClick}
+            >
+                <div className={styles.card} style={{backgroundColor: card.color}}>
+                    <i
+                        className={`pi pi-check-circle ${card.isDone ? styles.checkedIcon : ''}`}
+                        onClick={handleIconClick}
+                        style={{
+                            cursor: 'pointer',
+                            pointerEvents: 'auto'
+                        }}
+                    />
 
-                {/* Drag handle только для обычного отображения */}
-                {!isEditing && (
-                    <div className={styles.dragHandle} {...listeners}>
-                        <div className={styles.cardName}>
-                            <h3 className={`${card.isDone ? styles.checkedText : ''}`}>{card.title}</h3>
+                    {!isEditing && (
+                        <div className={styles.dragHandle}>
+                            <div className={styles.cardName}>
+                                <h3 {...listeners} className={`${card.isDone ? styles.checkedText : ''}`}>
+                                    {card.title}
+                                </h3>
+                            </div>
                         </div>
-                    </div>
-                )}
+                    )}
 
-                {/* InputText вне drag handle при редактировании */}
-                {isEditing && (
-                    <div className={styles.cardName}>
-                        <InputText
-                            value={newTitle}
-                            onChange={handleTitleChange}
-                            onBlur={handleTitleBlur}
-                            onKeyDown={handleKeyDown}
-                            ref={inputRef}
-                            className={styles.titleInput}
+                    {isEditing && (
+                        <div className={styles.cardName}>
+                            <InputText
+                                value={newTitle}
+                                onChange={handleTitleChange}
+                                onBlur={handleTitleBlur}
+                                onKeyDown={handleKeyDown}
+                                ref={inputRef}
+                                className={styles.titleInput}
+                            />
+                        </div>
+                    )}
+
+                    <div style={{pointerEvents: 'auto'}} onClick={handleMenuAction}>
+                        <BoardCardMenu
+                            cardColor={card.color || '#ffffff'}
+                            onColorChange={(color) => onChangeColor(card.id, color)}
+                            onRename={handleRenameClick}
+                            onDelete={() => onDeleteCard(card.id)}
+                            onDuplicate={() => onDuplicateCard(card.id)}
                         />
                     </div>
-                )}
-
-                {/* Меню - не должно быть частью drag handle */}
-                <div style={{pointerEvents: 'auto'}}>
-                    <BoardCardMenu
-                        cardColor={card.color || '#ffffff'}
-                        onColorChange={(color) => onChangeColor(card.id, color)}
-                        onRename={handleRenameClick}
-                        onDelete={() => onDeleteCard(card.id)}
-                        onDuplicate={() => onDuplicateCard(card.id)}
-                    />
                 </div>
             </div>
-        </div>
+            <InfoSidebar
+                sidebarName={card.title}
+                sidebarDescription={card.description ?? 'Нет описания'}
+                visible={sidebarVisible}
+                onHide={handleSidebarHide}
+            />
+        </>
     );
 };
 

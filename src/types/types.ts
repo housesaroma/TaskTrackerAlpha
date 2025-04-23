@@ -5,7 +5,7 @@ export interface ITask {
     priority?: number;
     dates?: string;
     isDone?: boolean;
-    color: string;
+    color?: string;
     type: 'task';
 }
 

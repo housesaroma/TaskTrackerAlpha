@@ -1,10 +1,10 @@
 import styles from './NavigationPanel.module.scss';
 import {MenuItem} from "primereact/menuitem";
-import {Menu} from "primereact/menu";
 import {Button} from "primereact/button";
 import {useNavigate} from "react-router-dom";
 import {useSelector} from "react-redux";
 import {RootState} from "../../store.ts";
+import {PanelMenu} from "primereact/panelmenu";
 
 interface NavigationPanelProps {
     onThemeToggle: () => void;
@@ -22,8 +22,13 @@ const NavigationPanel = ({onThemeToggle}: NavigationPanelProps) => {
         },
         {
             label: 'Проекты',
-            icon: 'pi pi-th-large',
-            command: () => navigate('/main')
+            icon: 'pi pi-sitemap',
+            items: [
+                {
+                    label: 'Chill Team',
+                    command: () => navigate('/main')
+                },
+            ]
         },
         {
             label: 'Чаты',
@@ -40,7 +45,7 @@ const NavigationPanel = ({onThemeToggle}: NavigationPanelProps) => {
     return (
         <div className={styles.navigationPanel}>
             <div className={styles.menuContainer}>
-                <Menu model={items} className={styles.menu}/>
+                <PanelMenu model={items} className={styles.menu}/>
             </div>
             <div className={styles.themeToggle}>
                 <Button onClick={onThemeToggle} className={styles.themeButton}>
