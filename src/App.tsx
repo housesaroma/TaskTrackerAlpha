@@ -1,14 +1,16 @@
-import {BrowserRouter, Navigate, Route, Routes} from 'react-router-dom';
+import {BrowserRouter, Navigate, Outlet, Route, Routes} from 'react-router-dom';
 import {PrimeReactContext, PrimeReactProvider} from 'primereact/api';
 import {useContext} from 'react';
-import {Button} from 'primereact/button';
 import Login from "./pages/Auth/Login/Login.tsx";
 import Register from "./pages/Auth/Register/Register.tsx";
 import Main from "./pages/Main/Main.tsx";
 import {Provider, useDispatch, useSelector} from "react-redux";
 import {RootState, store, toggleTheme} from "./store.ts";
 import "primeicons/primeicons.css";
-import styles from './App.module.scss'
+import Chats from "./pages/Chats/Chats.tsx";
+import Metrics from "./pages/Metrics/Metrics.tsx";
+import MyTasks from "./pages/MyTasks/MyTasks.tsx";
+import AuthenticatedLayout from "./components/AuthenticatedLayout/AuthenticatedLayout.tsx";
 
 function AppContent() {
     const dispatch = useDispatch();
@@ -25,23 +27,29 @@ function AppContent() {
     };
 
     return (
-        <div>
+        <>
 
-            <Button onClick={handleThemeChange} className={styles.themeButton}>
-                <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
-                    <i className={currentTheme === 'dark' ? 'pi pi-moon' : 'pi pi-sun'}></i>
-                    Тема
-                </div>
-            </Button>
 
             <Routes>
-                <Route path="/main" element={<Main/>}/>
                 <Route path="/login" element={<Login/>}/>
                 <Route path="/register" element={<Register/>}/>
                 <Route path="/" element={<Navigate to="/main"/>}/>
+
+                <Route element={
+                    <AuthenticatedLayout onThemeToggle={handleThemeChange}>
+                        <Outlet />
+                    </AuthenticatedLayout>
+                }>
+                    <Route path="/main" element={<Main/>}/>
+                    <Route path="/chats" element={<Chats/>}/>
+                    <Route path="/metrics" element={<Metrics/>}/>
+                    <Route path="/mytasks" element={<MyTasks/>}/>
+                </Route>
+
                 <Route path="*" element={<div>404 Not Found</div>}/>
             </Routes>
-        </div>
+
+        </>
     );
 }
 

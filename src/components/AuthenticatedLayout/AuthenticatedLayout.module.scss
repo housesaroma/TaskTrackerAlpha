@@ -1,0 +1,23 @@
+.layout {
+  display: grid;
+  grid-template-areas:
+        "header header"
+        "nav content";
+  grid-template-columns: auto 1fr; // Навигация слева, контент занимает оставшееся место
+  grid-template-rows: auto 1fr;    // Хедер сверху, остальное — контент
+  overflow: hidden;
+}
+
+.header {
+  grid-area: header;
+  z-index: 10;
+}
+
+.navPanel {
+  grid-area: nav;
+}
+
+.content {
+  grid-area: content;
+  overflow-y: auto; // Контент можно скроллить
+}

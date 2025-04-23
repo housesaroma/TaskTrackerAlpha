@@ -1,4 +1,3 @@
-import Header from "../../components/Header/Header.tsx";
 import Board from "../../components/Board/Board.tsx";
 
 interface MyComponentProps {
@@ -6,7 +5,6 @@ interface MyComponentProps {
 
 const Main = ({}: MyComponentProps) => {
     return <div>
-        <Header></Header>
         <Board></Board>
     </div>
 };
