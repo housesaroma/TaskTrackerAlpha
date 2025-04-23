@@ -1,5 +1,6 @@
-import {SortableContext, verticalListSortingStrategy} from "@dnd-kit/sortable";
+import {SortableContext, verticalListSortingStrategy, useSortable} from "@dnd-kit/sortable";
 import {useDroppable} from "@dnd-kit/core";
+import {CSS} from "@dnd-kit/utilities";
 import {ICard, IColumn} from "../../types/types";
 import styles from "./Column.module.scss";
 import BoardCard from "../BoardCard/BoardCard";
@@ -36,6 +37,17 @@ export const Column = ({
                            onDuplicateCard
                        }: ColumnProps) => {
     const {setNodeRef} = useDroppable({id: column.id});
+    
+    const {
+        attributes,
+        listeners,
+        setNodeRef: setSortableRef,
+        transform,
+        transition,
+        isDragging,
+    } = useSortable({
+        id: column.id,
+    });
 
     const {
         isEditing,
@@ -45,13 +57,24 @@ export const Column = ({
         handleTitleChange,
         handleTitleBlur,
         handleKeyDown,
-        handleAddCard,
+        handleAddCard: handleAddCardLocal,
     } = useColumn(column, {onRenameColumn, onAddCard});
+
+    const style = {
+        transform: CSS.Transform.toString(transform),
+        transition: transition || undefined,
+        opacity: isDragging ? 0.5 : 1,
+    };
+
     return (
         <div
-            ref={setNodeRef}
+            ref={(node) => {
+                setNodeRef(node);
+                setSortableRef(node);
+            }}
             className={styles.column}
-            style={{backgroundColor: column.color}}
+            style={{...style, backgroundColor: column.color}}
+            {...attributes}
         >
             <div className={styles.columnTitleWrapper}>
                 {isEditing ? (
@@ -64,18 +87,18 @@ export const Column = ({
                         className={styles.titleInput}
                     />
                 ) : (
-                    <h2 className={styles.columnTitle}>{column.title}</h2>
+                    <h2 className={styles.columnTitle} {...listeners}>{column.title}</h2>
                 )}
-                <ColumnMenu columnColor={column.color} onColorChange={(color) => onChangeColor(column.id, color)}
-                            onRename={handleRenameClick}
-                            onDelete={() => onDeleteColumn(column.id)}
-                            onDuplicate={() => onDuplicateColumn(column.id)}></ColumnMenu>
+                <ColumnMenu 
+                    columnColor={column.color} 
+                    onColorChange={(color) => onChangeColor(column.id, color)}
+                    onRename={handleRenameClick}
+                    onDelete={() => onDeleteColumn(column.id)}
+                    onDuplicate={() => onDuplicateColumn(column.id)}
+                />
             </div>
 
-            {
-                column.id !== 'done' ? <SelectTaskType onAdd={handleAddCard}></SelectTaskType> : ''
-            }
-
+            {column.id !== 'done' && <SelectTaskType onAdd={handleAddCardLocal} />}
 
             <SortableContext
                 items={column.cards.map(card => card.id)}

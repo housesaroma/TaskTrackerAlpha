@@ -5,16 +5,16 @@
   width: 270px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   height: fit-content;
-
+  
   h2 {
     margin-top: 0;
   }
 
   .cardsList {
-     display: flex;
-     flex-direction: column;
-     gap: 0.5rem;
-   }
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
 
   .emptyColumn {
     display: flex;
@@ -40,17 +40,30 @@
     -webkit-user-select: none; // Для Safari
     -moz-user-select: none; // Для Firefox
     -ms-user-select: none; // Для IE/Edge
-    pointer-events: none; // Запрет всех взаимодействий
-    cursor: default; // Убираем курсор-указатель
+    pointer-events: auto; // Разрешаем взаимодействие
+    cursor: grab; // Изменяем курсор при взаимодействии
+    margin: 0;
+    padding: 0.5rem;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.05);
+    }
+
+    &:active {
+      cursor: grabbing;
+    }
   }
 
-  .columnTitleWrapper{
+  .columnTitleWrapper {
     display: flex;
     align-self: center;
     justify-content: space-between;
+    margin-bottom: 1rem;
   }
 
-  .titleIcon{
+  .titleIcon {
     margin-top: 10px;
     padding-left: 10px;
   }

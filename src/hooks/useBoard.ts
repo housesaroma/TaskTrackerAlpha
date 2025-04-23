@@ -6,9 +6,19 @@ import {INITIAL_COLUMNS} from '../constants/mock-data.ts';
 export const useBoard = () => {
     const [columns, setColumns] = useState<IColumn[]>(INITIAL_COLUMNS);
     const [activeCard, setActiveCard] = useState<ICard | null>(null);
+    const [activeColumn, setActiveColumn] = useState<IColumn | null>(null);
 
     const handleDragStart = (event: any) => {
         const {active} = event;
+        
+        // Check if we're dragging a column
+        const column = columns.find(col => col.id === active.id);
+        if (column) {
+            setActiveColumn(column);
+            return;
+        }
+
+        // Otherwise check for a card
         for (const column of columns) {
             const card = column.cards.find(c => c.id === active.id);
             if (card) {
@@ -20,9 +30,26 @@ export const useBoard = () => {
 
     const handleDragEnd = (event: DragEndEvent) => {
         setActiveCard(null);
+        setActiveColumn(null);
         const {active, over} = event;
 
         if (!over || active.id === over.id) return;
+
+        if (columns.some(col => col.id === active.id)) {
+            setColumns(prevColumns => {
+                const newColumns = [...prevColumns];
+                const activeIndex = newColumns.findIndex(col => col.id === active.id);
+                const overIndex = newColumns.findIndex(col => col.id === over.id);
+
+                if (activeIndex === -1 || overIndex === -1) return prevColumns;
+
+                const [removed] = newColumns.splice(activeIndex, 1);
+                newColumns.splice(overIndex, 0, removed);
+
+                return newColumns;
+            });
+            return;
+        }
 
         setColumns(prevColumns => {
             const newColumns = [...prevColumns];
@@ -253,6 +280,7 @@ export const useBoard = () => {
     return {
         columns,
         activeCard,
+        activeColumn,
         handleDragStart,
         handleDragEnd,
         handleCheckClick,

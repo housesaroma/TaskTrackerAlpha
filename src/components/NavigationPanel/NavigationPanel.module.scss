@@ -1,9 +1,13 @@
+:root {
+  transition: all 1.0s ease;
+}
+
 .navigationPanel {
   display: flex;
   flex-direction: column;
   width: fit-content;
-  height: calc(100vh - 140px);
   margin-right: 8px;
+  justify-content: space-between;
 }
 
 .menuContainer {
@@ -17,8 +21,7 @@
 }
 
 .themeToggle {
-  padding: 1rem;
-  display: grid;
+  margin: 50px auto 0;
 }
 
 .themeButton {

@@ -1,4 +1,5 @@
 import {closestCenter, defaultDropAnimationSideEffects, DndContext, DragOverlay} from '@dnd-kit/core';
+import {SortableContext, horizontalListSortingStrategy} from '@dnd-kit/sortable';
 import styles from './Board.module.scss';
 import Column from '../Column/Column';
 import {useBoard} from '../../hooks/useBoard';
@@ -18,6 +19,7 @@ const Board = () => {
     const {
         columns,
         activeCard,
+        activeColumn,
         handleDragStart,
         handleDragEnd,
         handleCheckClick,
@@ -40,30 +42,54 @@ const Board = () => {
                 onDragStart={handleDragStart}
                 onDragEnd={handleDragEnd}
             >
-                <div className={styles.columnsContainer}>
-                    {columns.map(column => (
-                        <Column
-                            key={column.id}
-                            column={column}
+                <SortableContext
+                    items={columns.map(column => column.id)}
+                    strategy={horizontalListSortingStrategy}
+                >
+                    <div className={styles.columnsContainer}>
+                        {columns.map(column => (
+                            <Column
+                                key={column.id}
+                                column={column}
+                                onCheckClick={handleCheckClick}
+                                onRenameColumn={handleRenameColumn}
+                                onChangeColor={handleChangeColumnColor}
+                                onDeleteColumn={handleDeleteColumn}
+                                onDuplicateColumn={handleDuplicateColumn}
+                                onAddCard={handleAddCard}
+                                onRenameCard={handleRenameCard}
+                                onChangeCardColor={handleChangeCardColor}
+                                onDeleteCard={handleDeleteCard}
+                                onDuplicateCard={handleDuplicateCard}
+                            />
+                        ))}
+                    </div>
+                </SortableContext>
+
+                <DragOverlay dropAnimation={dropAnimationConfig}>
+                    {activeCard && (
+                        <DragOverlayContent
+                            activeCard={activeCard}
                             onCheckClick={handleCheckClick}
-                            onRenameColumn={handleRenameColumn}
-                            onChangeColor={handleChangeColumnColor}
-                            onDeleteColumn={handleDeleteColumn}
-                            onDuplicateColumn={handleDuplicateColumn}
-                            onAddCard={handleAddCard}
                             onRenameCard={handleRenameCard}
-                            onChangeCardColor={handleChangeCardColor}
+                            onChangeColor={handleChangeCardColor}
                             onDeleteCard={handleDeleteCard}
                             onDuplicateCard={handleDuplicateCard}
                         />
-                    ))}
-                </div>
-
-                <DragOverlay dropAnimation={dropAnimationConfig}>
-                    <DragOverlayContent
-                        activeCard={activeCard}
-                        onCheckClick={handleCheckClick}
-                    />
+                    )}
+                    {activeColumn && (
+                        <div style={{
+                            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+                            opacity: 0.9,
+                            zIndex: 1000,
+                            width: '300px',
+                            backgroundColor: activeColumn.color,
+                            borderRadius: '8px',
+                            padding: '1rem'
+                        }}>
+                            <h2>{activeColumn.title}</h2>
+                        </div>
+                    )}
                 </DragOverlay>
             </DndContext>
             <i
