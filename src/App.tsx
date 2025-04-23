@@ -46,7 +46,6 @@ function AppContent() {
 
                 <Route path="*" element={<div>404 Not Found</div>}/>
             </Routes>
-
         </>
     );
 }

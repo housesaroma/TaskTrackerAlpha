@@ -1,4 +1,4 @@
-import {useCallback, useEffect, useRef, useState} from "react";
+import React, {useCallback, useEffect, useRef, useState} from "react";
 import {ICard} from "../types/types";
 
 export const useCard = (
@@ -60,7 +60,7 @@ export const useCard = (
         [handleTitleBlur]
     );
 
-    const handleMenuAction = useCallback((e?: MouseEvent) => {
+    const handleMenuAction = useCallback((e?: React.MouseEvent) => {
         e?.stopPropagation();
     }, []);
 

@@ -1,6 +1,8 @@
 import {Sidebar} from 'primereact/sidebar';
 import {TabPanel, TabView} from 'primereact/tabview';
 import styles from './InfoSidebar.module.scss';
+import {useState} from "react";
+import {EditableDescription} from "./EditableDescription/EditableDescription.tsx";
 
 interface InfoSidebarProps {
     sidebarName: string;
@@ -10,6 +12,14 @@ interface InfoSidebarProps {
 }
 
 export const InfoSidebar = ({sidebarName, sidebarDescription, visible, onHide}: InfoSidebarProps) => {
+
+    const [description, setDescription] = useState(sidebarDescription);
+
+    const handleDescriptionSave = (newDescription: string) => {
+        setDescription(newDescription);
+        // Здесь можно добавить API-вызов для сохранения на сервере
+    };
+
     return (
         <div>
             <Sidebar
@@ -35,9 +45,10 @@ export const InfoSidebar = ({sidebarName, sidebarDescription, visible, onHide}: 
                         </TabPanel>
 
                         <TabPanel header="Описание">
-                            <div className={styles.tabContent}>
-                                <p>{sidebarDescription}</p>
-                            </div>
+                            <EditableDescription
+                                description={description}
+                                onSave={handleDescriptionSave}
+                            />
                         </TabPanel>
 
                         <TabPanel header="Подзадачи">
