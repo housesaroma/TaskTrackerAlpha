@@ -1,4 +1,4 @@
-import {SortableContext, verticalListSortingStrategy, useSortable} from "@dnd-kit/sortable";
+import {SortableContext, useSortable, verticalListSortingStrategy} from "@dnd-kit/sortable";
 import {useDroppable} from "@dnd-kit/core";
 import {CSS} from "@dnd-kit/utilities";
 import {ICard, IColumn} from "../../types/types";
@@ -37,7 +37,7 @@ export const Column = ({
                            onDuplicateCard
                        }: ColumnProps) => {
     const {setNodeRef} = useDroppable({id: column.id});
-    
+
     const {
         attributes,
         listeners,
@@ -58,6 +58,7 @@ export const Column = ({
         handleTitleBlur,
         handleKeyDown,
         handleAddCard: handleAddCardLocal,
+        handleMenuAction
     } = useColumn(column, {onRenameColumn, onAddCard});
 
     const style = {
@@ -89,16 +90,17 @@ export const Column = ({
                 ) : (
                     <h2 className={styles.columnTitle} {...listeners}>{column.title}</h2>
                 )}
-                <ColumnMenu 
-                    columnColor={column.color} 
-                    onColorChange={(color) => onChangeColor(column.id, color)}
-                    onRename={handleRenameClick}
-                    onDelete={() => onDeleteColumn(column.id)}
-                    onDuplicate={() => onDuplicateColumn(column.id)}
-                />
+                <div style={{pointerEvents: 'auto'}} onClick={handleMenuAction}>
+                    <ColumnMenu
+                        columnColor={column.color}
+                        onColorChange={(color) => onChangeColor(column.id, color)}
+                        onRename={handleRenameClick}
+                        onDelete={() => onDeleteColumn(column.id)}
+                        onDuplicate={() => onDuplicateColumn(column.id)}
+                    /></div>
             </div>
 
-            {column.id !== 'done' && <SelectTaskType onAdd={handleAddCardLocal} />}
+            {column.id !== 'done' && <SelectTaskType onAdd={handleAddCardLocal}/>}
 
             <SortableContext
                 items={column.cards.map(card => card.id)}

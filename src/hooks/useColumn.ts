@@ -27,6 +27,10 @@ export const useColumn = (
         []
     );
 
+    const handleMenuAction = useCallback((e?: React.MouseEvent) => {
+        e?.stopPropagation();
+    }, []);
+
     const handleTitleBlur = useCallback(() => {
         if (newTitle.trim() && newTitle !== column.title) {
             callbacks.onRenameColumn(column.id, newTitle);
@@ -76,5 +80,6 @@ export const useColumn = (
         handleTitleBlur,
         handleKeyDown,
         handleAddCard,
+        handleMenuAction
     };
 };
