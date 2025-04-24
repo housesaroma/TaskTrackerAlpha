@@ -3,6 +3,15 @@ import {TabPanel, TabView} from 'primereact/tabview';
 import styles from './InfoSidebar.module.scss';
 import {useState} from "react";
 import {EditableDescription} from "./EditableDescription/EditableDescription.tsx";
+import SubtaskSection from '../SubtaskSection/subtaskSection';
+
+interface Subtask {
+    id: string;
+    title: string;
+    completed: boolean;
+    startDate?: string;
+    endDate?: string;
+}
 
 interface InfoSidebarProps {
     sidebarName: string;
@@ -12,12 +21,37 @@ interface InfoSidebarProps {
 }
 
 export const InfoSidebar = ({sidebarName, sidebarDescription, visible, onHide}: InfoSidebarProps) => {
-
     const [description, setDescription] = useState(sidebarDescription);
+    const [subtasks, setSubtasks] = useState<Subtask[]>([]);
 
     const handleDescriptionSave = (newDescription: string) => {
         setDescription(newDescription);
         // Здесь можно добавить API-вызов для сохранения на сервере
+    };
+
+    const handleAddSubtask = () => {
+        // Обработка добавления подзадачи будет происходить в компоненте SubtaskSection
+    };
+
+    const handleSubtaskToggle = (id: string) => {
+        setSubtasks(subtasks.map(task => 
+            task.id === id ? { ...task, completed: !task.completed } : task
+        ));
+    };
+
+    const handleSubtaskUpdate = (updatedSubtask: Subtask) => {
+        setSubtasks(prevSubtasks => {
+            const existingTaskIndex = prevSubtasks.findIndex(task => task.id === updatedSubtask.id);
+            if (existingTaskIndex !== -1) {
+                // Обновляем существующую подзадачу
+                const newSubtasks = [...prevSubtasks];
+                newSubtasks[existingTaskIndex] = updatedSubtask;
+                return newSubtasks;
+            } else {
+                // Добавляем новую подзадачу
+                return [...prevSubtasks, updatedSubtask];
+            }
+        });
     };
 
     return (
@@ -53,7 +87,12 @@ export const InfoSidebar = ({sidebarName, sidebarDescription, visible, onHide}: 
 
                         <TabPanel header="Подзадачи">
                             <div className={styles.tabContent}>
-                                <p>Содержимое вкладки Подзадачи</p>
+                                <SubtaskSection
+                                    subtasks={subtasks}
+                                    onAddSubtask={handleAddSubtask}
+                                    onSubtaskToggle={handleSubtaskToggle}
+                                    onSubtaskUpdate={handleSubtaskUpdate}
+                                />
                             </div>
                         </TabPanel>
                     </TabView>

@@ -1,6 +1,11 @@
 .sidebar {
   width: fit-content;
   max-width: 500px;
+  min-width: 400px;
+
+  :global(.p-sidebar-content) {
+    padding: 0;
+  }
 
   .sidebarContent {
     padding: 1rem;
@@ -17,16 +22,31 @@
 
     .tabView {
       flex-grow: 1;
+      display: flex;
+      flex-direction: column;
 
-      .p-tabview-panels {
+      :global(.p-tabview-panels) {
         padding: 1rem 0;
         height: 100%;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+      }
+
+      :global(.p-tabview-panel) {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
       }
 
       .tabContent {
         height: 100%;
         padding: 0.5rem;
         color: var(--text-color);
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+        overflow-y: auto;
       }
     }
   }
