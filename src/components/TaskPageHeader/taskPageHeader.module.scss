@@ -1,0 +1,32 @@
+.header {
+  padding: 2rem;
+  border-bottom: 0.1rem solid #e0e0e0;
+
+  &Content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  &Title {
+    margin: 0;
+    font-size: 24px;
+    color: #333;
+  }
+}
+
+.projectButton {
+  background-color: #FFFFFF80;
+  border: none;
+  color: black;
+  margin-left: 2rem;
+  
+
+  &:hover {
+    background-color: #a7a1a180 !important;
+  }
+
+  &:focus {
+    box-shadow: none !important;
+  }
+}
