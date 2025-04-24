@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import styles from './subtaskSection.module.scss'
 import SubtaskCard from '../SubtaskCard/SubtaskCard'
 
@@ -82,6 +81,16 @@ function SubtaskSection({ subtasks, onAddSubtask, onSubtaskToggle, onSubtaskUpda
         }
     };
 
+    const handleTitleChange = (subtaskId: string, newTitle: string) => {
+        const subtask = subtasks.find(task => task.id === subtaskId);
+        if (subtask) {
+            onSubtaskUpdate({
+                ...subtask,
+                title: newTitle
+            });
+        }
+    };
+
     const progress = getProgress();
     const dateRange = getDateRange();
 
@@ -114,6 +123,7 @@ function SubtaskSection({ subtasks, onAddSubtask, onSubtaskToggle, onSubtaskUpda
                         endDate={subtask.endDate}
                         onToggleComplete={() => onSubtaskToggle(subtask.id)}
                         onDateChange={(startDate, endDate) => handleDateChange(subtask.id, startDate, endDate)}
+                        onTitleChange={(newTitle) => handleTitleChange(subtask.id, newTitle)}
                     />
                 ))}
             </div>

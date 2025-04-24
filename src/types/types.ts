@@ -6,28 +6,64 @@ export interface ISubtask {
     endDate?: string;
 }
 
+export interface IUser {
+    id: string;
+    name: string;
+    avatar?: string;
+    role?: 'administrator' | 'user';
+}
+
+export interface ITaskAction {
+    id: string;
+    date: string;
+    action: string;
+    user: IUser;
+}
+
 export interface ITask {
     id: string;
     title: string;
     description?: string;
-    priority?: number;
-    dates?: string;
+    priority?: 'Важно' | 'Средне' | 'Незначительно';
+    deadline?: string;
     isDone?: boolean;
     color?: string;
     type: 'task';
     subtasks?: ISubtask[];
+    createdAt: string;
+    createdBy: IUser;
+    assignedTo?: IUser;
+    responsibleUser?: IUser;
+    viewers?: IUser[];
+    linkedTasks?: string[];
+    actions?: ITaskAction[];
+    location?: {
+        board: string;
+        section: string;
+    };
 }
 
 export interface IDefect {
     id: string;
     title: string;
     description?: string;
-    priority?: number;
-    dates?: string;
+    priority?: 'Важно' | 'Средне' | 'Незначительно';
+    deadline?: string;
     isDone?: boolean;
     color: string;
     type: 'defect';
     subtasks?: ISubtask[];
+    createdAt: string;
+    createdBy: IUser;
+    assignedTo?: IUser;
+    responsibleUser?: IUser;
+    viewers?: IUser[];
+    linkedTasks?: string[];
+    actions?: ITaskAction[];
+    location?: {
+        board: string;
+        section: string;
+    };
 }
 
 export type ICard = ITask | IDefect;

@@ -1,0 +1,44 @@
+.taskInformation {
+    :global {
+        .p-accordion {
+            .p-accordion-header {
+                .p-accordion-header-link {
+                    padding: 1rem;
+                    background: transparent;
+                    border: none;
+                    color: var(--text-color);
+                    font-weight: 500;
+                    
+                    &:hover {
+                        background: var(--surface-hover);
+                    }
+                    
+                    &:focus {
+                        box-shadow: none;
+                        outline: none;
+                    }
+                }
+            }
+            
+            .p-accordion-content {
+                padding: 1rem;
+                background: transparent;
+                border: none;
+                color: var(--text-color);
+            }
+            
+            .p-accordion-tab {
+                margin-bottom: 0;
+                border-radius: 0;
+                
+                &:not(:last-child) {
+                    border-bottom: 1px solid var(--surface-border);
+                }
+            }
+        }
+    }
+}
+
+.accordionContent {
+    min-height: 50px;
+} 

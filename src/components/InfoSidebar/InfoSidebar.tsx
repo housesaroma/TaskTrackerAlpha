@@ -4,6 +4,7 @@ import styles from './InfoSidebar.module.scss';
 import {useState} from "react";
 import {EditableDescription} from "./EditableDescription/EditableDescription.tsx";
 import SubtaskSection from '../SubtaskSection/subtaskSection';
+import { TaskInformation } from './TaskInformation/TaskInformation';
 
 interface Subtask {
     id: string;
@@ -74,7 +75,7 @@ export const InfoSidebar = ({sidebarName, sidebarDescription, visible, onHide}: 
 
                         <TabPanel header="Информация">
                             <div className={styles.tabContent}>
-                                <p>Содержимое вкладки Информация</p>
+                                <TaskInformation />
                             </div>
                         </TabPanel>
 

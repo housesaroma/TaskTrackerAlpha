@@ -1,7 +1,8 @@
 import styles from './SubtaskCard.module.scss';
 import "primeicons/primeicons.css";
 import { Calendar } from 'primereact/calendar';
-import { useState } from 'react';
+import { InputText } from 'primereact/inputtext';
+import { useState, useRef, useEffect } from 'react';
 
 interface SubtaskCardProps {
     title: string;
@@ -10,6 +11,7 @@ interface SubtaskCardProps {
     endDate?: string;
     onToggleComplete: () => void;
     onDateChange: (startDate?: string, endDate?: string) => void;
+    onTitleChange: (newTitle: string) => void;
 }
 
 const SubtaskCard = ({ 
@@ -18,10 +20,20 @@ const SubtaskCard = ({
     startDate, 
     endDate, 
     onToggleComplete,
-    onDateChange 
+    onDateChange,
+    onTitleChange
 }: SubtaskCardProps) => {
     const [showCalendar, setShowCalendar] = useState(false);
     const [dateRange, setDateRange] = useState<Date[] | null>(null);
+    const [isEditing, setIsEditing] = useState(false);
+    const [editedTitle, setEditedTitle] = useState(title);
+    const inputRef = useRef<HTMLInputElement>(null);
+
+    useEffect(() => {
+        if (isEditing && inputRef.current) {
+            inputRef.current.focus();
+        }
+    }, [isEditing]);
 
     const parseDateRange = (): Date[] | null => {
         if (!startDate || !endDate) return null;
@@ -48,6 +60,23 @@ const SubtaskCard = ({
         }
     };
 
+    const handleTitleClick = () => {
+        setIsEditing(true);
+    };
+
+    const handleTitleBlur = () => {
+        setIsEditing(false);
+        if (editedTitle !== title) {
+            onTitleChange(editedTitle);
+        }
+    };
+
+    const handleTitleKeyDown = (e: React.KeyboardEvent) => {
+        if (e.key === 'Enter') {
+            handleTitleBlur();
+        }
+    };
+
     return (
         <div className={styles.card}>
             <i
@@ -64,9 +93,24 @@ const SubtaskCard = ({
 
             <div className={styles.cardContent}>
                 <div className={styles.cardName}>
-                    <h3 className={`${completed ? styles.checkedText : ''}`}>
-                        {title}
-                    </h3>
+                    {isEditing ? (
+                        <InputText
+                            value={editedTitle}
+                            onChange={(e) => setEditedTitle(e.target.value)}
+                            onBlur={handleTitleBlur}
+                            onKeyDown={handleTitleKeyDown}
+                            ref={inputRef}
+                            className={styles.titleInput}
+                        />
+                    ) : (
+                        <h3 
+                            className={`${completed ? styles.checkedText : ''}`}
+                            onClick={handleTitleClick}
+                            style={{ cursor: completed ? 'default' : 'pointer' }}
+                        >
+                            {title}
+                        </h3>
+                    )}
                 </div>
                 <div className={styles.dateContainer}>
                     <div 
