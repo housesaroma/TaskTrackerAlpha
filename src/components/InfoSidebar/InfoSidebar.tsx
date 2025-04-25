@@ -20,9 +20,10 @@ interface InfoSidebarProps {
     sidebarDescription: string;
     visible: boolean;
     onHide: () => void;
+    cardId: string;
 }
 
-export const InfoSidebar = ({sidebarName, sidebarDescription, visible, onHide}: InfoSidebarProps) => {
+export const InfoSidebar = ({sidebarName, sidebarDescription, visible, onHide, cardId}: InfoSidebarProps) => {
     const [description, setDescription] = useState(sidebarDescription);
     const [subtasks, setSubtasks] = useState<Subtask[]>([]);
 
@@ -65,7 +66,7 @@ export const InfoSidebar = ({sidebarName, sidebarDescription, visible, onHide}: 
                 className={styles.sidebar}
             >
                 <div className={styles.sidebarContent}>
-                    <h3 className={styles.name}>{sidebarName}</h3>
+                    <h3 className={styles.name}>{sidebarName} <span style={{fontSize: '0.9em'}}>#{cardId}</span></h3>
 
                     <TabView className={styles.tabView}>
                         <TabPanel header="Чат">

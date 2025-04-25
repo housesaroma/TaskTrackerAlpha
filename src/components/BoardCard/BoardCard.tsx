@@ -78,7 +78,7 @@ const BoardCard = ({card, onCheckClick, onRenameCard, onChangeColor, onDeleteCar
                             <div className={styles.cardContent}>
                                 <div className={styles.cardName}>
                                     <h3 {...listeners} className={`${card.isDone ? styles.checkedText : ''}`}>
-                                        {card.title}
+                                        {card.title} <span style={{fontSize: '0.9em'}}>#{card.id}</span>
                                     </h3>
                                 </div>
                                 {(card.startDate || card.endDate || card.priority) && (
@@ -134,6 +134,7 @@ const BoardCard = ({card, onCheckClick, onRenameCard, onChangeColor, onDeleteCar
                 sidebarDescription={card.description ?? 'Нет описания'}
                 visible={sidebarVisible}
                 onHide={handleSidebarHide}
+                cardId={card.id}
             />
         </>
     );

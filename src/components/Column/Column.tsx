@@ -21,6 +21,7 @@ interface ColumnProps {
     onChangeCardColor: (id: string, newColor: string) => void;
     onDeleteCard: (id: string) => void;
     onDuplicateCard: (id: string) => void;
+    getNextId: () => number;
 }
 
 export const Column = ({
@@ -34,7 +35,8 @@ export const Column = ({
                            onRenameCard,
                            onChangeCardColor,
                            onDeleteCard,
-                           onDuplicateCard
+                           onDuplicateCard,
+                           getNextId
                        }: ColumnProps) => {
     const {setNodeRef} = useDroppable({id: column.id});
 
@@ -59,7 +61,7 @@ export const Column = ({
         handleKeyDown,
         handleAddCard: handleAddCardLocal,
         handleMenuAction
-    } = useColumn(column, {onRenameColumn, onAddCard});
+    } = useColumn(column, {onRenameColumn, onAddCard}, getNextId);
 
     const style = {
         transform: CSS.Transform.toString(transform),

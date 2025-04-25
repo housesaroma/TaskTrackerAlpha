@@ -6,7 +6,8 @@ export const useColumn = (
     callbacks: {
         onRenameColumn: (id: string, newTitle: string) => void;
         onAddCard: (columnId: string, card: ICard) => void;
-    }
+    },
+    getNextId: () => number
 ) => {
     const [isEditing, setIsEditing] = useState(false);
     const [newTitle, setNewTitle] = useState(column.title);
@@ -52,7 +53,7 @@ export const useColumn = (
     const createNewCard = useCallback(
         (type: "task" | "defect"): ICard => {
             const baseCard = {
-                id: `${type}-${Date.now()}`,
+                id: `${getNextId()}`,
                 title: type === "task" ? "Новая задача" : "Новый дефект",
                 isDone: false,
                 type,
@@ -60,7 +61,7 @@ export const useColumn = (
 
             return type === "task" ? (baseCard as ITask) : (baseCard as IDefect);
         },
-        []
+        [getNextId]
     );
 
     const handleAddCard = useCallback(

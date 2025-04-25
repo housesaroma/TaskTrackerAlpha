@@ -4,6 +4,7 @@ import styles from './Board.module.scss';
 import Column from '../Column/Column';
 import {useBoard} from '../../hooks/useBoard';
 import DragOverlayContent from '../../utils/DragOverlayContent/DragOverlayContent.tsx';
+import { useCardId } from '../../hooks/useCardId';
 
 const dropAnimationConfig = {
     sideEffects: defaultDropAnimationSideEffects({
@@ -34,6 +35,7 @@ const Board = () => {
         handleDuplicateCard,
         handleRenameCard
     } = useBoard();
+    const { getNextId } = useCardId();
 
     return (
         <div className={styles.board}>
@@ -61,6 +63,7 @@ const Board = () => {
                                 onChangeCardColor={handleChangeCardColor}
                                 onDeleteCard={handleDeleteCard}
                                 onDuplicateCard={handleDuplicateCard}
+                                getNextId={getNextId}
                             />
                         ))}
                     </div>
