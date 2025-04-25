@@ -34,11 +34,11 @@ export const ColumnMenu = ({
                     icon: 'pi pi-pencil',
                     command: onRename
                 },
-                {
-                    label: 'Дублировать',
-                    icon: 'pi pi-copy',
-                    command: onDuplicate
-                },
+                // {
+                //     label: 'Дублировать',
+                //     icon: 'pi pi-copy',
+                //     command: onDuplicate
+                // },
                 {
                     label: 'Цвет колонки',
                     icon: 'pi pi-palette',

@@ -105,7 +105,7 @@ export const Chat = () => {
                                     text: newMessage,
                                     sender: {
                                         id: '1',
-                                        name: 'Current User',
+                                        name: 'housesaroma',
                                     },
                                     timestamp: new Date(),
                                     attachments

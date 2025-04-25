@@ -26,3 +26,53 @@ header {
   }
 }
 
+:global(.p-overlaypanel.p-component) {
+  border-radius: 12px;
+  padding: 8px;
+  min-width: 200px;
+}
+
+.menuItem {
+  margin: 4px 0;
+  width: 100%;
+
+  :global(.p-button.p-component) {
+    width: 100%;
+    justify-content: flex-start;
+    padding: 8px;
+    border-radius: 8px;
+
+    &:hover {
+      background-color: var(--surface-hover);
+    }
+  }
+
+  :global(.p-button-label) {
+    margin-left: 8px;
+  }
+}
+
+.dialog {
+  :global(.p-dialog-content) {
+    padding: 2rem;
+  }
+}
+
+.dialogContent {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  :global(.p-inputtext) {
+    width: 100%;
+  }
+
+  :global(.p-fileupload-buttonbar) {
+    padding: 0;
+  }
+
+  :global(.p-button) {
+    width: 100%;
+  }
+}
+
