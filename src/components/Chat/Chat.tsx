@@ -123,7 +123,7 @@ export const Chat = () => {
                     onChange={(e) => setNewMessage(e.target.value)}
                     placeholder="Введите сообщение"
                     className={styles.messageInput}
-                    onKeyPress={(e) => {
+                    onKeyDown={(e) => {
                         if (e.key === 'Enter') {
                             handleSendMessage();
                         }
