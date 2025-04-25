@@ -72,6 +72,7 @@ const Header = ({}: MyComponentProps) => {
         <div className={styles.right} onClick={handleProfileClick}>
             <Avatar shape={"circle"} image={avatarUrl} size={"large"}></Avatar>
             <p className={styles.nickName}>{nickname}</p>
+            <i className={'pi pi-angle-down'}></i>
         </div>
 
         <OverlayPanel ref={op} className={styles.overlay}>
