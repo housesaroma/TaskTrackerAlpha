@@ -5,6 +5,7 @@ import {useState} from "react";
 import {EditableDescription} from "./EditableDescription/EditableDescription.tsx";
 import SubtaskSection from '../SubtaskSection/subtaskSection';
 import { TaskInformation } from './TaskInformation/TaskInformation';
+import { Chat } from '../Chat/Chat';
 
 interface Subtask {
     id: string;
@@ -69,7 +70,7 @@ export const InfoSidebar = ({sidebarName, sidebarDescription, visible, onHide}: 
                     <TabView className={styles.tabView}>
                         <TabPanel header="Чат">
                             <div className={styles.tabContent}>
-                                <p>Тут будет чат</p>
+                                <Chat />
                             </div>
                         </TabPanel>
 
