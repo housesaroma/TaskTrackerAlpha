@@ -75,10 +75,32 @@ const BoardCard = ({card, onCheckClick, onRenameCard, onChangeColor, onDeleteCar
 
                     {!isEditing && (
                         <div className={styles.dragHandle}>
-                            <div className={styles.cardName}>
-                                <h3 {...listeners} className={`${card.isDone ? styles.checkedText : ''}`}>
-                                    {card.title}
-                                </h3>
+                            <div className={styles.cardContent}>
+                                <div className={styles.cardName}>
+                                    <h3 {...listeners} className={`${card.isDone ? styles.checkedText : ''}`}>
+                                        {card.title}
+                                    </h3>
+                                </div>
+                                {(card.startDate || card.endDate || card.priority) && (
+                                    <div className={styles.cardMetadata}>
+                                        {(card.startDate || card.endDate) && (
+                                            <div className={styles.dates}>
+                                                <i className="pi pi-calendar" />
+                                                {card.startDate && card.endDate ? (
+                                                    `${card.startDate.split('-').slice(1).join('.')} - ${card.endDate.split('-').slice(1).join('.')}`
+                                                ) : (
+                                                    card.startDate?.split('-').slice(1).join('.') || card.endDate?.split('-').slice(1).join('.')
+                                                )}
+                                            </div>
+                                        )}
+                                        {card.priority && (
+                                            <div className={`${styles.priority} ${card.priority === 'Важно' ? styles.important : styles.medium}`}>
+                                                <i className="pi pi-bolt" />
+                                                {card.priority}
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
                             </div>
                         </div>
                     )}

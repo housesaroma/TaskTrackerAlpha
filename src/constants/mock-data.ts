@@ -19,8 +19,8 @@ export const INITIAL_COLUMNS: IColumn[] = [
                 isDone: false,
                 type: 'task',
                 description: 'Подготовить паспорт проекта с описанием архитектуры и используемых технологий',
-                priority: 1,
-                dates: '2023-10-10/2023-10-12'
+                priority: 'Важно',
+                endDate: '2023-10-12'
             },
             {
                 id: '3',
@@ -28,8 +28,9 @@ export const INITIAL_COLUMNS: IColumn[] = [
                 isDone: false,
                 type: 'task',
                 description: 'Провести анализ конкурентов и составить отчет по ключевым метрикам',
-                priority: 3,
-                dates: '2023-10-05/2023-10-09'
+                priority: 'Средне',
+                startDate: '2023-10-05',
+                endDate: '2023-10-09'
             }
         ]
     },
@@ -43,8 +44,7 @@ export const INITIAL_COLUMNS: IColumn[] = [
                 title: 'Документирование',
                 isDone: false,
                 type: 'task',
-                priority: 2,
-                dates: '2023-10-18/2023-10-25'
+                priority: 'Средне',
             },
         ]
     },
@@ -59,8 +59,8 @@ export const INITIAL_COLUMNS: IColumn[] = [
                 isDone: false,
                 type: 'task',
                 description: 'Исправить критические баги перед релизом версии 1.0.0',
-                priority: 1,
-                dates: '2023-10-16/2023-10-17'
+                startDate: '2023-10-16',
+                endDate: '2023-10-17'
             },
         ]
     },
@@ -75,8 +75,9 @@ export const INITIAL_COLUMNS: IColumn[] = [
                 isDone: true,
                 type: 'task',
                 description: 'Адаптировать дизайн под мобильные устройства согласно новому гайдлайну',
-                priority: 2,
-                dates: '2023-10-01/2023-10-04'
+                priority: 'Средне',
+                startDate: '2023-10-01',
+                endDate: '2023-10-04'
             },
         ]
     },
