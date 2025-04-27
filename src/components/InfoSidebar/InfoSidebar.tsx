@@ -23,7 +23,9 @@ interface InfoSidebarProps {
     cardId: string;
     startDate?: string;
     endDate?: string;
+    priority?: 'Важно' | 'Средне' | 'Незначительно';
     onDateChange: (cardId: string, startDate: string, endDate: string) => void;
+    onPriorityChange: (cardId: string, priority: 'Важно' | 'Средне' | 'Незначительно') => void;
 }
 
 export const InfoSidebar = ({
@@ -34,7 +36,9 @@ export const InfoSidebar = ({
     cardId,
     startDate,
     endDate,
-    onDateChange
+    priority,
+    onDateChange,
+    onPriorityChange
 }: InfoSidebarProps) => {
     const [description, setDescription] = useState(sidebarDescription);
     const [subtasks, setSubtasks] = useState<Subtask[]>([]);
@@ -93,7 +97,9 @@ export const InfoSidebar = ({
                                     cardId={cardId}
                                     startDate={startDate}
                                     endDate={endDate}
+                                    priority={priority}
                                     onDateChange={onDateChange}
+                                    onPriorityChange={onPriorityChange}
                                 />
                             </div>
                         </TabPanel>

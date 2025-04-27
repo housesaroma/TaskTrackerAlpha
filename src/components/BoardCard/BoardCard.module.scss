@@ -73,8 +73,12 @@
       background-color:var(--red-400);
     }
 
-    &.medium {
-      background-color: var(--orange-400);
+      &.medium {
+        background-color: var(--orange-400);
+      }
+
+    &.low {
+      background-color: var(--teal-400);
     }
 
     i {

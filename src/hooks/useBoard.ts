@@ -292,6 +292,17 @@ export const useBoard = (getNextId?: () => number) => {
         });
     };
 
+    const handlePriorityChange = (cardId: string, priority: 'Важно' | 'Средне' | 'Незначительно') => {
+        setColumns(prevColumns =>
+            prevColumns.map(column => ({
+                ...column,
+                cards: column.cards.map(card =>
+                    card.id === cardId ? { ...card, priority } : card
+                )
+            }))
+        );
+    };
+
     return {
         columns,
         activeCard,
@@ -309,6 +320,7 @@ export const useBoard = (getNextId?: () => number) => {
         handleChangeCardColor,
         handleDuplicateCard,
         handleDeleteCard,
-        handleChangeCardDates
+        handleChangeCardDates,
+        handlePriorityChange
     };
 };

@@ -1,4 +1,5 @@
 import { Calendar } from 'primereact/calendar';
+import { SelectButton } from 'primereact/selectbutton';
 import { useState, useEffect } from 'react';
 import styles from './TaskInformation.module.scss';
 import "primeicons/primeicons.css";
@@ -7,10 +8,18 @@ interface TaskInfoSectionProps {
     cardId: string;
     startDate?: string;
     endDate?: string;
+    priority?: 'Важно' | 'Средне' | 'Незначительно';
     onDateChange: (cardId: string, startDate: string, endDate: string) => void;
+    onPriorityChange: (cardId: string, priority: 'Важно' | 'Средне' | 'Незначительно') => void;
 }
 
-export const TaskInfoSection = ({ cardId, startDate, endDate, onDateChange }: TaskInfoSectionProps) => {
+const priorityOptions = [
+    { label: 'Важно', value: 'Важно' as const },
+    { label: 'Средне', value: 'Средне' as const },
+    { label: 'Незначительно', value: 'Незначительно' as const }
+];
+
+export const TaskInfoSection = ({ cardId, startDate, endDate, priority, onDateChange, onPriorityChange }: TaskInfoSectionProps) => {
     const [showCalendar, setShowCalendar] = useState(false);
     const [dateRange, setDateRange] = useState<Date[] | null>(null);
 
@@ -36,34 +45,49 @@ export const TaskInfoSection = ({ cardId, startDate, endDate, onDateChange }: Ta
             const newStartDate = formatDate(dates[0]);
             const newEndDate = formatDate(dates[1]);
             onDateChange(cardId, newStartDate, newEndDate);
-            setShowCalendar(false);
+        } else {
+            // Если даты не выбраны или очищены, передаем пустые строки
+            onDateChange(cardId, '', '');
         }
+        setShowCalendar(false);
     };
 
     return (
-        <div className={styles.dateContainer}>
-            <div 
-                className={styles.dates} 
-                onClick={() => setShowCalendar(true)}
-            >
-                <i style={{color: 'var(--text-color)'}} className="pi pi-calendar" />
-                <span>{startDate} - {endDate}</span>
-            </div>
-            {showCalendar && (
-                <div className={styles.calendarOverlay} onClick={() => setShowCalendar(false)}>
-                    <div className={styles.calendar} onClick={e => e.stopPropagation()}>
-                        <Calendar
-                            value={dateRange}
-                            onChange={handleDateChange}
-                            selectionMode="range"
-                            readOnlyInput
-                            inline
-                            dateFormat="dd.mm.yy"
-                            showButtonBar
-                        />
-                    </div>
+        <div className={styles.taskInfoContainer}>
+            <div className={styles.dateContainer}>
+                <div 
+                    className={styles.dates} 
+                    onClick={() => setShowCalendar(true)}
+                >
+                    <i style={{color: 'var(--text-color)'}} className="pi pi-calendar" />
+                    <span>{startDate && endDate ? `${startDate} - ${endDate}` : startDate ? startDate : endDate ? endDate : 'Выберите даты'}</span>
                 </div>
-            )}
+                {showCalendar && (
+                    <div className={styles.calendarOverlay} onClick={() => setShowCalendar(false)}>
+                        <div className={styles.calendar} onClick={e => e.stopPropagation()}>
+                            <Calendar
+                                value={dateRange}
+                                onChange={handleDateChange}
+                                selectionMode="range"
+                                readOnlyInput
+                                inline
+                                dateFormat="dd.mm.yy"
+                                showButtonBar
+                            />
+                        </div>
+                    </div>
+                )}
+            </div>
+            
+            <div className={styles.priorityContainer}>
+                <label>Приоритет</label>
+                <SelectButton
+                    value={priority}
+                    options={priorityOptions}
+                    onChange={(e) => onPriorityChange(cardId, e.value)}
+                    className={styles.prioritySelect}
+                />
+            </div>
         </div>
     );
 }; 

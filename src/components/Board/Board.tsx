@@ -35,7 +35,8 @@ const Board = () => {
         handleDeleteCard,
         handleDuplicateCard,
         handleRenameCard,
-        handleChangeCardDates
+        handleChangeCardDates,
+        handlePriorityChange
     } = useBoard(getNextId);
 
     return (
@@ -65,6 +66,7 @@ const Board = () => {
                                 onDeleteCard={handleDeleteCard}
                                 onDuplicateCard={handleDuplicateCard}
                                 onDateChange={handleChangeCardDates}
+                                onPriorityChange={handlePriorityChange}
                                 getNextId={getNextId}
                             />
                         ))}
@@ -87,6 +89,7 @@ const Board = () => {
                 onChangeColor={handleChangeCardColor}
                 onDeleteCard={handleDeleteCard}
                 onDateChange={handleChangeCardDates}
+                onPriorityChange={handlePriorityChange}
             />
         </div>
                     )}

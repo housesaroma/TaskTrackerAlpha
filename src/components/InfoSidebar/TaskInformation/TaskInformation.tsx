@@ -6,10 +6,19 @@ interface TaskInformationProps {
     cardId: string;
     startDate?: string;
     endDate?: string;
+    priority?: 'Важно' | 'Средне' | 'Незначительно';
     onDateChange: (cardId: string, startDate: string, endDate: string) => void;
+    onPriorityChange: (cardId: string, priority: 'Важно' | 'Средне' | 'Незначительно') => void;
 }
 
-export const TaskInformation = ({ cardId, startDate, endDate, onDateChange }: TaskInformationProps) => {
+export const TaskInformation = ({ 
+    cardId, 
+    startDate, 
+    endDate, 
+    priority,
+    onDateChange,
+    onPriorityChange 
+}: TaskInformationProps) => {
     return (
         <div className={styles.taskInformation}>
             <Accordion multiple>
@@ -19,7 +28,9 @@ export const TaskInformation = ({ cardId, startDate, endDate, onDateChange }: Ta
                             cardId={cardId}
                             startDate={startDate}
                             endDate={endDate}
+                            priority={priority}
                             onDateChange={onDateChange}
+                            onPriorityChange={onPriorityChange}
                         />
                     </div>
                 </AccordionTab>

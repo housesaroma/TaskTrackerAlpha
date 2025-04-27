@@ -8,7 +8,7 @@ import {BoardCardMenu} from "./BoardCardMenu.tsx";
 import {InfoSidebar} from "../InfoSidebar/InfoSidebar.tsx";
 import {useCard} from "../../hooks/useCard";
 
-const BoardCard = ({card, onCheckClick, onRenameCard, onChangeColor, onDeleteCard, onDuplicateCard, onDateChange}: {
+const BoardCard = ({card, onCheckClick, onRenameCard, onChangeColor, onDeleteCard, onDuplicateCard, onDateChange, onPriorityChange}: {
     card: ICard;
     onCheckClick?: (id: string, isDone: boolean) => void;
     onRenameCard: (id: string, newTitle: string) => void;
@@ -16,6 +16,7 @@ const BoardCard = ({card, onCheckClick, onRenameCard, onChangeColor, onDeleteCar
     onDeleteCard: (id: string) => void;
     onDuplicateCard: (id: string) => void;
     onDateChange: (cardId: string, startDate: string, endDate: string) => void;
+    onPriorityChange: (cardId: string, priority: 'Важно' | 'Средне' | 'Незначительно') => void;
 }) => {
     const {
         attributes,
@@ -93,13 +94,15 @@ const BoardCard = ({card, onCheckClick, onRenameCard, onChangeColor, onDeleteCar
                                                 <i className="pi pi-calendar" />
                                                 {card.startDate && card.endDate ? (
                                                     `${formatDate(card.startDate)} - ${formatDate(card.endDate)}`
-                                                ) : (
-                                                    formatDate(card.startDate || card.endDate || '')
-                                                )}
+                                                ) : card.startDate ? (
+                                                    formatDate(card.startDate)
+                                                ) : card.endDate ? (
+                                                    formatDate(card.endDate)
+                                                ) : null}
                                             </div>
                                         )}
                                         {card.priority && (
-                                            <div className={`${styles.priority} ${card.priority === 'Важно' ? styles.important : styles.medium}`}>
+                                            <div className={`${styles.priority} ${card.priority === 'Важно' ? styles.important : card.priority === 'Средне' ? styles.medium : styles.low}`}>
                                                 <i className="pi pi-bolt" />
                                                 {card.priority}
                                             </div>
@@ -142,7 +145,9 @@ const BoardCard = ({card, onCheckClick, onRenameCard, onChangeColor, onDeleteCar
                 cardId={card.id}
                 startDate={card.startDate}
                 endDate={card.endDate}
+                priority={card.priority}
                 onDateChange={onDateChange}
+                onPriorityChange={onPriorityChange}
             />
         </>
     );
