@@ -1,13 +1,37 @@
 import { Accordion, AccordionTab } from 'primereact/accordion';
 import styles from './TaskInformation.module.scss';
+import { TaskInfoSection } from './TaskInfoSection';
 
-export const TaskInformation = () => {
+interface TaskInformationProps {
+    cardId: string;
+    startDate?: string;
+    endDate?: string;
+    priority?: 'Важно' | 'Средне' | 'Незначительно';
+    onDateChange: (cardId: string, startDate: string, endDate: string) => void;
+    onPriorityChange: (cardId: string, priority: 'Важно' | 'Средне' | 'Незначительно') => void;
+}
+
+export const TaskInformation = ({ 
+    cardId, 
+    startDate, 
+    endDate, 
+    priority,
+    onDateChange,
+    onPriorityChange 
+}: TaskInformationProps) => {
     return (
         <div className={styles.taskInformation}>
             <Accordion multiple>
                 <AccordionTab header="Информация о задаче">
                     <div className={styles.accordionContent}>
-                        {/* Content will be added later */}
+                        <TaskInfoSection
+                            cardId={cardId}
+                            startDate={startDate}
+                            endDate={endDate}
+                            priority={priority}
+                            onDateChange={onDateChange}
+                            onPriorityChange={onPriorityChange}
+                        />
                     </div>
                 </AccordionTab>
                 

@@ -21,6 +21,8 @@ interface ColumnProps {
     onChangeCardColor: (id: string, newColor: string) => void;
     onDeleteCard: (id: string) => void;
     onDuplicateCard: (id: string) => void;
+    onDateChange: (cardId: string, startDate: string, endDate: string) => void;
+    onPriorityChange: (cardId: string, priority: 'Важно' | 'Средне' | 'Незначительно') => void;
     getNextId: () => number;
 }
 
@@ -36,6 +38,8 @@ export const Column = ({
                            onChangeCardColor,
                            onDeleteCard,
                            onDuplicateCard,
+                           onDateChange,
+                           onPriorityChange,
                            getNextId
                        }: ColumnProps) => {
     const {setNodeRef} = useDroppable({id: column.id});
@@ -119,6 +123,8 @@ export const Column = ({
                                 onChangeColor={onChangeCardColor}
                                 onDeleteCard={onDeleteCard}
                                 onDuplicateCard={onDuplicateCard}
+                                onDateChange={onDateChange}
+                                onPriorityChange={onPriorityChange}
                             />
                         ))
                     ) : (

@@ -3,7 +3,7 @@ import {DragEndEvent} from '@dnd-kit/core';
 import {ICard, IColumn} from '../types/types.ts';
 import {INITIAL_COLUMNS} from '../constants/mock-data.ts';
 
-export const useBoard = () => {
+export const useBoard = (getNextId?: () => number) => {
     const [columns, setColumns] = useState<IColumn[]>(INITIAL_COLUMNS);
     const [activeCard, setActiveCard] = useState<ICard | null>(null);
     const [activeColumn, setActiveColumn] = useState<IColumn | null>(null);
@@ -248,6 +248,17 @@ export const useBoard = () => {
         );
     };
 
+    const handleChangeCardDates = (cardId: string, startDate: string, endDate: string) => {
+        setColumns(prev =>
+            prev.map(column => ({
+                ...column,
+                cards: column.cards.map(card =>
+                    card.id === cardId ? {...card, startDate, endDate} : card
+                )
+            }))
+        );
+    };
+
     const handleDeleteCard = (cardId: string) => {
         setColumns(prev =>
             prev.map(column => ({
@@ -258,6 +269,10 @@ export const useBoard = () => {
     };
 
     const handleDuplicateCard = (cardId: string) => {
+        if (!getNextId) return;
+        
+        const newId = getNextId();
+        
         setColumns(prev => {
             return prev.map(column => {
                 const cardToDuplicate = column.cards.find(card => card.id === cardId);
@@ -265,7 +280,7 @@ export const useBoard = () => {
 
                 const duplicatedCard = {
                     ...cardToDuplicate,
-                    id: `card-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+                    id: `${newId}`,
                     title: `${cardToDuplicate.title} (копия)`
                 };
 
@@ -275,6 +290,17 @@ export const useBoard = () => {
                 };
             });
         });
+    };
+
+    const handlePriorityChange = (cardId: string, priority: 'Важно' | 'Средне' | 'Незначительно') => {
+        setColumns(prevColumns =>
+            prevColumns.map(column => ({
+                ...column,
+                cards: column.cards.map(card =>
+                    card.id === cardId ? { ...card, priority } : card
+                )
+            }))
+        );
     };
 
     return {
@@ -293,6 +319,8 @@ export const useBoard = () => {
         handleRenameCard,
         handleChangeCardColor,
         handleDuplicateCard,
-        handleDeleteCard
+        handleDeleteCard,
+        handleChangeCardDates,
+        handlePriorityChange
     };
 };

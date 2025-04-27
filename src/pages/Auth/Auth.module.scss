@@ -3,7 +3,6 @@
   margin: 0 auto;
   padding: 2rem;
 
-  // Текстовые элементы
   .title {
     font: var(--text-32-bold);
     margin-bottom: 0;
@@ -20,46 +19,24 @@
     margin: 0;
   }
 
-  // Форма и инпуты
   .inputWrapper {
     margin-bottom: 1rem;
   }
 
-  // Стили кнопки
-  .submitButton {
-    width: 100%;
-    border-radius: 12px;
-    color: var(--surface-900);
-    background-color: var(--surface-500);
-    border-color: var(--surface-500);
-    transition: all 0.3s ease;
-
-    &:hover {
-      background-color: var(--surface-600);
-      border-color: var(--surface-600);
-    }
-
-    &:active {
-      background-color: var(--surface-700);
-    }
-
-    &:focus {
-      outline: none;
-      box-shadow: 0 0 0 2px var(--surface-300);
-    }
-  }
-
   .buttonWrapper {
     margin-top: 3rem;
+    > [class~="p-button"] {
+      background: var(--text-color);
+      border: none;
+      box-shadow: none;
+    }
   }
 
-  // Иконки
   .showIcon, .hideIcon {
     width: 24px;
     height: 20px;
   }
 
-  // Разделитель
   .divider {
     margin: 3rem auto 0;
     width: 80%;
@@ -78,15 +55,9 @@
     align-items: center;
     gap: 0.5rem;
 
-    .loginLink {
+    .loginLink{
       font: var(--text-16-semi-bold);
-      color: var(--gray-900);
+      color: var(--text-color);
     }
   }
-}
-
-button:focus, 
-button:active {
-  outline: none !important;
-  box-shadow: none !important;
 }
