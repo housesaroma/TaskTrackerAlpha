@@ -3,10 +3,16 @@ import {Password} from "primereact/password";
 import {Button} from "primereact/button";
 import styles from "../Auth.module.scss";
 import {Divider} from "primereact/divider";
-import {Link} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 
 
 const Register = () => {
+
+    const navigate = useNavigate();
+    const handleLogin = () => {
+        navigate('/main');
+    };
+
     return (
         <div className={styles.formContainer}>
             <h1 className={styles.title}>С возвращением</h1>
@@ -43,7 +49,7 @@ const Register = () => {
 
 
                 <div className={styles.buttonWrapper}>
-                    <Button label="Войти" pt={{
+                    <Button onClick={handleLogin} label="Войти" pt={{
                         root: {
                             style: {
                                 borderRadius: '12px',

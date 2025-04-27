@@ -25,6 +25,11 @@
 
   .buttonWrapper {
     margin-top: 3rem;
+    > [class~="p-button"] {
+      background: var(--text-color);
+      border: none;
+      box-shadow: none;
+    }
   }
 
   .showIcon, .hideIcon {
@@ -52,6 +57,7 @@
 
     .loginLink{
       font: var(--text-16-semi-bold);
+      color: var(--text-color);
     }
   }
 }
