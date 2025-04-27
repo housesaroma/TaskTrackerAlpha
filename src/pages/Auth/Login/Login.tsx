@@ -6,7 +6,7 @@ import {Divider} from "primereact/divider";
 import {Link, useNavigate} from "react-router-dom";
 
 
-const Register = () => {
+const Login = () => {
 
     const navigate = useNavigate();
     const handleLogin = () => {
@@ -72,4 +72,4 @@ const Register = () => {
     );
 };
 
-export default Register;
+export default Login;
