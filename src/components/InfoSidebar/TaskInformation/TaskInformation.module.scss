@@ -1,4 +1,5 @@
 .taskInformation {
+    padding: 1rem;
     :global {
         .p-accordion {
             .p-accordion-header {
@@ -40,5 +41,49 @@
 }
 
 .accordionContent {
-    min-height: 50px;
+    padding: 1rem;
+}
+
+.dateContainer {
+    position: relative;
+    margin-bottom: 1rem;
+}
+
+.dates {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 4px;
+    background-color: var(--surface-ground);
+    transition: background-color 0.2s;
+
+    &:hover {
+        background-color: var(--surface-hover);
+    }
+
+    i {
+        color: var(--primary-color);
+    }
+}
+
+.calendarOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--maskbg);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.calendar {
+    background-color: var(--surface-card);
+    padding: 1rem;
+    border-radius: 4px;
+    box-shadow: var(--shadow-1);
 } 

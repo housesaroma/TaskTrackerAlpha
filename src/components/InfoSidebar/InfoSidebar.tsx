@@ -21,9 +21,21 @@ interface InfoSidebarProps {
     visible: boolean;
     onHide: () => void;
     cardId: string;
+    startDate?: string;
+    endDate?: string;
+    onDateChange: (cardId: string, startDate: string, endDate: string) => void;
 }
 
-export const InfoSidebar = ({sidebarName, sidebarDescription, visible, onHide, cardId}: InfoSidebarProps) => {
+export const InfoSidebar = ({
+    sidebarName, 
+    sidebarDescription, 
+    visible, 
+    onHide, 
+    cardId,
+    startDate,
+    endDate,
+    onDateChange
+}: InfoSidebarProps) => {
     const [description, setDescription] = useState(sidebarDescription);
     const [subtasks, setSubtasks] = useState<Subtask[]>([]);
 
@@ -77,7 +89,12 @@ export const InfoSidebar = ({sidebarName, sidebarDescription, visible, onHide, c
 
                         <TabPanel header="Информация">
                             <div className={styles.tabContent}>
-                                <TaskInformation />
+                                <TaskInformation 
+                                    cardId={cardId}
+                                    startDate={startDate}
+                                    endDate={endDate}
+                                    onDateChange={onDateChange}
+                                />
                             </div>
                         </TabPanel>
 

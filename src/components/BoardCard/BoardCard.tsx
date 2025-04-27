@@ -8,13 +8,14 @@ import {BoardCardMenu} from "./BoardCardMenu.tsx";
 import {InfoSidebar} from "../InfoSidebar/InfoSidebar.tsx";
 import {useCard} from "../../hooks/useCard";
 
-const BoardCard = ({card, onCheckClick, onRenameCard, onChangeColor, onDeleteCard, onDuplicateCard}: {
+const BoardCard = ({card, onCheckClick, onRenameCard, onChangeColor, onDeleteCard, onDuplicateCard, onDateChange}: {
     card: ICard;
     onCheckClick?: (id: string, isDone: boolean) => void;
     onRenameCard: (id: string, newTitle: string) => void;
     onChangeColor: (id: string, newColor: string) => void;
     onDeleteCard: (id: string) => void;
     onDuplicateCard: (id: string) => void;
+    onDateChange: (cardId: string, startDate: string, endDate: string) => void;
 }) => {
     const {
         attributes,
@@ -47,6 +48,10 @@ const BoardCard = ({card, onCheckClick, onRenameCard, onChangeColor, onDeleteCar
         onDeleteCard,
         onDuplicateCard
     });
+
+    const formatDate = (date: string) => {
+        return date.split('.')[0] + '.' + date.split('.')[1];
+    };
 
     const style = {
         transform: CSS.Transform.toString(transform),
@@ -87,9 +92,9 @@ const BoardCard = ({card, onCheckClick, onRenameCard, onChangeColor, onDeleteCar
                                             <div className={styles.dates}>
                                                 <i className="pi pi-calendar" />
                                                 {card.startDate && card.endDate ? (
-                                                    `${card.startDate.split('-').slice(1).join('.')} - ${card.endDate.split('-').slice(1).join('.')}`
+                                                    `${formatDate(card.startDate)} - ${formatDate(card.endDate)}`
                                                 ) : (
-                                                    card.startDate?.split('-').slice(1).join('.') || card.endDate?.split('-').slice(1).join('.')
+                                                    formatDate(card.startDate || card.endDate || '')
                                                 )}
                                             </div>
                                         )}
@@ -135,6 +140,9 @@ const BoardCard = ({card, onCheckClick, onRenameCard, onChangeColor, onDeleteCar
                 visible={sidebarVisible}
                 onHide={handleSidebarHide}
                 cardId={card.id}
+                startDate={card.startDate}
+                endDate={card.endDate}
+                onDateChange={onDateChange}
             />
         </>
     );

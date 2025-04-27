@@ -3,8 +3,8 @@ import {SortableContext, horizontalListSortingStrategy} from '@dnd-kit/sortable'
 import styles from './Board.module.scss';
 import Column from '../Column/Column';
 import {useBoard} from '../../hooks/useBoard';
-import DragOverlayContent from '../../utils/DragOverlayContent/DragOverlayContent.tsx';
 import { useCardId } from '../../hooks/useCardId';
+import BoardCard from '../BoardCard/BoardCard.tsx';
 
 const dropAnimationConfig = {
     sideEffects: defaultDropAnimationSideEffects({
@@ -17,6 +17,7 @@ const dropAnimationConfig = {
 };
 
 const Board = () => {
+    const { getNextId } = useCardId();
     const {
         columns,
         activeCard,
@@ -33,9 +34,9 @@ const Board = () => {
         handleChangeCardColor,
         handleDeleteCard,
         handleDuplicateCard,
-        handleRenameCard
-    } = useBoard();
-    const { getNextId } = useCardId();
+        handleRenameCard,
+        handleChangeCardDates
+    } = useBoard(getNextId);
 
     return (
         <div className={styles.board}>
@@ -63,6 +64,7 @@ const Board = () => {
                                 onChangeCardColor={handleChangeCardColor}
                                 onDeleteCard={handleDeleteCard}
                                 onDuplicateCard={handleDuplicateCard}
+                                onDateChange={handleChangeCardDates}
                                 getNextId={getNextId}
                             />
                         ))}
@@ -71,14 +73,22 @@ const Board = () => {
 
                 <DragOverlay dropAnimation={dropAnimationConfig}>
                     {activeCard && (
-                        <DragOverlayContent
-                            activeCard={activeCard}
-                            onCheckClick={handleCheckClick}
-                            onRenameCard={handleRenameCard}
-                            onChangeColor={handleChangeCardColor}
-                            onDeleteCard={handleDeleteCard}
-                            onDuplicateCard={handleDuplicateCard}
-                        />
+        <div style={{
+            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+            opacity: 0.9,
+            zIndex: 1000,
+            width: '280px'
+        }}>
+            <BoardCard
+                card={activeCard}
+                onCheckClick={handleCheckClick}
+                onRenameCard={handleRenameCard}
+                onDuplicateCard={handleDuplicateCard}
+                onChangeColor={handleChangeCardColor}
+                onDeleteCard={handleDeleteCard}
+                onDateChange={handleChangeCardDates}
+            />
+        </div>
                     )}
                     {activeColumn && (
                         <div style={{

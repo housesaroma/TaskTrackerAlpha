@@ -17,7 +17,7 @@ export const ColumnMenu = ({
                                onColorChange,
                                onDelete,
                                onRename,
-                               onDuplicate
+                               // onDuplicate
                            }: ColumnMenuProps) => {
     const menuRef = useRef<Menu>(null);
 

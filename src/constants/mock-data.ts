@@ -20,7 +20,8 @@ export const INITIAL_COLUMNS: IColumn[] = [
                 type: 'task',
                 description: 'Подготовить паспорт проекта с описанием архитектуры и используемых технологий',
                 priority: 'Важно',
-                endDate: '2023-10-12'
+                startDate: '12.10',
+                endDate: '12.10'
             },
             {
                 id: '3',
@@ -29,8 +30,8 @@ export const INITIAL_COLUMNS: IColumn[] = [
                 type: 'task',
                 description: 'Провести анализ конкурентов и составить отчет по ключевым метрикам',
                 priority: 'Средне',
-                startDate: '2023-10-05',
-                endDate: '2023-10-09'
+                startDate: '10.05',     
+                endDate: '10.09'    
             }
         ]
     },
@@ -59,8 +60,8 @@ export const INITIAL_COLUMNS: IColumn[] = [
                 isDone: false,
                 type: 'task',
                 description: 'Исправить критические баги перед релизом версии 1.0.0',
-                startDate: '2023-10-16',
-                endDate: '2023-10-17'
+                startDate: '16.10',
+                endDate: '17.10'
             },
         ]
     },
@@ -76,8 +77,8 @@ export const INITIAL_COLUMNS: IColumn[] = [
                 type: 'task',
                 description: 'Адаптировать дизайн под мобильные устройства согласно новому гайдлайну',
                 priority: 'Средне',
-                startDate: '2023-10-01',
-                endDate: '2023-10-04'
+                startDate: '10.01',
+                endDate: '10.04'
             },
         ]
     },
