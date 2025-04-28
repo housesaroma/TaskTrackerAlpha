@@ -2,18 +2,26 @@ import styles from './taskItem.module.scss'
 import { classNames } from 'primereact/utils'
 
 interface TaskItemProps {
+	id: string
 	title: string
-	completed: boolean
-	startDate?: string // формат: 'dd.mm.yy'
-	endDate?: string // формат: 'dd.mm.yy'
+	isDone?: boolean
+	startDate?: string
+	endDate?: string
+	onToggleComplete?: (id: string) => void
 }
 
-function TaskItem({ title, completed, startDate, endDate }: TaskItemProps) {
+function TaskItem({
+	id,
+	title,
+	isDone,
+	startDate,
+	endDate,
+	onToggleComplete,
+}: TaskItemProps) {
 	const getDueDateStatus = () => {
-		if (completed) return 'completed'
+		if (isDone) return 'completed'
 		if (!endDate) return 'normal'
 
-		// Парсим дату из формата dd.mm.yy
 		const parseDate = (dateStr: string) => {
 			const [day, month, year] = dateStr.split('.').map(Number)
 			return new Date(2000 + year, month - 1, day)
@@ -37,9 +45,18 @@ function TaskItem({ title, completed, startDate, endDate }: TaskItemProps) {
 		const formatPart = (dateStr: string) => {
 			const [day, month] = dateStr.split('.')
 			const months = [
-				'Jan', 'Feb', 'Mar', 'Apr',
-				'May', 'Jun', 'Jul', 'Aug',
-				'Sep', 'Oct', 'Nov', 'Dec',
+				'Jan',
+				'Feb',
+				'Mar',
+				'Apr',
+				'May',
+				'Jun',
+				'Jul',
+				'Aug',
+				'Sep',
+				'Oct',
+				'Nov',
+				'Dec',
 			]
 			return `${day} ${months[parseInt(month) - 1]}`
 		}
@@ -50,14 +67,21 @@ function TaskItem({ title, completed, startDate, endDate }: TaskItemProps) {
 	const status = getDueDateStatus()
 	const displayDate = formatDisplayDate()
 
+	const handleClick = () => {
+		if (onToggleComplete) {
+			onToggleComplete(id)
+		}
+	}
+
 	return (
 		<div className={styles.taskItem}>
 			<div
 				className={classNames(styles.taskCheckbox, {
-					[styles.completed]: completed,
+					[styles.completed]: isDone,
 				})}
+				onClick={handleClick}
 			>
-				{completed && (
+				{isDone && (
 					<i
 						className='pi pi-check'
 						style={{ fontSize: '0.75rem', color: 'white' }}
@@ -67,7 +91,7 @@ function TaskItem({ title, completed, startDate, endDate }: TaskItemProps) {
 			<div className={styles.taskContent}>
 				<span
 					className={classNames(styles.taskTitle, {
-						[styles.completed]: completed,
+						[styles.completed]: isDone,
 					})}
 				>
 					{title}
