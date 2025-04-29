@@ -1,19 +1,12 @@
 import {Sidebar} from 'primereact/sidebar';
 import {TabPanel, TabView} from 'primereact/tabview';
 import styles from './InfoSidebar.module.scss';
-import {useState} from "react";
+import {useState, useEffect} from "react";
 import {EditableDescription} from "./EditableDescription/EditableDescription.tsx";
 import SubtaskSection from '../SubtaskSection/subtaskSection';
 import { TaskInformation } from './TaskInformation/TaskInformation';
 import { Chat } from '../Chat/Chat';
-
-interface Subtask {
-    id: string;
-    title: string;
-    completed: boolean;
-    startDate?: string;
-    endDate?: string;
-}
+import { ISubtask } from '../../types/types';
 
 interface InfoSidebarProps {
     sidebarName: string;
@@ -27,6 +20,8 @@ interface InfoSidebarProps {
     priority?: 'Важно' | 'Средне' | 'Незначительно';
     onDateChange: (cardId: string, startDate: string, endDate: string) => void;
     onPriorityChange: (cardId: string, priority: 'Важно' | 'Средне' | 'Незначительно') => void;
+    subtasks?: ISubtask[];
+    onSubtasksChange?: (cardId: string, subtasks: ISubtask[]) => void;
 }
 
 export const InfoSidebar = ({
@@ -40,10 +35,16 @@ export const InfoSidebar = ({
     priority,
     createdAt,
     onDateChange,
-    onPriorityChange
+    onPriorityChange,
+    subtasks: initialSubtasks = [],
+    onSubtasksChange
 }: InfoSidebarProps) => {
     const [description, setDescription] = useState(sidebarDescription);
-    const [subtasks, setSubtasks] = useState<Subtask[]>([]);
+    const [subtasks, setSubtasks] = useState<ISubtask[]>(initialSubtasks);
+
+    useEffect(() => {
+        setSubtasks(initialSubtasks);
+    }, [initialSubtasks]);
 
     const handleDescriptionSave = (newDescription: string) => {
         setDescription(newDescription);
@@ -55,24 +56,31 @@ export const InfoSidebar = ({
     };
 
     const handleSubtaskToggle = (id: string) => {
-        setSubtasks(subtasks.map(task => 
-            task.id === id ? { ...task, completed: !task.completed } : task
-        ));
+        const updatedSubtasks = subtasks.map(task => 
+            task.id === id ? { ...task, isDone: !task.isDone } : task
+        );
+        setSubtasks(updatedSubtasks);
+        if (onSubtasksChange) {
+            onSubtasksChange(cardId, updatedSubtasks);
+        }
     };
 
-    const handleSubtaskUpdate = (updatedSubtask: Subtask) => {
-        setSubtasks(prevSubtasks => {
-            const existingTaskIndex = prevSubtasks.findIndex(task => task.id === updatedSubtask.id);
-            if (existingTaskIndex !== -1) {
-                // Обновляем существующую подзадачу
-                const newSubtasks = [...prevSubtasks];
-                newSubtasks[existingTaskIndex] = updatedSubtask;
-                return newSubtasks;
-            } else {
-                // Добавляем новую подзадачу
-                return [...prevSubtasks, updatedSubtask];
-            }
-        });
+    const handleSubtaskUpdate = (updatedSubtask: ISubtask) => {
+        const updatedSubtasks = [...subtasks];
+        const existingTaskIndex = updatedSubtasks.findIndex(task => task.id === updatedSubtask.id);
+        
+        if (existingTaskIndex !== -1) {
+            // Обновляем существующую подзадачу
+            updatedSubtasks[existingTaskIndex] = updatedSubtask;
+        } else {
+            // Добавляем новую подзадачу
+            updatedSubtasks.push(updatedSubtask);
+        }
+        
+        setSubtasks(updatedSubtasks);
+        if (onSubtasksChange) {
+            onSubtasksChange(cardId, updatedSubtasks);
+        }
     };
 
     return (

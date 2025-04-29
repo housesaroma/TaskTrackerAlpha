@@ -1,7 +1,7 @@
 import {SortableContext, useSortable, verticalListSortingStrategy} from "@dnd-kit/sortable";
 import {useDroppable} from "@dnd-kit/core";
 import {CSS} from "@dnd-kit/utilities";
-import {ICard, IColumn} from "../../types/types";
+import {ICard, IColumn, ISubtask} from "../../types/types";
 import styles from "./Column.module.scss";
 import BoardCard from "../BoardCard/BoardCard";
 import {ColumnMenu} from "./ColumnMenu";
@@ -23,6 +23,7 @@ interface ColumnProps {
     onDuplicateCard: (id: string) => void;
     onDateChange: (cardId: string, startDate: string, endDate: string) => void;
     onPriorityChange: (cardId: string, priority: 'Важно' | 'Средне' | 'Незначительно') => void;
+    onSubtasksChange: (cardId: string, subtasks: ISubtask[]) => void;
     getNextId: () => number;
 }
 
@@ -40,6 +41,7 @@ export const Column = ({
                            onDuplicateCard,
                            onDateChange,
                            onPriorityChange,
+                           onSubtasksChange,
                            getNextId
                        }: ColumnProps) => {
     const {setNodeRef} = useDroppable({id: column.id});
@@ -125,6 +127,7 @@ export const Column = ({
                                 onDuplicateCard={onDuplicateCard}
                                 onDateChange={onDateChange}
                                 onPriorityChange={onPriorityChange}
+                                onSubtasksChange={onSubtasksChange}
                             />
                         ))
                     ) : (

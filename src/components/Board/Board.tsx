@@ -36,7 +36,8 @@ const Board = () => {
         handleDuplicateCard,
         handleRenameCard,
         handleChangeCardDates,
-        handlePriorityChange
+        handlePriorityChange,
+        handleSubtasksChange
     } = useBoard(getNextId);
 
     return (
@@ -67,6 +68,7 @@ const Board = () => {
                                 onDuplicateCard={handleDuplicateCard}
                                 onDateChange={handleChangeCardDates}
                                 onPriorityChange={handlePriorityChange}
+                                onSubtasksChange={handleSubtasksChange}
                                 getNextId={getNextId}
                             />
                         ))}

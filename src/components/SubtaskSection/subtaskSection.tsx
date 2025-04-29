@@ -1,25 +1,18 @@
 import styles from './subtaskSection.module.scss'
 import SubtaskCard from '../SubtaskCard/SubtaskCard'
-
-interface Subtask {
-    id: string
-    title: string
-    completed: boolean
-    startDate?: string
-    endDate?: string
-}
+import { ISubtask } from '../../types/types'
 
 interface SubtaskSectionProps {
-    subtasks: Subtask[]
+    subtasks: ISubtask[]
     onAddSubtask: () => void
     onSubtaskToggle: (id: string) => void
-    onSubtaskUpdate: (subtask: Subtask) => void
+    onSubtaskUpdate: (subtask: ISubtask) => void
 }
 
 function SubtaskSection({ subtasks, onAddSubtask, onSubtaskToggle, onSubtaskUpdate }: SubtaskSectionProps) {
     const getProgress = () => {
         const total = subtasks.length;
-        const completed = subtasks.filter(task => task.completed).length;
+        const completed = subtasks.filter(task => task.isDone).length;
         const percentage = total > 0 ? (completed / total) * 100 : 0;
         return { completed, total, percentage };
     }
@@ -58,10 +51,10 @@ function SubtaskSection({ subtasks, onAddSubtask, onSubtaskToggle, onSubtaskUpda
             return `${date.getDate().toString().padStart(2, '0')}.${(date.getMonth() + 1).toString().padStart(2, '0')}.${(date.getFullYear() - 2000).toString().padStart(2, '0')}`
         };
 
-        const newSubtask: Subtask = {
+        const newSubtask: ISubtask = {
             id: Date.now().toString(),
             title: 'Новая подзадача',
-            completed: false,
+            isDone: false,
             startDate: formatDate(today),
             endDate: formatDate(nextWeek)
         };
@@ -118,7 +111,7 @@ function SubtaskSection({ subtasks, onAddSubtask, onSubtaskToggle, onSubtaskUpda
                     <SubtaskCard
                         key={subtask.id}
                         title={subtask.title}
-                        completed={subtask.completed}
+                        completed={subtask.isDone}
                         startDate={subtask.startDate}
                         endDate={subtask.endDate}
                         onToggleComplete={() => onSubtaskToggle(subtask.id)}

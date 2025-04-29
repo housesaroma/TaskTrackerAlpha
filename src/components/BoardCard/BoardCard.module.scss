@@ -42,6 +42,11 @@
     color: #22C55E;
   }
 
+  .icon, .checkedIcon {
+    align-self: flex-start;
+    margin-top: 3px;
+  }
+
   .checkedText {
     color: rgba(135, 135, 135, 0.5);
   }
@@ -91,5 +96,44 @@
     display: flex;
     flex-direction: column;
     flex-grow: 1;
+  }
+  
+  .subtasksSection {
+    margin-top: 8px;
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    padding-top: 8px;
+  }
+  
+  .subtasksHeader {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    color: var(--text-color-secondary);
+    
+    i {
+      font-size: 10px;
+      margin-right: 0;
+    }
+  }
+  
+  .subtasksList {
+    margin-top: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  
+  .subtaskItem {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    padding-left: 4px;
+    
+    i {
+      font-size: 10px;
+      margin-right: 0;
+    }
   }
 }

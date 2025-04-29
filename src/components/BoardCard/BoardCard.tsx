@@ -1,14 +1,15 @@
 import {useSortable} from '@dnd-kit/sortable';
 import {CSS} from '@dnd-kit/utilities';
-import {ICard} from '../../types/types';
+import {ICard, ISubtask} from '../../types/types';
 import styles from './BoardCard.module.scss';
 import "primeicons/primeicons.css";
 import {InputText} from "primereact/inputtext";
 import {BoardCardMenu} from "./BoardCardMenu.tsx";
 import {InfoSidebar} from "../InfoSidebar/InfoSidebar.tsx";
 import {useCard} from "../../hooks/useCard";
+import { useState } from 'react';
 
-const BoardCard = ({card, onCheckClick, onRenameCard, onChangeColor, onDeleteCard, onDuplicateCard, onDateChange, onPriorityChange}: {
+const BoardCard = ({card, onCheckClick, onRenameCard, onChangeColor, onDeleteCard, onDuplicateCard, onDateChange, onPriorityChange, onSubtasksChange}: {
     card: ICard;
     onCheckClick?: (id: string, isDone: boolean) => void;
     onRenameCard: (id: string, newTitle: string) => void;
@@ -17,6 +18,7 @@ const BoardCard = ({card, onCheckClick, onRenameCard, onChangeColor, onDeleteCar
     onDuplicateCard: (id: string) => void;
     onDateChange: (cardId: string, startDate: string, endDate: string) => void;
     onPriorityChange: (cardId: string, priority: 'Важно' | 'Средне' | 'Незначительно') => void;
+    onSubtasksChange?: (cardId: string, subtasks: ISubtask[]) => void;
 }) => {
     const {
         attributes,
@@ -50,6 +52,8 @@ const BoardCard = ({card, onCheckClick, onRenameCard, onChangeColor, onDeleteCar
         onDuplicateCard
     });
 
+    const [showSubtasks, setShowSubtasks] = useState(false);
+
     const formatDate = (date: string) => {
         return date.split('.')[0] + '.' + date.split('.')[1];
     };
@@ -58,6 +62,25 @@ const BoardCard = ({card, onCheckClick, onRenameCard, onChangeColor, onDeleteCar
         transform: CSS.Transform.toString(transform),
         transition: transition || undefined,
         opacity: isDragging ? 0.5 : 1,
+    };
+
+    const toggleSubtasks = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        setShowSubtasks(!showSubtasks);
+    };
+
+    const getCompletedSubtasksCount = () => {
+        return card.subtasks?.filter(subtask => subtask.isDone).length || 0;
+    };
+
+    const getTotalSubtasksCount = () => {
+        return card.subtasks?.length || 0;
+    };
+
+    const handleSubtasksChange = (cardId: string, subtasks: ISubtask[]) => {
+        if (onSubtasksChange) {
+            onSubtasksChange(cardId, subtasks);
+        }
     };
 
     return (
@@ -71,7 +94,7 @@ const BoardCard = ({card, onCheckClick, onRenameCard, onChangeColor, onDeleteCar
             >
                 <div className={styles.card} style={{backgroundColor: card.color}}>
                     <i
-                        className={`pi pi-check-circle ${card.isDone ? styles.checkedIcon : ''}`}
+                        className={`pi pi-check-circle ${card.isDone ? styles.checkedIcon : styles.icon}`}
                         onClick={handleIconClick}
                         style={{
                             cursor: 'pointer',
@@ -105,6 +128,33 @@ const BoardCard = ({card, onCheckClick, onRenameCard, onChangeColor, onDeleteCar
                                             <div className={`${styles.priority} ${card.priority === 'Важно' ? styles.important : card.priority === 'Средне' ? styles.medium : styles.low}`}>
                                                 <i className="pi pi-bolt" />
                                                 {card.priority}
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+                                
+                                {/* Subtasks section */}
+                                {card.subtasks && card.subtasks.length > 0 && (
+                                    <div className={styles.subtasksSection}>
+                                        <div 
+                                            className={styles.subtasksHeader} 
+                                            onClick={toggleSubtasks}
+                                            style={{ cursor: 'pointer' }}
+                                        >
+                                            <i className={`pi ${showSubtasks ? 'pi-chevron-down' : 'pi-chevron-right'}`} />
+                                            <span>Подзадачи ({getCompletedSubtasksCount()}/{getTotalSubtasksCount()})</span>
+                                        </div>
+                                        
+                                        {showSubtasks && (
+                                            <div className={styles.subtasksList}>
+                                                {card.subtasks.map(subtask => (
+                                                    <div key={subtask.id} className={styles.subtaskItem}>
+                                                        <i className={`pi pi-check-circle ${subtask.isDone ? styles.checkedIcon : ''}`} />
+                                                        <span className={subtask.isDone ? styles.checkedText : ''}>
+                                                            {subtask.title}
+                                                        </span>
+                                                    </div>
+                                                ))}
                                             </div>
                                         )}
                                     </div>
@@ -149,6 +199,8 @@ const BoardCard = ({card, onCheckClick, onRenameCard, onChangeColor, onDeleteCar
                 onDateChange={onDateChange}
                 onPriorityChange={onPriorityChange}
                 createdAt={card.createdAt}
+                subtasks={card.subtasks}
+                onSubtasksChange={handleSubtasksChange}
             />
         </>
     );

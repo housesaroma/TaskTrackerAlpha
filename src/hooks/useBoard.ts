@@ -1,6 +1,6 @@
 import {useState} from 'react';
 import {DragEndEvent} from '@dnd-kit/core';
-import {ICard, IColumn} from '../types/types.ts';
+import {ICard, IColumn, ISubtask} from '../types/types.ts';
 import {INITIAL_COLUMNS} from '../constants/mock-data.ts';
 
 export const useBoard = (getNextId?: () => number) => {
@@ -315,6 +315,25 @@ export const useBoard = (getNextId?: () => number) => {
         );
     };
 
+    const handleSubtasksChange = (cardId: string, subtasks: ISubtask[]) => {
+        setColumns(prev => {
+            const newColumns = [...prev];
+            
+            for (let i = 0; i < newColumns.length; i++) {
+                const cardIndex = newColumns[i].cards.findIndex(c => c.id === cardId);
+                if (cardIndex !== -1) {
+                    newColumns[i].cards[cardIndex] = {
+                        ...newColumns[i].cards[cardIndex],
+                        subtasks
+                    };
+                    break;
+                }
+            }
+            
+            return newColumns;
+        });
+    };
+
     return {
         columns,
         activeCard,
@@ -333,6 +352,7 @@ export const useBoard = (getNextId?: () => number) => {
         handleDuplicateCard,
         handleDeleteCard,
         handleChangeCardDates,
-        handlePriorityChange
+        handlePriorityChange,
+        handleSubtasksChange
     };
 };
