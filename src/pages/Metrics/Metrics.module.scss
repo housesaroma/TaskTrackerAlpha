@@ -1,2 +1,99 @@
-.card{
+.card {
+    padding: 20px;
+    background-color: var(--surface-card);
+    border-radius: 8px;
+    box-shadow: 0 2px 8px var(--surface-ground);
+}
+
+.chartControls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.chartToggle {
+    display: flex;
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid var(--surface-border);
+}
+
+.toggleButton {
+    flex: 1;
+    padding: 10px 15px;
+    background-color: var(--surface-section);
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s ease;
+    
+    &:hover {
+        background-color: var(--surface-hover);
+    }
+    
+    &.active {
+        background-color: var(--primary-color);
+        color: var(--primary-color-text);
+    }
+}
+
+.datePickerContainer {
+    position: relative;
+}
+
+.datePickerButton {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 15px;
+    background-color: var(--surface-section);
+    border: 1px solid var(--surface-border);
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s ease;
+    
+    &:hover {
+        background-color: var(--surface-hover);
+    }
+    
+    i {
+        color: var(--primary-color);
+    }
+}
+
+.calendarOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.calendar {
+    background: var(--surface-card);
+    border-radius: 6px;
+    box-shadow: 0 2px 8px var(--surface-ground);
+    padding: 1rem;
+}
+
+// Стили для текста графика
+:global {
+    .chart-text {
+        color: var(--text-color) !important;
+    }
+    
+    .chart-legend-text {
+        color: var(--text-color) !important;
+    }
+    
+    .chart-axis-text {
+        color: var(--text-color) !important;
+    }
 }
