@@ -23,6 +23,7 @@ interface InfoSidebarProps {
     cardId: string;
     startDate?: string;
     endDate?: string;
+    createdAt?: string;
     priority?: 'Важно' | 'Средне' | 'Незначительно';
     onDateChange: (cardId: string, startDate: string, endDate: string) => void;
     onPriorityChange: (cardId: string, priority: 'Важно' | 'Средне' | 'Незначительно') => void;
@@ -37,6 +38,7 @@ export const InfoSidebar = ({
     startDate,
     endDate,
     priority,
+    createdAt,
     onDateChange,
     onPriorityChange
 }: InfoSidebarProps) => {
@@ -98,6 +100,7 @@ export const InfoSidebar = ({
                                     startDate={startDate}
                                     endDate={endDate}
                                     priority={priority}
+                                    createdAt={createdAt}
                                     onDateChange={onDateChange}
                                     onPriorityChange={onPriorityChange}
                                 />

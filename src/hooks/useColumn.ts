@@ -52,17 +52,30 @@ export const useColumn = (
 
     const createNewCard = useCallback(
         (type: "task" | "defect"): ICard => {
+            const now = new Date();
+            const formattedDate = `${now.getDate()} ${getMonthName(now.getMonth())} ${now.getFullYear()} ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+            
             const baseCard = {
                 id: `${getNextId()}`,
                 title: type === "task" ? "Новая задача" : "Новый дефект",
                 isDone: false,
                 type,
+                createdAt: formattedDate
             };
 
             return type === "task" ? (baseCard as ITask) : (baseCard as IDefect);
         },
         [getNextId]
     );
+
+    // Helper function to get month name in Russian
+    const getMonthName = (month: number): string => {
+        const months = [
+            'Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн',
+            'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'
+        ];
+        return months[month];
+    };
 
     const handleAddCard = useCallback(
         (type: "task" | "defect") => {

@@ -7,6 +7,7 @@ interface TaskInformationProps {
     startDate?: string;
     endDate?: string;
     priority?: 'Важно' | 'Средне' | 'Незначительно';
+    createdAt?: string;
     onDateChange: (cardId: string, startDate: string, endDate: string) => void;
     onPriorityChange: (cardId: string, priority: 'Важно' | 'Средне' | 'Незначительно') => void;
 }
@@ -16,6 +17,7 @@ export const TaskInformation = ({
     startDate, 
     endDate, 
     priority,
+    createdAt,
     onDateChange,
     onPriorityChange 
 }: TaskInformationProps) => {
@@ -29,6 +31,7 @@ export const TaskInformation = ({
                             startDate={startDate}
                             endDate={endDate}
                             priority={priority}
+                            createdAt={createdAt}
                             onDateChange={onDateChange}
                             onPriorityChange={onPriorityChange}
                         />

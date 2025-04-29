@@ -9,6 +9,7 @@ interface TaskInfoSectionProps {
     startDate?: string;
     endDate?: string;
     priority?: 'Важно' | 'Средне' | 'Незначительно';
+    createdAt?: string;
     onDateChange: (cardId: string, startDate: string, endDate: string) => void;
     onPriorityChange: (cardId: string, priority: 'Важно' | 'Средне' | 'Незначительно') => void;
 }
@@ -19,7 +20,7 @@ const priorityOptions = [
     { label: 'Незначительно', value: 'Незначительно' as const }
 ];
 
-export const TaskInfoSection = ({ cardId, startDate, endDate, priority, onDateChange, onPriorityChange }: TaskInfoSectionProps) => {
+export const TaskInfoSection = ({ cardId, startDate, endDate, priority, createdAt, onDateChange, onPriorityChange }: TaskInfoSectionProps) => {
     const [showCalendar, setShowCalendar] = useState(false);
     const [dateRange, setDateRange] = useState<Date[] | null>(null);
 
@@ -55,6 +56,12 @@ export const TaskInfoSection = ({ cardId, startDate, endDate, priority, onDateCh
     return (
         <div className={styles.taskInfoContainer}>
             <div className={styles.dateContainer}>
+                {createdAt && (
+                    <div className={styles.createdAt}>
+                        <i style={{color: 'var(--text-color)'}} className="pi pi-clock" />
+                        <span>Создано: {createdAt}</span>
+                    </div>
+                )}
                 <div 
                     className={styles.dates} 
                     onClick={() => setShowCalendar(true)}

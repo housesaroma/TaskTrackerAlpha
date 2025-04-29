@@ -12,6 +12,7 @@ export const INITIAL_COLUMNS: IColumn[] = [
                 isDone: false,
                 type: 'task',
                 description: 'Создать макеты основных экранов приложения в Figma, включая светлую и темную темы',
+                createdAt: '15 Мар 2024 10:30'
             },
             {
                 id: '2',
@@ -21,7 +22,8 @@ export const INITIAL_COLUMNS: IColumn[] = [
                 description: 'Подготовить паспорт проекта с описанием архитектуры и используемых технологий',
                 priority: 'Важно',
                 startDate: '12.10.25',
-                endDate: '12.10.25'
+                endDate: '12.10.25',
+                createdAt: '18 Мар 2024 14:45'
             },
             {
                 id: '3',
@@ -31,7 +33,8 @@ export const INITIAL_COLUMNS: IColumn[] = [
                 description: 'Провести анализ конкурентов и составить отчет по ключевым метрикам',
                 priority: 'Средне',
                 startDate: '10.05.25',     
-                endDate: '10.09.25'    
+                endDate: '10.09.25',
+                createdAt: '20 Мар 2024 09:15'
             }
         ]
     },
@@ -46,6 +49,7 @@ export const INITIAL_COLUMNS: IColumn[] = [
                 isDone: false,
                 type: 'task',
                 priority: 'Средне',
+                createdAt: '22 Мар 2024 16:20'
             },
         ]
     },
@@ -61,7 +65,8 @@ export const INITIAL_COLUMNS: IColumn[] = [
                 type: 'task',
                 description: 'Исправить критические баги перед релизом версии 1.0.0',
                 startDate: '16.10.25',
-                endDate: '17.10.25'
+                endDate: '17.10.25',
+                createdAt: '25 Мар 2024 11:05'
             },
         ]
     },
@@ -78,7 +83,8 @@ export const INITIAL_COLUMNS: IColumn[] = [
                 description: 'Адаптировать дизайн под мобильные устройства согласно новому гайдлайну',
                 priority: 'Незначительно',
                 startDate: '10.01.25',
-                endDate: '10.04.25'
+                endDate: '10.04.25',
+                createdAt: '28 Мар 2024 13:30'
             },
         ]
     },

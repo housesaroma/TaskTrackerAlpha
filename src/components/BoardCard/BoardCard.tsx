@@ -148,6 +148,7 @@ const BoardCard = ({card, onCheckClick, onRenameCard, onChangeColor, onDeleteCar
                 priority={card.priority}
                 onDateChange={onDateChange}
                 onPriorityChange={onPriorityChange}
+                createdAt={card.createdAt}
             />
         </>
     );

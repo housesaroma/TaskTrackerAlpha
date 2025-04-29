@@ -272,24 +272,36 @@ export const useBoard = (getNextId?: () => number) => {
         if (!getNextId) return;
         
         const newId = getNextId();
+        const now = new Date();
+        const formattedDate = `${now.getDate()} ${getMonthName(now.getMonth())} ${now.getFullYear()} ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
         
         setColumns(prev => {
             return prev.map(column => {
                 const cardToDuplicate = column.cards.find(card => card.id === cardId);
                 if (!cardToDuplicate) return column;
-
+    
                 const duplicatedCard = {
                     ...cardToDuplicate,
                     id: `${newId}`,
-                    title: `${cardToDuplicate.title} (копия)`
+                    title: `${cardToDuplicate.title} (копия)`,
+                    createdAt: formattedDate
                 };
-
+    
                 return {
                     ...column,
                     cards: [...column.cards, duplicatedCard]
                 };
             });
         });
+    };
+    
+    // Helper function to get month name in Russian
+    const getMonthName = (month: number): string => {
+        const months = [
+            'Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн',
+            'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'
+        ];
+        return months[month];
     };
 
     const handlePriorityChange = (cardId: string, priority: 'Важно' | 'Средне' | 'Незначительно') => {
