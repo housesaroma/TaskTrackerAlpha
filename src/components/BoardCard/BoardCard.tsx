@@ -132,6 +132,32 @@ const BoardCard = ({card, onCheckClick, onRenameCard, onChangeColor, onDeleteCar
                                     )}
                                 </div>
                             )}
+                            {/* Subtasks section */}
+                            {card.subtasks && card.subtasks.length > 0 && (
+                                <div className={styles.subtasksSection}>
+                                    <div
+                                        className={styles.subtasksHeader}
+                                        onClick={toggleSubtasks}
+                                        style={{ cursor: 'pointer' }}
+                                    >
+                                        <i className={`pi ${showSubtasks ? 'pi-chevron-down' : 'pi-chevron-right'}`} />
+                                        <span>Подзадачи ({getCompletedSubtasksCount()}/{getTotalSubtasksCount()})</span>
+                                    </div>
+
+                                    {showSubtasks && (
+                                        <div className={styles.subtasksList}>
+                                            {card.subtasks.map(subtask => (
+                                                <div key={subtask.id} className={styles.subtaskItem}>
+                                                    <i className={`pi pi-check-circle ${subtask.isDone ? styles.checkedIcon : ''}`} />
+                                                    <span className={subtask.isDone ? styles.checkedText : ''}>
+                                                            {subtask.title}
+                                                        </span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                            )}
                         </div>
                     )}
 
