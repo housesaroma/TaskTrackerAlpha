@@ -44,7 +44,7 @@ export const InfoSidebar = ({
 
     useEffect(() => {
         setSubtasks(initialSubtasks);
-    }, [initialSubtasks]);
+    }, []);
 
     const handleDescriptionSave = (newDescription: string) => {
         setDescription(newDescription);
