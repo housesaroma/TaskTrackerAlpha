@@ -6,6 +6,7 @@ import "primeicons/primeicons.css";
 import {InputText} from "primereact/inputtext";
 import {BoardCardMenu} from "./BoardCardMenu.tsx";
 import {InfoSidebar} from "../InfoSidebar/InfoSidebar.tsx";
+import {DefectSidebar} from "../InfoSidebar/DefectSidebar.tsx";
 import {useCard} from "../../hooks/useCard";
 import { useState } from 'react';
 
@@ -94,7 +95,7 @@ const BoardCard = ({card, onCheckClick, onRenameCard, onChangeColor, onDeleteCar
             >
                 <div className={styles.card} style={{backgroundColor: card.color}}>
                     <i
-                        className={`pi pi-check-circle ${card.isDone ? styles.checkedIcon : styles.icon}`}
+                        className={`pi ${card.type === 'defect' ? 'pi-exclamation-triangle' : 'pi-check-circle'} ${card.isDone ? styles.checkedIcon : styles.icon}`}
                         onClick={handleIconClick}
                         style={{
                             cursor: 'pointer',
@@ -104,62 +105,33 @@ const BoardCard = ({card, onCheckClick, onRenameCard, onChangeColor, onDeleteCar
 
                     {!isEditing && (
                         <div className={styles.dragHandle}>
-                            <div className={styles.cardContent}>
-                                <div className={styles.cardName}>
-                                    <h3 {...listeners} className={`${card.isDone ? styles.checkedText : ''}`}>
-                                        {card.title} <span style={{fontSize: '0.9em'}}>#{card.id}</span>
-                                    </h3>
-                                </div>
-                                {(card.startDate || card.endDate || card.priority) && (
-                                    <div className={styles.cardMetadata}>
-                                        {(card.startDate || card.endDate) && (
-                                            <div className={styles.dates}>
-                                                <i className="pi pi-calendar" />
-                                                {card.startDate && card.endDate ? (
-                                                    `${formatDate(card.startDate)} - ${formatDate(card.endDate)}`
-                                                ) : card.startDate ? (
-                                                    formatDate(card.startDate)
-                                                ) : card.endDate ? (
-                                                    formatDate(card.endDate)
-                                                ) : null}
-                                            </div>
-                                        )}
-                                        {card.priority && (
-                                            <div className={`${styles.priority} ${card.priority === 'Важно' ? styles.important : card.priority === 'Средне' ? styles.medium : styles.low}`}>
-                                                <i className="pi pi-bolt" />
-                                                {card.priority}
-                                            </div>
-                                        )}
-                                    </div>
-                                )}
-                                
-                                {/* Subtasks section */}
-                                {card.subtasks && card.subtasks.length > 0 && (
-                                    <div className={styles.subtasksSection}>
-                                        <div 
-                                            className={styles.subtasksHeader} 
-                                            onClick={toggleSubtasks}
-                                            style={{ cursor: 'pointer' }}
-                                        >
-                                            <i className={`pi ${showSubtasks ? 'pi-chevron-down' : 'pi-chevron-right'}`} />
-                                            <span>Подзадачи ({getCompletedSubtasksCount()}/{getTotalSubtasksCount()})</span>
-                                        </div>
-                                        
-                                        {showSubtasks && (
-                                            <div className={styles.subtasksList}>
-                                                {card.subtasks.map(subtask => (
-                                                    <div key={subtask.id} className={styles.subtaskItem}>
-                                                        <i className={`pi pi-check-circle ${subtask.isDone ? styles.checkedIcon : ''}`} />
-                                                        <span className={subtask.isDone ? styles.checkedText : ''}>
-                                                            {subtask.title}
-                                                        </span>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        )}
-                                    </div>
-                                )}
+                            <div className={styles.cardName}>
+                                <h3 {...listeners} className={`${card.isDone ? styles.checkedText : ''}`}>
+                                    {card.title} <span style={{fontSize: '0.9em'}}>#{card.id}</span>
+                                </h3>
                             </div>
+                            {(card.startDate || card.endDate || card.priority) && (
+                                <div className={styles.cardMetadata}>
+                                    {(card.startDate || card.endDate) && (
+                                        <div className={styles.dates}>
+                                            <i className="pi pi-calendar" />
+                                            {card.startDate && card.endDate ? (
+                                                `${formatDate(card.startDate)} - ${formatDate(card.endDate)}`
+                                            ) : card.startDate ? (
+                                                formatDate(card.startDate)
+                                            ) : card.endDate ? (
+                                                formatDate(card.endDate)
+                                            ) : null}
+                                        </div>
+                                    )}
+                                    {card.priority && (
+                                        <div className={`${styles.priority} ${card.priority === 'Важно' ? styles.important : card.priority === 'Средне' ? styles.medium : styles.low}`}>
+                                            <i className="pi pi-bolt" />
+                                            {card.priority}
+                                        </div>
+                                    )}
+                                </div>
+                            )}
                         </div>
                     )}
 
@@ -187,21 +159,38 @@ const BoardCard = ({card, onCheckClick, onRenameCard, onChangeColor, onDeleteCar
                     </div>
                 </div>
             </div>
-            <InfoSidebar
-                sidebarName={card.title}
-                sidebarDescription={card.description ?? 'Нет описания'}
-                visible={sidebarVisible}
-                onHide={handleSidebarHide}
-                cardId={card.id}
-                startDate={card.startDate}
-                endDate={card.endDate}
-                priority={card.priority}
-                onDateChange={onDateChange}
-                onPriorityChange={onPriorityChange}
-                createdAt={card.createdAt}
-                subtasks={card.subtasks}
-                onSubtasksChange={handleSubtasksChange}
-            />
+            {card.type === 'defect' ? (
+                <DefectSidebar
+                    sidebarName={card.title}
+                    sidebarDescription={card.description ?? 'Нет описания'}
+                    sidebarSummary={card.summary ?? 'Нет резюме'}
+                    visible={sidebarVisible}
+                    onHide={handleSidebarHide}
+                    cardId={card.id}
+                    startDate={card.startDate}
+                    endDate={card.endDate}
+                    priority={card.priority}
+                    createdAt={card.createdAt}
+                    onDateChange={onDateChange}
+                    onPriorityChange={onPriorityChange}
+                />
+            ) : (
+                <InfoSidebar
+                    sidebarName={card.title}
+                    sidebarDescription={card.description ?? 'Нет описания'}
+                    visible={sidebarVisible}
+                    onHide={handleSidebarHide}
+                    cardId={card.id}
+                    startDate={card.startDate}
+                    endDate={card.endDate}
+                    priority={card.priority}
+                    onDateChange={onDateChange}
+                    onPriorityChange={onPriorityChange}
+                    createdAt={card.createdAt}
+                    subtasks={card.subtasks}
+                    onSubtasksChange={handleSubtasksChange}
+                />
+            )}
         </>
     );
 };

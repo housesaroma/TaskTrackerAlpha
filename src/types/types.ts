@@ -48,6 +48,7 @@ export interface IDefect {
     id: string;
     title: string;
     description?: string;
+    summary?: string;
     priority?: 'Важно' | 'Средне' | 'Незначительно';
     startDate?: string;
     endDate?: string;

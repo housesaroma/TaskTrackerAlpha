@@ -48,6 +48,19 @@
 
 .dateContainer {
     position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.createdAt {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-color-secondary);
+    font-size: 0.875rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
 }
 
 .dates {
@@ -80,10 +93,10 @@
 }
 
 .calendar {
-    background-color: var(--surface-card);
+    background: var(--surface-card);
     padding: 1rem;
-    border-radius: 6px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .priorityContainer {
@@ -98,6 +111,7 @@
 }
 
 .prioritySelect {
+    margin-top: 1rem;
     :global(.p-selectbutton) {
         display: flex;
         gap: 0.5rem;
@@ -113,19 +127,5 @@
         &:focus {
             box-shadow: none !important;
         }
-    }
-}
-
-.createdAt {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 0.5rem;
-    color: var(--text-color);
-    font-size: 0.9rem;
-    padding: 0.25rem 0.5rem;
-
-    i {
-        font-size: 1rem;
     }
 } 
