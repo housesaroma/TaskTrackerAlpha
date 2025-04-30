@@ -30,6 +30,11 @@ export const BoardCardMenu = ({
             label: 'Действия',
             items: [
                 {
+                    label: 'Выбрать эпик',
+                    icon: 'pi pi-flag',
+                    command: onRename
+                },
+                {
                     label: 'Переименовать',
                     icon: 'pi pi-pencil',
                     command: onRename

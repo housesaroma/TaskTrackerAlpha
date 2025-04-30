@@ -1,4 +1,4 @@
-import {IColumn} from "../types/types.ts";
+import {IColumn, IEpic} from "../types/types.ts";
 
 export const INITIAL_COLUMNS: IColumn[] = [
     {
@@ -87,5 +87,24 @@ export const INITIAL_COLUMNS: IColumn[] = [
                 createdAt: '28 Мар 2024 13:30'
             },
         ]
+    },
+];
+
+export const INITIAL_EPICS: IEpic[] = [
+    {
+        id: '1',
+        title: 'Регистрация',
+        description: 'Описание эпика 1',
+        startDate: '10.01.25',
+        endDate: '10.04.25',
+        color: '#FA9319',
+    },
+    {
+        id: '2',
+        title: 'Вход в систему',
+        description: 'Описание эпика 2',
+        startDate: '10.01.25',
+        endDate: '10.02.25',
+        color: '#EB28AE',
     },
 ];

@@ -6,6 +6,16 @@ export interface ISubtask {
     endDate?: string;
 }
 
+export interface IEpic {
+    id: string;
+    title: string;
+    description?: string;
+    summary?: string;
+    startDate?: string;
+    endDate?: string;
+    color?: string;
+}
+
 export interface IUser {
     id: string;
     name: string;
