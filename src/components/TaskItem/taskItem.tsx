@@ -3,7 +3,7 @@ import { classNames } from 'primereact/utils'
 
 interface TaskItemProps {
 	id: string
-	title: string
+	title?: string
 	isDone?: boolean
 	startDate?: string
 	endDate?: string
@@ -81,12 +81,7 @@ function TaskItem({
 				})}
 				onClick={handleClick}
 			>
-				{isDone && (
-					<i
-						className='pi pi-check'
-						style={{ fontSize: '0.75rem', color: 'white' }}
-					/>
-				)}
+				{isDone && <div className={styles.compInd}/>}
 			</div>
 			<div className={styles.taskContent}>
 				<span
@@ -96,8 +91,10 @@ function TaskItem({
 				>
 					{title}
 				</span>
+
 				{displayDate && (
 					<span className={classNames(styles.taskDueDate, styles[status])}>
+						<i className='pi pi-calendar' style={{ marginRight: '0.3rem' }} />
 						{displayDate}
 					</span>
 				)}

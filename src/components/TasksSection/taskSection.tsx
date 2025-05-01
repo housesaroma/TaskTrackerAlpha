@@ -27,18 +27,18 @@ const TaskSection = ({title,children, defaultCollapsed = false}: TaskSectionProp
 			className={styles.taskPanel}
 			pt={{
 				root: {
-					style: { backgroundColor: 'var(--gray-300)', border: 'none' },
+					style: { backgroundColor: 'var(--surface-ground)', border: 'none' },
 				},
 				header: {
 					style: {
-						backgroundColor: 'var(--gray-300)',
+						backgroundColor: 'var(--surface-ground)',
 						border: 'none',
 						justifyContent: 'flex-start',
 					},
 				},
 				content: {
-					style: { backgroundColor: 'var(--gray-300)', border: 'none' },
-				},
+					style: { backgroundColor: 'var(--surface-ground)', border: 'none' },
+				}
 			}}
 		>
 			<div className={styles.taskList}>{children}</div>

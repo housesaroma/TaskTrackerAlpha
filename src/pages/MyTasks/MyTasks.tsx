@@ -3,117 +3,87 @@ import TaskPageHeader from '../../components/TaskPageHeader/taskPageHeader.tsx'
 import TaskSection from '../../components/TasksSection/taskSection.tsx'
 import TaskItem from '../../components/TaskItem/taskItem.tsx'
 import styles from './MyTasks.module.scss'
-import { ITask } from '../../types/types.ts'
-
-type TaskItemData = Pick<ITask, 'id' | 'title' | 'startDate' | 'endDate' | 'isDone'>
-
-interface ITaskSectionData {
-	title: string
-	tasks: TaskItemData[]
-}
+import { INITIAL_COLUMNS } from '../../constants/mock-data.ts'
 
 const TaskPage = () => {
-	const [sections, setSections] = useState<ITaskSectionData[]>([
-		{
-			title: 'Важные задачи',
-			tasks: [
-				{
-					id: '1',
-					title: 'Задача',
-					isDone: false,
-					startDate: '17.04.23',
-					endDate: '21.04.23',
-				},
-			],
-		},
-		{
-			title: 'Текущие задачи',
-			tasks: [
-				{
-					id: '2',
-					title: 'Сделать дизайн сайта (подробнее в комментариях макета)',
-					isDone: false,
-					startDate: '30.03.23',
-					endDate: '04.04.23',
-				},
-				{
-					id: '3',
-					title: 'Сделать тест 1',
-					isDone: false,
-					startDate: '23.04.25',
-					endDate: '30.04.25',
-				},
-				{
-					id: '4',
-					title: 'Сделать тест 2',
-					isDone: false,
-					startDate: '20.04.25',
-					endDate: '24.04.25',
-				},
-			],
-		},
-		{
-			title: 'Выполненные задачи',
-			tasks: [
-				{
-					id: '5',
-					title: 'Создать UI-кит и шаблон сайта с референсами',
-					isDone: true,
-					startDate: '10.11.22',
-					endDate: '15.11.22',
-				},
-				{
-					id: '6',
-					title: 'Создание рабочего прототипа в фигме',
-					isDone: true,
-					startDate: '01.10.22',
-					endDate: '14.10.22',
-				},
-			],
-		},
-	])
+	// Преобразуем данные из INITIAL_COLUMNS в нужный формат
+	const [sections, setSections] = useState(() => {
+		return [
+			{
+				title: 'Важные задачи',
+				tasks: INITIAL_COLUMNS.flatMap(column =>
+					column.cards
+						.filter(card => card.priority === 'Важно' && !card.isDone)
+						.map(card => ({
+							id: card.id,
+							title: card.description,
+							isDone: card.isDone,
+							startDate: card.startDate,
+							endDate: card.endDate,
+						}))
+				),
+			},
+			{
+				title: 'Текущие задачи',
+				tasks: INITIAL_COLUMNS.flatMap(column =>
+					column.cards
+						.filter(card => !card.isDone && card.priority !== 'Важно')
+						.map(card => ({
+							id: card.id,
+							title: card.description,
+							isDone: card.isDone,
+							startDate: card.startDate,
+							endDate: card.endDate,
+						}))
+				),
+			},
+			{
+				title: 'Выполненные задачи',
+				tasks: INITIAL_COLUMNS.flatMap(column =>
+					column.cards
+						.filter(card => card.isDone)
+						.map(card => ({
+							id: card.id,
+							title: card.description,
+							isDone: card.isDone,
+							startDate: card.startDate,
+							endDate: card.endDate,
+						}))
+				),
+			},
+		].filter(section => section.tasks.length > 0) // Убираем пустые секции
+	})
+
 	const handleTaskToggle = (taskId: string) => {
 		setSections(prevSections => {
-			// Создаем глубокую копию разделов
-			const newSections = JSON.parse(
-				JSON.stringify(prevSections)
-			) as ITaskSectionData[]
+			const newSections = JSON.parse(JSON.stringify(prevSections))
 
-			// Находим задачу и ее текущий раздел
-			let taskToMove: TaskItemData | null = null
-			let sourceSectionIndex = -1
-			let taskIndex = -1
+			// Находим задачу и меняем ее статус
+			for (const section of newSections) {
+				const taskIndex = section.tasks.findIndex((t: any) => t.id === taskId)
+				if (taskIndex !== -1) {
+					const task = section.tasks[taskIndex]
+					task.isDone = !task.isDone
 
-			for (let i = 0; i < newSections.length; i++) {
-				const idx = newSections[i].tasks.findIndex(t => t.id === taskId)
-				if (idx !== -1) {
-					taskToMove = { ...newSections[i].tasks[idx] }
-					sourceSectionIndex = i
-					taskIndex = idx
+					// Удаляем из текущей секции
+					section.tasks.splice(taskIndex, 1)
+
+					// Добавляем в соответствующую секцию
+					const targetSectionTitle = task.isDone
+						? 'Выполненные задачи'
+						: task.priority === 'Важно'
+						? 'Важные задачи'
+						: 'Текущие задачи'
+
+					const targetSection = newSections.find(
+						(s: any) => s.title === targetSectionTitle
+					)
+					if (targetSection) {
+						targetSection.tasks.unshift(task)
+					}
+
 					break
 				}
-			}
-
-			if (!taskToMove) return prevSections
-
-			// Инвертируем статус задачи
-			taskToMove.isDone = !taskToMove.isDone
-
-			// Удаляем задачу из текущего раздела
-			newSections[sourceSectionIndex].tasks.splice(taskIndex, 1)
-
-			// Определяем целевой раздел
-			const targetSectionTitle = taskToMove.isDone
-				? 'Выполненные задачи'
-				: 'Текущие задачи'
-
-			const targetSectionIndex = newSections.findIndex(
-				s => s.title === targetSectionTitle
-			)
-
-			// Добавляем задачу в начало целевого раздела
-			if (targetSectionIndex !== -1) {
-				newSections[targetSectionIndex].tasks.unshift(taskToMove)
 			}
 
 			return newSections
@@ -123,7 +93,6 @@ const TaskPage = () => {
 	return (
 		<div className={styles.taskPage}>
 			<TaskPageHeader />
-
 			<div className={styles.taskContainer}>
 				{sections.map(section => (
 					<TaskSection key={section.title} title={section.title}>
