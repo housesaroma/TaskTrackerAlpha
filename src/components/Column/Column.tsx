@@ -1,7 +1,7 @@
 import {SortableContext, useSortable, verticalListSortingStrategy} from "@dnd-kit/sortable";
 import {useDroppable} from "@dnd-kit/core";
 import {CSS} from "@dnd-kit/utilities";
-import {ICard, IColumn, ISubtask} from "../../types/types";
+import {ICard, IColumn, ISubtask, IEpic} from "../../types/types";
 import styles from "./Column.module.scss";
 import BoardCard from "../BoardCard/BoardCard";
 import {ColumnMenu} from "./ColumnMenu";
@@ -24,6 +24,10 @@ interface ColumnProps {
     onDateChange: (cardId: string, startDate: string, endDate: string) => void;
     onPriorityChange: (cardId: string, priority: 'Важно' | 'Средне' | 'Незначительно') => void;
     onSubtasksChange: (cardId: string, subtasks: ISubtask[]) => void;
+    onEpicChange: (cardId: string, epicId: string | null) => void;
+    epics: IEpic[];
+    onAddEpic: () => void;
+    onUpdateEpic: (epicId: string, updates: Partial<IEpic>) => void;
     getNextId: () => number;
 }
 
@@ -42,6 +46,10 @@ export const Column = ({
                            onDateChange,
                            onPriorityChange,
                            onSubtasksChange,
+                           onEpicChange,
+                           epics,
+                           onAddEpic,
+                           onUpdateEpic,
                            getNextId
                        }: ColumnProps) => {
     const {setNodeRef} = useDroppable({id: column.id});
@@ -128,6 +136,10 @@ export const Column = ({
                                 onDateChange={onDateChange}
                                 onPriorityChange={onPriorityChange}
                                 onSubtasksChange={onSubtasksChange}
+                                onEpicChange={onEpicChange}
+                                epics={epics}
+                                onAddEpic={onAddEpic}
+                                onUpdateEpic={onUpdateEpic}
                             />
                         ))
                     ) : (

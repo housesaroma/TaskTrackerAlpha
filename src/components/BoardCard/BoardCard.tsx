@@ -1,16 +1,21 @@
 import {useSortable} from '@dnd-kit/sortable';
 import {CSS} from '@dnd-kit/utilities';
-import {ICard, ISubtask} from '../../types/types';
+import {ICard, ISubtask, IEpic, IDefect, ITask} from '../../types/types';
 import styles from './BoardCard.module.scss';
 import "primeicons/primeicons.css";
 import {InputText} from "primereact/inputtext";
 import {BoardCardMenu} from "./BoardCardMenu.tsx";
 import {InfoSidebar} from "../InfoSidebar/InfoSidebar.tsx";
 import {DefectSidebar} from "../InfoSidebar/DefectSidebar.tsx";
+import {EpicSidebar} from "../EpicSidebar/EpicSidebar";
 import {useCard} from "../../hooks/useCard";
 import { useState } from 'react';
 
-const BoardCard = ({card, onCheckClick, onRenameCard, onChangeColor, onDeleteCard, onDuplicateCard, onDateChange, onPriorityChange, onSubtasksChange}: {
+const isTask = (card: ICard): card is ITask => {
+    return card.type === 'task';
+};
+
+const BoardCard = ({card, onCheckClick, onRenameCard, onChangeColor, onDeleteCard, onDuplicateCard, onDateChange, onPriorityChange, onSubtasksChange, onEpicChange, epics, onAddEpic, onUpdateEpic}: {
     card: ICard;
     onCheckClick?: (id: string, isDone: boolean) => void;
     onRenameCard: (id: string, newTitle: string) => void;
@@ -20,6 +25,10 @@ const BoardCard = ({card, onCheckClick, onRenameCard, onChangeColor, onDeleteCar
     onDateChange: (cardId: string, startDate: string, endDate: string) => void;
     onPriorityChange: (cardId: string, priority: 'Важно' | 'Средне' | 'Незначительно') => void;
     onSubtasksChange?: (cardId: string, subtasks: ISubtask[]) => void;
+    onEpicChange?: (cardId: string, epicId: string | null) => void;
+    epics: IEpic[];
+    onAddEpic?: () => void;
+    onUpdateEpic?: (epicId: string, updates: Partial<IEpic>) => void;
 }) => {
     const {
         attributes,
@@ -54,6 +63,8 @@ const BoardCard = ({card, onCheckClick, onRenameCard, onChangeColor, onDeleteCar
     });
 
     const [showSubtasks, setShowSubtasks] = useState(false);
+    const [epicSidebarVisible, setEpicSidebarVisible] = useState(false);
+    const currentEpic = isTask(card) && card.epicId ? epics.find(e => e.id === card.epicId) : null;
 
     const formatDate = (date: string) => {
         return date.split('.')[0] + '.' + date.split('.')[1];
@@ -109,6 +120,20 @@ const BoardCard = ({card, onCheckClick, onRenameCard, onChangeColor, onDeleteCar
                                 <h3 {...listeners} className={`${card.isDone ? styles.checkedText : ''}`}>
                                     {card.title} <span style={{fontSize: '0.9em'}}>#{card.id}</span>
                                 </h3>
+                                {isTask(card) && card.epicId && (
+                                    <div className={styles.epicContainer}>
+                                        <span 
+                                            className={styles.epicTag} 
+                                            style={{ backgroundColor: epics.find(e => e.id === card.epicId)?.color || '#e3e3e3' }}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                setEpicSidebarVisible(true);
+                                            }}
+                                        >
+                                            {epics.find(e => e.id === card.epicId)?.title}
+                                        </span>
+                                    </div>
+                                )}
                             </div>
                             {(card.startDate || card.endDate || card.priority) && (
                                 <div className={styles.cardMetadata}>
@@ -181,6 +206,9 @@ const BoardCard = ({card, onCheckClick, onRenameCard, onChangeColor, onDeleteCar
                             onRename={handleRenameClick}
                             onDelete={() => onDeleteCard(card.id)}
                             onDuplicate={() => onDuplicateCard(card.id)}
+                            onEpicSelect={onEpicChange ? (epicId) => onEpicChange(card.id, epicId) : undefined}
+                            epics={epics}
+                            onAddEpic={onAddEpic}
                         />
                     </div>
                 </div>
@@ -189,7 +217,7 @@ const BoardCard = ({card, onCheckClick, onRenameCard, onChangeColor, onDeleteCar
                 <DefectSidebar
                     sidebarName={card.title}
                     sidebarDescription={card.description ?? 'Нет описания'}
-                    sidebarSummary={card.summary ?? 'Нет резюме'}
+                    sidebarSummary={(card as IDefect).summary ?? 'Нет резюме'}
                     visible={sidebarVisible}
                     onHide={handleSidebarHide}
                     cardId={card.id}
@@ -214,7 +242,19 @@ const BoardCard = ({card, onCheckClick, onRenameCard, onChangeColor, onDeleteCar
                     onPriorityChange={onPriorityChange}
                     createdAt={card.createdAt}
                     subtasks={card.subtasks}
-                    onSubtasksChange={handleSubtasksChange}
+                    onSubtasksChange={onSubtasksChange}
+                />
+            )}
+            {currentEpic && (
+                <EpicSidebar
+                    epic={currentEpic}
+                    visible={epicSidebarVisible}
+                    onHide={() => setEpicSidebarVisible(false)}
+                    onUpdate={(updates) => {
+                        if (onUpdateEpic && currentEpic) {
+                            onUpdateEpic(currentEpic.id, updates);
+                        }
+                    }}
                 />
             )}
         </>

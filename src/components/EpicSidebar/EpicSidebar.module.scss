@@ -1,0 +1,67 @@
+.epicSidebar {
+    :global(.p-sidebar) {
+        width: 400px;
+    }
+}
+
+.sidebarContent {
+    padding: 1rem;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.sidebarHeader {
+    .sidebarTitle {
+        margin: 0;
+        font-size: 1.5rem;
+        cursor: pointer;
+        padding: 0.5rem;
+        border-radius: 4px;
+        transition: background-color 0.2s;
+
+        &:hover {
+            background-color: var(--surface-hover);
+        }
+    }
+
+    .titleInput {
+        width: 100%;
+        font-size: 1.5rem;
+    }
+}
+
+.sidebarSection {
+    h3 {
+        margin: 0 0 0.5rem 0;
+        font-size: 1rem;
+        color: var(--text-color-secondary);
+    }
+}
+
+.textarea {
+    width: 100%;
+    resize: vertical;
+}
+
+.dateInputs {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.dateInput {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+
+    label {
+        font-size: 0.9rem;
+        color: var(--text-color-secondary);
+    }
+}
+
+.colorPicker {
+    width: 100%;
+} 

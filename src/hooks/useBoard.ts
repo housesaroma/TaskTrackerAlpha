@@ -334,6 +334,23 @@ export const useBoard = (getNextId?: () => number) => {
         });
     };
 
+    const handleEpicChange = (cardId: string, epicId: string | null) => {
+        setColumns(prev =>
+            prev.map(column => ({
+                ...column,
+                cards: column.cards.map(card => {
+                    if (card.id === cardId) {
+                        return {
+                            ...card,
+                            epicId: epicId
+                        };
+                    }
+                    return card;
+                })
+            }))
+        );
+    };
+
     return {
         columns,
         activeCard,
@@ -353,6 +370,7 @@ export const useBoard = (getNextId?: () => number) => {
         handleDeleteCard,
         handleChangeCardDates,
         handlePriorityChange,
-        handleSubtasksChange
+        handleSubtasksChange,
+        handleEpicChange
     };
 };
