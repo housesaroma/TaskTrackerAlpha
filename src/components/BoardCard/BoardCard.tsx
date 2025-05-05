@@ -10,15 +10,16 @@ import {DefectSidebar} from "../InfoSidebar/DefectSidebar.tsx";
 import {useCard} from "../../hooks/useCard";
 import { useState } from 'react';
 
-const BoardCard = ({card, onCheckClick, onRenameCard, onChangeColor, onDeleteCard, onDuplicateCard, onDateChange, onPriorityChange, onSubtasksChange}: {
+const BoardCard = ({card, showMenu=true, onCheckClick, onRenameCard, onChangeColor, onDeleteCard, onDuplicateCard, onDateChange, onPriorityChange, onSubtasksChange}: {
     card: ICard;
+    showMenu?:boolean,
     onCheckClick?: (id: string, isDone: boolean) => void;
-    onRenameCard: (id: string, newTitle: string) => void;
-    onChangeColor: (id: string, newColor: string) => void;
-    onDeleteCard: (id: string) => void;
-    onDuplicateCard: (id: string) => void;
-    onDateChange: (cardId: string, startDate: string, endDate: string) => void;
-    onPriorityChange: (cardId: string, priority: 'Важно' | 'Средне' | 'Незначительно') => void;
+    onRenameCard?: (id: string, newTitle: string) => void;
+    onChangeColor?: (id: string, newColor: string) => void;
+    onDeleteCard?: (id: string) => void;
+    onDuplicateCard?: (id: string) => void;
+    onDateChange?: (cardId: string, startDate: string, endDate: string) => void;
+    onPriorityChange?: (cardId: string, priority: 'Важно' | 'Средне' | 'Незначительно') => void;
     onSubtasksChange?: (cardId: string, subtasks: ISubtask[]) => void;
 }) => {
     const {
@@ -85,140 +86,175 @@ const BoardCard = ({card, onCheckClick, onRenameCard, onChangeColor, onDeleteCar
     };
 
     return (
-        <>
-            <div
-                ref={setNodeRef}
-                style={style}
-                {...attributes}
-                className={styles.draggableWrapper}
-                onClick={handleCardClick}
-            >
-                <div className={styles.card} style={{backgroundColor: card.color}}>
-                    <i
-                        className={`pi ${card.type === 'defect' ? 'pi-exclamation-triangle' : 'pi-check-circle'} ${card.isDone ? styles.checkedIcon : styles.icon}`}
-                        onClick={handleIconClick}
-                        style={{
-                            cursor: 'pointer',
-                            pointerEvents: 'auto'
-                        }}
-                    />
+			<>
+				<div
+					ref={setNodeRef}
+					style={style}
+					{...attributes}
+					className={styles.draggableWrapper}
+					onClick={handleCardClick}
+				>
+					<div className={styles.card} style={{ backgroundColor: card.color }}>
+						<i
+							className={`pi ${
+								card.type === 'defect'
+									? 'pi-exclamation-triangle'
+									: 'pi-check-circle'
+							} ${card.isDone ? styles.checkedIcon : styles.icon}`}
+							onClick={handleIconClick}
+							style={{
+								cursor: 'pointer',
+								pointerEvents: 'auto',
+							}}
+						/>
 
-                    {!isEditing && (
-                        <div className={styles.dragHandle}>
-                            <div className={styles.cardName}>
-                                <h3 {...listeners} className={`${card.isDone ? styles.checkedText : ''}`}>
-                                    {card.title} <span style={{fontSize: '0.9em'}}>#{card.id}</span>
-                                </h3>
-                            </div>
-                            {(card.startDate || card.endDate || card.priority) && (
-                                <div className={styles.cardMetadata}>
-                                    {(card.startDate || card.endDate) && (
-                                        <div className={styles.dates}>
-                                            <i className="pi pi-calendar" />
-                                            {card.startDate && card.endDate ? (
-                                                `${formatDate(card.startDate)} - ${formatDate(card.endDate)}`
-                                            ) : card.startDate ? (
-                                                formatDate(card.startDate)
-                                            ) : card.endDate ? (
-                                                formatDate(card.endDate)
-                                            ) : null}
-                                        </div>
-                                    )}
-                                    {card.priority && (
-                                        <div className={`${styles.priority} ${card.priority === 'Важно' ? styles.important : card.priority === 'Средне' ? styles.medium : styles.low}`}>
-                                            <i className="pi pi-bolt" />
-                                            {card.priority}
-                                        </div>
-                                    )}
-                                </div>
-                            )}
-                            {/* Subtasks section */}
-                            {card.subtasks && card.subtasks.length > 0 && (
-                                <div className={styles.subtasksSection}>
-                                    <div
-                                        className={styles.subtasksHeader}
-                                        onClick={toggleSubtasks}
-                                        style={{ cursor: 'pointer' }}
-                                    >
-                                        <i className={`pi ${showSubtasks ? 'pi-chevron-down' : 'pi-chevron-right'}`} />
-                                        <span>Подзадачи ({getCompletedSubtasksCount()}/{getTotalSubtasksCount()})</span>
-                                    </div>
+						{!isEditing && (
+							<div className={styles.dragHandle}>
+								<div className={styles.cardName}>
+									<h3
+										{...listeners}
+										className={`${card.isDone ? styles.checkedText : ''}`}
+									>
+										{card.title}{' '}
+										<span style={{ fontSize: '0.9em' }}>#{card.id}</span>
+									</h3>
+								</div>
+								{(card.startDate || card.endDate || card.priority) && (
+									<div className={styles.cardMetadata}>
+										{(card.startDate || card.endDate) && (
+											<div className={styles.dates}>
+												<i className='pi pi-calendar' />
+												{card.startDate && card.endDate
+													? `${formatDate(card.startDate)} - ${formatDate(
+															card.endDate
+													  )}`
+													: card.startDate
+													? formatDate(card.startDate)
+													: card.endDate
+													? formatDate(card.endDate)
+													: null}
+											</div>
+										)}
+										{card.priority && (
+											<div
+												className={`${styles.priority} ${
+													card.priority === 'Важно'
+														? styles.important
+														: card.priority === 'Средне'
+														? styles.medium
+														: styles.low
+												}`}
+											>
+												<i className='pi pi-bolt' />
+												{card.priority}
+											</div>
+										)}
+									</div>
+								)}
+								{/* Subtasks section */}
+								{card.subtasks && card.subtasks.length > 0 && (
+									<div className={styles.subtasksSection}>
+										<div
+											className={styles.subtasksHeader}
+											onClick={toggleSubtasks}
+											style={{ cursor: 'pointer' }}
+										>
+											<i
+												className={`pi ${
+													showSubtasks ? 'pi-chevron-down' : 'pi-chevron-right'
+												}`}
+											/>
+											<span>
+												Подзадачи ({getCompletedSubtasksCount()}/
+												{getTotalSubtasksCount()})
+											</span>
+										</div>
 
-                                    {showSubtasks && (
-                                        <div className={styles.subtasksList}>
-                                            {card.subtasks.map(subtask => (
-                                                <div key={subtask.id} className={styles.subtaskItem}>
-                                                    <i className={`pi pi-check-circle ${subtask.isDone ? styles.checkedIcon : ''}`} />
-                                                    <span className={subtask.isDone ? styles.checkedText : ''}>
-                                                            {subtask.title}
-                                                        </span>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    )}
-                                </div>
-                            )}
-                        </div>
-                    )}
+										{showSubtasks && (
+											<div className={styles.subtasksList}>
+												{card.subtasks.map(subtask => (
+													<div key={subtask.id} className={styles.subtaskItem}>
+														<i
+															className={`pi pi-check-circle ${
+																subtask.isDone ? styles.checkedIcon : ''
+															}`}
+														/>
+														<span
+															className={
+																subtask.isDone ? styles.checkedText : ''
+															}
+														>
+															{subtask.title}
+														</span>
+													</div>
+												))}
+											</div>
+										)}
+									</div>
+								)}
+							</div>
+						)}
 
-                    {isEditing && (
-                        <div className={styles.cardName}>
-                            <InputText
-                                value={newTitle}
-                                onChange={handleTitleChange}
-                                onBlur={handleTitleBlur}
-                                onKeyDown={handleKeyDown}
-                                ref={inputRef}
-                                className={styles.titleInput}
-                            />
-                        </div>
-                    )}
+						{isEditing && (
+							<div className={styles.cardName}>
+								<InputText
+									value={newTitle}
+									onChange={handleTitleChange}
+									onBlur={handleTitleBlur}
+									onKeyDown={handleKeyDown}
+									ref={inputRef}
+									className={styles.titleInput}
+								/>
+							</div>
+						)}
 
-                    <div style={{pointerEvents: 'auto'}} onClick={handleMenuAction}>
-                        <BoardCardMenu
-                            cardColor={card.color || '#ffffff'}
-                            onColorChange={(color) => onChangeColor(card.id, color)}
-                            onRename={handleRenameClick}
-                            onDelete={() => onDeleteCard(card.id)}
-                            onDuplicate={() => onDuplicateCard(card.id)}
-                        />
-                    </div>
-                </div>
-            </div>
-            {card.type === 'defect' ? (
-                <DefectSidebar
-                    sidebarName={card.title}
-                    sidebarDescription={card.description ?? 'Нет описания'}
-                    sidebarSummary={card.summary ?? 'Нет резюме'}
-                    visible={sidebarVisible}
-                    onHide={handleSidebarHide}
-                    cardId={card.id}
-                    startDate={card.startDate}
-                    endDate={card.endDate}
-                    priority={card.priority}
-                    createdAt={card.createdAt}
-                    onDateChange={onDateChange}
-                    onPriorityChange={onPriorityChange}
-                />
-            ) : (
-                <InfoSidebar
-                    sidebarName={card.title}
-                    sidebarDescription={card.description ?? 'Нет описания'}
-                    visible={sidebarVisible}
-                    onHide={handleSidebarHide}
-                    cardId={card.id}
-                    startDate={card.startDate}
-                    endDate={card.endDate}
-                    priority={card.priority}
-                    onDateChange={onDateChange}
-                    onPriorityChange={onPriorityChange}
-                    createdAt={card.createdAt}
-                    subtasks={card.subtasks}
-                    onSubtasksChange={handleSubtasksChange}
-                />
-            )}
-        </>
-    );
+						{showMenu && (
+							<div style={{ pointerEvents: 'auto' }} onClick={handleMenuAction}>
+								<BoardCardMenu
+									cardColor={card.color || '#ffffff'}
+									onColorChange={color => onChangeColor?.(card.id, color)}
+									onRename={handleRenameClick}
+									onDelete={() => onDeleteCard?.(card.id)}
+									onDuplicate={() => onDuplicateCard?.(card.id)}
+								/>
+							</div>
+						)}
+					</div>
+				</div>
+				{card.type === 'defect' ? (
+					<DefectSidebar
+						sidebarName={card.title}
+						sidebarDescription={card.description ?? 'Нет описания'}
+						sidebarSummary={card.summary ?? 'Нет резюме'}
+						visible={sidebarVisible}
+						onHide={handleSidebarHide}
+						cardId={card.id}
+						startDate={card.startDate}
+						endDate={card.endDate}
+						priority={card.priority}
+						createdAt={card.createdAt}
+						onDateChange={(...args) => onDateChange?.(...args)}
+						onPriorityChange={(...args) => onPriorityChange?.(...args)}
+					/>
+				) : (
+					<InfoSidebar
+						sidebarName={card.title}
+						sidebarDescription={card.description ?? 'Нет описания'}
+						visible={sidebarVisible}
+						onHide={handleSidebarHide}
+						cardId={card.id}
+						startDate={card.startDate}
+						endDate={card.endDate}
+						priority={card.priority}
+						onDateChange={(...args) => onDateChange?.(...args)}
+						onPriorityChange={(...args) => onPriorityChange?.(...args)}
+						createdAt={card.createdAt}
+						subtasks={card.subtasks}
+						onSubtasksChange={handleSubtasksChange}
+					/>
+				)}
+			</>
+		)
 };
 
 export default BoardCard;

@@ -5,6 +5,7 @@ import {useRef} from 'react';
 import styles from "./BoardCard.module.scss";
 
 interface BoardCardMenuProps {
+    showMenu?:boolean,
     cardColor: string;
     onColorChange: (color: string) => void;
     onRename: () => void;
