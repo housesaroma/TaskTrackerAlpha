@@ -11,6 +11,7 @@ import Chats from "./pages/Chats/Chats.tsx";
 import Metrics from "./pages/Metrics/Metrics.tsx";
 import MyTasks from "./pages/MyTasks/MyTasks.tsx";
 import AuthenticatedLayout from "./components/AuthenticatedLayout/AuthenticatedLayout.tsx";
+import EisenhowerMatrix from './pages/Matrix/matrix.tsx';
 
 function AppContent() {
     const dispatch = useDispatch();
@@ -42,6 +43,7 @@ function AppContent() {
                     <Route path="/chats" element={<Chats/>}/>
                     <Route path="/metrics" element={<Metrics/>}/>
                     <Route path="/mytasks" element={<MyTasks/>}/>
+                    <Route path="/matrix" element={<EisenhowerMatrix/>}/>
                 </Route>
 
                 <Route path="*" element={<div>404 Not Found</div>}/>
