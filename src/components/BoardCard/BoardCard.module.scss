@@ -30,12 +30,22 @@
   }
 
   .cardName {
-    display: flex;
-    align-items: center;
-    user-select: none;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
+    flex: 1;
+    min-width: 0;
+
+    h3 {
+      margin: 0;
+      font-size: 1rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+
+      span {
+        flex-shrink: 0;
+      }
+    }
   }
 
   .checkedIcon {
@@ -135,5 +145,27 @@
       font-size: 10px;
       margin-right: 0;
     }
+  }
+}
+
+.epicContainer {
+  margin-top: 0.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+.epicTag {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  color: #fff;
+  cursor: pointer;
+  transition: opacity 0.2s;
+
+  &:hover {
+    opacity: 0.8;
   }
 }

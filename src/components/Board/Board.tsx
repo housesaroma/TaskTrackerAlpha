@@ -4,6 +4,7 @@ import styles from './Board.module.scss';
 import Column from '../Column/Column';
 import {useBoard} from '../../hooks/useBoard';
 import { useCardId } from '../../hooks/useCardId';
+import { useEpic } from '../../hooks/useEpic';
 import BoardCard from '../BoardCard/BoardCard.tsx';
 
 const dropAnimationConfig = {
@@ -18,6 +19,7 @@ const dropAnimationConfig = {
 
 const Board = () => {
     const { getNextId } = useCardId();
+    const { epics, handleAddEpic, handleUpdateEpic, handleDeleteEpic } = useEpic();
     const {
         columns,
         activeCard,
@@ -37,8 +39,16 @@ const Board = () => {
         handleRenameCard,
         handleChangeCardDates,
         handlePriorityChange,
-        handleSubtasksChange
+        handleSubtasksChange,
+        handleEpicChange
     } = useBoard(getNextId);
+
+    const handleAddNewEpic = () => {
+        const newEpic = handleAddEpic();
+        if (newEpic && activeCard) {
+            handleEpicChange(activeCard.id, newEpic.id);
+        }
+    };
 
     return (
         <div className={styles.board}>
@@ -69,6 +79,9 @@ const Board = () => {
                                 onDateChange={handleChangeCardDates}
                                 onPriorityChange={handlePriorityChange}
                                 onSubtasksChange={handleSubtasksChange}
+                                onEpicChange={handleEpicChange}
+                                epics={epics}
+                                onAddEpic={handleAddNewEpic}
                                 getNextId={getNextId}
                             />
                         ))}
@@ -77,23 +90,27 @@ const Board = () => {
 
                 <DragOverlay dropAnimation={dropAnimationConfig}>
                     {activeCard && (
-        <div style={{
-            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
-            opacity: 0.9,
-            zIndex: 1000,
-            width: '280px'
-        }}>
-            <BoardCard
-                card={activeCard}
-                onCheckClick={handleCheckClick}
-                onRenameCard={handleRenameCard}
-                onDuplicateCard={handleDuplicateCard}
-                onChangeColor={handleChangeCardColor}
-                onDeleteCard={handleDeleteCard}
-                onDateChange={handleChangeCardDates}
-                onPriorityChange={handlePriorityChange}
-            />
-        </div>
+                        <div style={{
+                            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+                            opacity: 0.9,
+                            zIndex: 1000,
+                            width: '280px'
+                        }}>
+                            <BoardCard
+                                card={activeCard}
+                                onCheckClick={handleCheckClick}
+                                onRenameCard={handleRenameCard}
+                                onDuplicateCard={handleDuplicateCard}
+                                onChangeColor={handleChangeCardColor}
+                                onDeleteCard={handleDeleteCard}
+                                onDateChange={handleChangeCardDates}
+                                onPriorityChange={handlePriorityChange}
+                                onEpicChange={handleEpicChange}
+                                epics={epics}
+                                onAddEpic={handleAddNewEpic}
+                                onUpdateEpic={handleUpdateEpic}
+                            />
+                        </div>
                     )}
                     {activeColumn && (
                         <div style={{

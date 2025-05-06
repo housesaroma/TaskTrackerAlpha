@@ -40,6 +40,7 @@ export interface ITask {
     isDone?: boolean;
     color?: string;
     type: 'task';
+    epicId?: string | null;
     subtasks?: ISubtask[];
     createdAt?: string;
     createdBy?: IUser;
