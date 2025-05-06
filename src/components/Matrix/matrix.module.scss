@@ -1,0 +1,82 @@
+
+.eisenhower-matrix {
+  position: relative;
+  padding: 2rem;
+  margin-top: 6rem;
+  background-color: var(--surface-50);
+}
+
+.matrix-labels-container {
+  position: absolute;
+  width: calc(100% - 80px);
+  height: calc(100% - 120px);
+  pointer-events: none;
+
+  .importance-label {
+    position: absolute;
+    left: -2.5rem;
+    top: 9%;
+    transform: rotate(-90deg);
+    font: var(--text-22-bold);
+    color: var(--grey-100);
+  }
+
+  .unimportance-label {
+    position: absolute;
+    left: -3.5rem;
+    top: 70%;
+    transform: rotate(-90deg);
+    font: var(--text-22-bold);
+    color: var(--grey-100);
+  }
+
+  .urgency-label-left {
+    position: absolute;
+    top: -1rem;
+    left: 2%;
+    font: var(--text-22-bold);
+    color: var(--grey-100);
+  }
+
+  .urgency-label-right {
+    position: absolute;
+    top: -1rem;
+    left: 53%;
+    font: var(--text-22-bold);
+    color: var(--grey-100);
+  }
+}
+
+.matrix-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 3rem;
+  height: 31.25rem;
+  padding: 1.25rem;
+  position: relative;
+}
+
+.quadrant {
+  border-radius: 1rem;
+  padding: 1.5rem;
+  overflow-y: auto;
+  
+  position: relative;
+}
+
+.cards-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.quadrant-1,
+.quadrant-2,
+.quadrant-3,
+.quadrant-4 {
+  background-color: var(--surface-200);
+}
+
+
+

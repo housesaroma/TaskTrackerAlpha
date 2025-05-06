@@ -5,10 +5,10 @@ export const useCard = (
     card: ICard,
     callbacks: {
         onCheckClick?: (id: string, isDone: boolean) => void;
-        onRenameCard: (id: string, newTitle: string) => void;
-        onChangeColor: (id: string, newColor: string) => void;
-        onDeleteCard: (id: string) => void;
-        onDuplicateCard: (id: string) => void;
+        onRenameCard?: (id: string, newTitle: string) => void;
+        onChangeColor?: (id: string, newColor: string) => void;
+        onDeleteCard?: (id: string) => void;
+        onDuplicateCard?: (id: string) => void;
     }
 ) => {
     const [isEditing, setIsEditing] = useState(false);
@@ -44,7 +44,7 @@ export const useCard = (
 
     const handleTitleBlur = useCallback(() => {
         if (newTitle.trim() && newTitle !== card.title) {
-            callbacks.onRenameCard(card.id, newTitle);
+            callbacks.onRenameCard?.(card.id, newTitle);
         } else {
             setNewTitle(card.title);
         }

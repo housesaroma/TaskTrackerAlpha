@@ -8,6 +8,7 @@ import {IEpic} from '../../types/types';
 import {EpicSidebar} from '../EpicSidebar/EpicSidebar';
 
 interface BoardCardMenuProps {
+    showMenu?:boolean,
     cardColor: string;
     onColorChange: (color: string) => void;
     onRename: () => void;
