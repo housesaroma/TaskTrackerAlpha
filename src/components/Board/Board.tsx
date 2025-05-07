@@ -45,9 +45,7 @@ const Board = () => {
 
     const handleAddNewEpic = () => {
         const newEpic = handleAddEpic();
-        if (newEpic && activeCard) {
-            handleEpicChange(activeCard.id, newEpic.id);
-        }
+        return newEpic;
     };
 
     return (
@@ -82,6 +80,7 @@ const Board = () => {
                                 onEpicChange={handleEpicChange}
                                 epics={epics}
                                 onAddEpic={handleAddNewEpic}
+                                onUpdateEpic={handleUpdateEpic}
                                 getNextId={getNextId}
                             />
                         ))}

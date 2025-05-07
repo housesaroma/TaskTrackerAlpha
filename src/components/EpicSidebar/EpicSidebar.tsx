@@ -1,10 +1,12 @@
-import { useState, useRef, useEffect } from 'react';
-import { Sidebar } from 'primereact/sidebar';
-import { InputText } from 'primereact/inputtext';
-import { InputTextarea } from 'primereact/inputtextarea';
+import {Sidebar} from 'primereact/sidebar';
 import { Calendar } from 'primereact/calendar';
 import { ColorPicker, ColorPickerChangeEvent } from 'primereact/colorpicker';
+import { InputText } from 'primereact/inputtext';
 import styles from './EpicSidebar.module.scss';
+import {useState, useEffect, useRef} from "react";
+import {EditableDescription} from "../InfoSidebar/EditableDescription/EditableDescription.tsx";
+import {EditableSummary} from "../InfoSidebar/EditableSummary/EditableSummary.tsx";
+import "primeicons/primeicons.css";
 
 interface EpicSidebarProps {
     epic: {
@@ -15,6 +17,7 @@ interface EpicSidebarProps {
         startDate?: string;
         endDate?: string;
         color?: string;
+        createdAt?: string;
     };
     visible: boolean;
     onHide: () => void;
@@ -29,32 +32,34 @@ interface EpicSidebarProps {
 }
 
 export const EpicSidebar = ({ epic, visible, onHide, onUpdate }: EpicSidebarProps) => {
-    const [isEditing, setIsEditing] = useState(false);
-    const [newTitle, setNewTitle] = useState(epic.title);
     const [description, setDescription] = useState(epic.description || '');
     const [summary, setSummary] = useState(epic.summary || '');
-    const [startDate, setStartDate] = useState<Date | null>(epic.startDate ? new Date(epic.startDate) : null);
-    const [endDate, setEndDate] = useState<Date | null>(epic.endDate ? new Date(epic.endDate) : null);
     const [color, setColor] = useState(epic.color || '#e3e3e3');
-    const inputRef = useRef<HTMLInputElement>(null);
+    const [showCalendar, setShowCalendar] = useState(false);
+    const [dateRange, setDateRange] = useState<Date[] | null>(null);
+    const [isEditingTitle, setIsEditingTitle] = useState(false);
+    const [newTitle, setNewTitle] = useState(epic.title);
+    const titleInputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
-        setNewTitle(epic.title);
-        setDescription(epic.description || '');
-        setSummary(epic.summary || '');
-        setStartDate(epic.startDate ? new Date(epic.startDate) : null);
-        setEndDate(epic.endDate ? new Date(epic.endDate) : null);
-        setColor(epic.color || '#e3e3e3');
-    }, [epic]);
-
-    useEffect(() => {
-        if (isEditing && inputRef.current) {
-            inputRef.current.focus();
+        if (epic.startDate && epic.endDate) {
+            const parseDate = (dateStr: string) => {
+                const [day, month, year] = dateStr.split('.').map(Number);
+                return new Date(2000 + year, month - 1, day);
+            };
+            setDateRange([parseDate(epic.startDate), parseDate(epic.endDate)]);
         }
-    }, [isEditing]);
+    }, [epic.startDate, epic.endDate]);
+
+    useEffect(() => {
+        if (isEditingTitle && titleInputRef.current) {
+            titleInputRef.current.focus();
+        }
+    }, [isEditingTitle]);
 
     const handleTitleClick = () => {
-        setIsEditing(true);
+        setIsEditingTitle(true);
+        setNewTitle(epic.title);
     };
 
     const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -64,36 +69,24 @@ export const EpicSidebar = ({ epic, visible, onHide, onUpdate }: EpicSidebarProp
     const handleTitleBlur = () => {
         if (newTitle.trim() && newTitle !== epic.title) {
             onUpdate({ title: newTitle });
-        } else {
-            setNewTitle(epic.title);
         }
-        setIsEditing(false);
+        setIsEditingTitle(false);
     };
 
-    const handleKeyDown = (e: React.KeyboardEvent) => {
+    const handleTitleKeyDown = (e: React.KeyboardEvent) => {
         if (e.key === 'Enter') {
             handleTitleBlur();
         }
     };
 
-    const handleDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-        setDescription(e.target.value);
-        onUpdate({ description: e.target.value });
+    const handleDescriptionSave = (newDescription: string) => {
+        setDescription(newDescription);
+        onUpdate({ description: newDescription });
     };
 
-    const handleSummaryChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-        setSummary(e.target.value);
-        onUpdate({ summary: e.target.value });
-    };
-
-    const handleStartDateChange = (date: Date | null) => {
-        setStartDate(date);
-        onUpdate({ startDate: date?.toISOString() });
-    };
-
-    const handleEndDateChange = (date: Date | null) => {
-        setEndDate(date);
-        onUpdate({ endDate: date?.toISOString() });
+    const handleSummarySave = (newSummary: string) => {
+        setSummary(newSummary);
+        onUpdate({ summary: newSummary });
     };
 
     const handleColorChange = (e: ColorPickerChangeEvent) => {
@@ -102,86 +95,106 @@ export const EpicSidebar = ({ epic, visible, onHide, onUpdate }: EpicSidebarProp
         onUpdate({ color: newColor });
     };
 
+    const handleDateChange = (e: { value: any }) => {
+        const dates = e.value as Date[];
+        setDateRange(dates);
+        
+        if (dates && dates.length === 2) {
+            const formatDate = (date: Date) => {
+                return `${date.getDate().toString().padStart(2, '0')}.${(date.getMonth() + 1).toString().padStart(2, '0')}.${(date.getFullYear() - 2000).toString().padStart(2, '0')}`;
+            };
+
+            const newStartDate = formatDate(dates[0]);
+            const newEndDate = formatDate(dates[1]);
+            onUpdate({ startDate: newStartDate, endDate: newEndDate });
+        } else {
+            onUpdate({ startDate: '', endDate: '' });
+        }
+        setShowCalendar(false);
+    };
+
+    const formatDisplayDate = () => {
+        if (epic.startDate && epic.endDate) return `${epic.startDate} - ${epic.endDate}`;
+        if (epic.startDate) return epic.startDate;
+        if (epic.endDate) return epic.endDate;
+        return 'Выберите даты';
+    };
+
     return (
         <Sidebar
             visible={visible}
             position="right"
             onHide={onHide}
-            className={styles.epicSidebar}
+            className={styles.sidebar}
         >
             <div className={styles.sidebarContent}>
-                <div className={styles.sidebarHeader}>
-                    {isEditing ? (
-                        <InputText
-                            value={newTitle}
-                            onChange={handleTitleChange}
-                            onBlur={handleTitleBlur}
-                            onKeyDown={handleKeyDown}
-                            ref={inputRef}
-                            className={styles.titleInput}
-                        />
-                    ) : (
-                        <h2 onClick={handleTitleClick} className={styles.sidebarTitle}>
-                            {epic.title}
-                        </h2>
-                    )}
-                </div>
-
-                <div className={styles.sidebarSection}>
-                    <h3>Резюме</h3>
-                    <InputTextarea
-                        value={summary}
-                        onChange={handleSummaryChange}
-                        rows={3}
-                        className={styles.textarea}
-                        placeholder="Введите резюме эпика"
+                {isEditingTitle ? (
+                    <InputText
+                        value={newTitle}
+                        onChange={handleTitleChange}
+                        onBlur={handleTitleBlur}
+                        onKeyDown={handleTitleKeyDown}
+                        ref={titleInputRef}
+                        className={styles.titleInput}
                     />
-                </div>
-
-                <div className={styles.sidebarSection}>
-                    <h3>Описание</h3>
-                    <InputTextarea
-                        value={description}
-                        onChange={handleDescriptionChange}
-                        rows={5}
-                        className={styles.textarea}
-                        placeholder="Введите описание эпика"
+                ) : (
+                    <h3 className={styles.name} onClick={handleTitleClick}>
+                        {epic.title} <span style={{fontSize: '0.9em'}}>#{epic.id}</span>
+                    </h3>
+                )}
+                
+                <div className={styles.tabContent}>
+                    <EditableSummary
+                        summary={summary}
+                        onSave={handleSummarySave}
                     />
-                </div>
+                    
+                    <EditableDescription
+                        description={description}
+                        onSave={handleDescriptionSave}
+                    />
 
-                <div className={styles.sidebarSection}>
-                    <h3>Даты</h3>
-                    <div className={styles.dateInputs}>
-                        <div className={styles.dateInput}>
-                            <label>Начало</label>
-                            <Calendar
-                                value={startDate}
-                                onChange={(e) => handleStartDateChange(e.value as Date | null)}
-                                dateFormat="dd.mm.yy"
-                                showIcon
-                            />
+                    <div className={styles.dateSection}>
+                        {epic.createdAt && (
+                            <div className={styles.createdAt}>
+                                <i className="pi pi-clock" />
+                                <span>Создано: {epic.createdAt}</span>
+                            </div>
+                        )}
+                        <div 
+                            className={styles.dates} 
+                            onClick={() => setShowCalendar(true)}
+                        >
+                            <i className="pi pi-calendar" />
+                            <span>{formatDisplayDate()}</span>
                         </div>
-                        <div className={styles.dateInput}>
-                            <label>Окончание</label>
-                            <Calendar
-                                value={endDate}
-                                onChange={(e) => handleEndDateChange(e.value as Date | null)}
-                                dateFormat="dd.mm.yy"
-                                showIcon
-                            />
-                        </div>
+                        {showCalendar && (
+                            <div className={styles.calendarOverlay} onClick={() => setShowCalendar(false)}>
+                                <div className={styles.calendar} onClick={e => e.stopPropagation()}>
+                                    <Calendar
+                                        value={dateRange}
+                                        onChange={handleDateChange}
+                                        selectionMode="range"
+                                        readOnlyInput
+                                        inline
+                                        dateFormat="dd.mm.yy"
+                                        showButtonBar
+                                    />
+                                </div>
+                            </div>
+                        )}
                     </div>
-                </div>
-
-                <div className={styles.sidebarSection}>
-                    <h3>Цвет</h3>
-                    <ColorPicker
-                        value={color}
-                        onChange={handleColorChange}
-                        className={styles.colorPicker}
-                    />
+                    
+                    <div className={styles.colorSection}>
+                        <h3>Цвет</h3>
+                        <ColorPicker
+                            value={color}
+                            onChange={handleColorChange}
+                            className={styles.colorPicker}
+                        />
+                    </div>
                 </div>
             </div>
         </Sidebar>
     );
-}; 
+};

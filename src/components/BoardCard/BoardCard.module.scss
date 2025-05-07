@@ -161,11 +161,35 @@
   padding: 0.25rem 0.5rem;
   border-radius: 4px;
   font-size: 0.8rem;
-  color: #fff;
+  color: var(--text-color);
   cursor: pointer;
   transition: opacity 0.2s;
 
   &:hover {
     opacity: 0.8;
   }
+}
+
+.epicDropdown {
+    :global {
+        .p-dropdown-item {
+            padding: 0.5rem 1rem;
+            
+            &:hover {
+                background-color: var(--surface-hover);
+            }
+
+            .p-dropdown-item-content {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+        }
+
+        .p-dropdown-panel {
+            .p-dropdown-items {
+                padding: 0.5rem 0;
+            }
+        }
+    }
 }

@@ -66,6 +66,7 @@ export interface IDefect {
     isDone?: boolean;
     color: string;
     type: 'defect';
+    epicId?: string | null;
     subtasks?: ISubtask[];
     createdAt?: string;
     createdBy?: IUser;

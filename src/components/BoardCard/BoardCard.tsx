@@ -1,6 +1,6 @@
 import {useSortable} from '@dnd-kit/sortable';
 import {CSS} from '@dnd-kit/utilities';
-import {ICard, ISubtask} from '../../types/types';
+import {ICard, ISubtask, IEpic} from '../../types/types';
 import styles from './BoardCard.module.scss';
 import "primeicons/primeicons.css";
 import {InputText} from "primereact/inputtext";
@@ -9,8 +9,9 @@ import {InfoSidebar} from "../InfoSidebar/InfoSidebar.tsx";
 import {DefectSidebar} from "../InfoSidebar/DefectSidebar.tsx";
 import {useCard} from "../../hooks/useCard";
 import { useState } from 'react';
+import { EpicSidebar } from "../EpicSidebar/EpicSidebar.tsx";
 
-const BoardCard = ({card, showMenu=true, onCheckClick, onRenameCard, onChangeColor, onDeleteCard, onDuplicateCard, onDateChange, onPriorityChange, onSubtasksChange}: {
+const BoardCard = ({card, showMenu=true, onCheckClick, onRenameCard, onChangeColor, onDeleteCard, onDuplicateCard, onDateChange, onPriorityChange, onSubtasksChange, epics, onEpicChange, onUpdateEpic, onAddEpic}: {
     card: ICard;
     showMenu?:boolean,
     onCheckClick?: (id: string, isDone: boolean) => void;
@@ -21,6 +22,10 @@ const BoardCard = ({card, showMenu=true, onCheckClick, onRenameCard, onChangeCol
     onDateChange?: (cardId: string, startDate: string, endDate: string) => void;
     onPriorityChange?: (cardId: string, priority: 'Важно' | 'Средне' | 'Незначительно') => void;
     onSubtasksChange?: (cardId: string, subtasks: ISubtask[]) => void;
+    epics: IEpic[];
+    onEpicChange?: (cardId: string, epicId: string | null) => void;
+    onUpdateEpic?: (epicId: string, updates: Partial<IEpic>) => void;
+    onAddEpic?: () => IEpic;
 }) => {
     const {
         attributes,
@@ -55,6 +60,8 @@ const BoardCard = ({card, showMenu=true, onCheckClick, onRenameCard, onChangeCol
     });
 
     const [showSubtasks, setShowSubtasks] = useState(false);
+    const [showEpicSidebar, setShowEpicSidebar] = useState(false);
+    const [selectedEpic, setSelectedEpic] = useState<IEpic | null>(null);
 
     const formatDate = (date: string) => {
         return date.split('.')[0] + '.' + date.split('.')[1];
@@ -118,6 +125,29 @@ const BoardCard = ({card, showMenu=true, onCheckClick, onRenameCard, onChangeCol
 										{card.title}{' '}
 										<span style={{ fontSize: '0.9em' }}>#{card.id}</span>
 									</h3>
+																	{/* Epic tag */}
+								{card.epicId && (
+									<div className={styles.epicContainer}>
+										{epics.find(epic => epic.id === card.epicId) && (
+											<div 
+												className={styles.epicTag}
+												style={{ 
+													backgroundColor: epics.find(epic => epic.id === card.epicId)?.color || '#e3e3e3'
+												}}
+												onClick={(e) => {
+													e.stopPropagation();
+													const epic = epics.find(epic => epic.id === card.epicId);
+													if (epic) {
+														setSelectedEpic(epic);
+														setShowEpicSidebar(true);
+													}
+												}}
+											>
+												{epics.find(epic => epic.id === card.epicId)?.title}
+											</div>
+										)}
+									</div>
+								)}
 								</div>
 								{(card.startDate || card.endDate || card.priority) && (
 									<div className={styles.cardMetadata}>
@@ -216,7 +246,9 @@ const BoardCard = ({card, showMenu=true, onCheckClick, onRenameCard, onChangeCol
 									onRename={handleRenameClick}
 									onDelete={() => onDeleteCard?.(card.id)}
 									onDuplicate={() => onDuplicateCard?.(card.id)}
-								/>
+									epics={epics}
+									onEpicSelect={(epicId) => onEpicChange?.(card.id, epicId)}
+									onAddEpic={onAddEpic}/>
 							</div>
 						)}
 					</div>
@@ -251,6 +283,18 @@ const BoardCard = ({card, showMenu=true, onCheckClick, onRenameCard, onChangeCol
 						createdAt={card.createdAt}
 						subtasks={card.subtasks}
 						onSubtasksChange={handleSubtasksChange}
+					/>
+				)}
+				{selectedEpic && (
+					<EpicSidebar
+						epic={selectedEpic}
+						visible={showEpicSidebar}
+						onHide={() => setShowEpicSidebar(false)}
+						onUpdate={(updates) => {
+							if (onUpdateEpic && selectedEpic) {
+								onUpdateEpic(selectedEpic.id, updates);
+							}
+						}}
 					/>
 				)}
 			</>

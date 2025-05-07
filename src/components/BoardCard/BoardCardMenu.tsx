@@ -16,21 +16,21 @@ interface BoardCardMenuProps {
     onDuplicate: () => void;
     onEpicSelect?: (epicId: string | null) => void;
     epics: IEpic[];
-    onAddEpic?: () => void;
+    onAddEpic?: () => IEpic;
 }
 
 export const BoardCardMenu = ({
-                                  cardColor,
-                                  onColorChange,
-                                  onDelete,
-                                  onRename,
+    cardColor,
+    onColorChange,
+    onDelete,
+    onRename,
     onDuplicate,
     onEpicSelect,
     epics,
     onAddEpic
-                              }: BoardCardMenuProps) => {
+}: BoardCardMenuProps) => {
     const menuRef = useRef<Menu>(null);
-    const [showEpicDropdown, setShowEpicDropdown] = useState(false);
+    const [selectedEpicId, setSelectedEpicId] = useState<string | null>(null);
     const [selectedEpic, setSelectedEpic] = useState<IEpic | null>(null);
     const [showEpicSidebar, setShowEpicSidebar] = useState(false);
 
@@ -42,69 +42,102 @@ export const BoardCardMenu = ({
         ...epics.map(epic => ({
             label: epic.title,
             value: epic.id,
-            style: { color: epic.color }
+            color: epic.color
         })),
         {
-            label: 'Добавить эпик',
+            label: 'Создать эпик',
             value: 'add',
             icon: 'pi pi-plus'
         }
     ];
 
-    const handleEpicChange = (e: { value: string }) => {
-        if (e.value === 'add') {
-            onAddEpic?.();
-        } else {
-            const epic = epics.find(epic => epic.id === e.value);
-            if (epic) {
-                setSelectedEpic(epic);
-                setShowEpicSidebar(true);
-                onEpicSelect?.(epic.id);
-            }
+    const epicItemTemplate = (option: any) => {
+        if (option.value === 'add') {
+            return (
+                <span style={{ display: 'flex', alignItems: 'center' }}>
+                    <i className="pi pi-plus" style={{ marginRight: 8 }} />
+                    {option.label}
+                </span>
+            );
         }
-        setShowEpicDropdown(false);
+        return (
+            <span style={{ display: 'flex', alignItems: 'center' }}>
+                <span style={{
+                    width: 14,
+                    height: 14,
+                    borderRadius: '50%',
+                    background: option.color,
+                    display: 'inline-block',
+                    marginRight: 8,
+                    border: '1px solid rgba(0,0,0,0.1)'
+                }} />
+                {option.label}
+            </span>
+        );
     };
 
-    const handleEpicSelect = (e: React.MouseEvent) => {
-        setShowEpicDropdown(true);
-        menuRef.current?.toggle(e);
+    const handleEpicChange = (e: { value: string | null }) => {
+        if (e.value === 'add') {
+            const newEpic = onAddEpic?.();
+            if (newEpic) {
+                setSelectedEpicId(newEpic.id);
+                setSelectedEpic(newEpic);
+                setShowEpicSidebar(true);
+                onEpicSelect?.(newEpic.id);
+            }
+        } else {
+            setSelectedEpicId(e.value);
+            const epic = e.value ? epics.find(epic => epic.id === e.value) || null : null;
+            setSelectedEpic(epic);
+            onEpicSelect?.(e.value); // Здесь передаем либо ID эпика, либо null
+        }
     };
 
     const items: MenuItem[] = [
-                {
-                    label: 'Выбрать эпик',
-                    icon: 'pi pi-flag',
-            command: (e) => handleEpicSelect(e.originalEvent as React.MouseEvent)
-                },
-                {
-                    label: 'Переименовать',
-                    icon: 'pi pi-pencil',
-                    command: onRename
-                },
-                {
-                    label: 'Дублировать',
-                    icon: 'pi pi-copy',
-                    command: onDuplicate
-                },
-                {
-                    label: 'Цвет карточки',
-                    icon: 'pi pi-palette',
-                    template: () => (
-                        <div className="p-2" style={{padding: '0 12px 12px 12px'}}>
-                            <p>Цвет карточки</p>
-                            <ColorPicker
-                                value={normalizeColor(cardColor)}
-                                onChange={(e) => onColorChange(`#${e.value}80`)}
-                                format="hex"
-                            />
-                            <p>{cardColor}</p>
-                        </div>
-                    )
-                },
-                {
-                    label: 'Убрать в архив',
-                    icon: 'pi pi-box',
-                    command: onDelete
+        {
+            label: 'Эпик',
+            icon: 'pi pi-flag',
+            template: () => (
+                <Dropdown
+                    value={selectedEpicId}
+                    options={epicOptions}
+                    onChange={handleEpicChange}
+                    placeholder="Выбрать эпик"
+                    itemTemplate={epicItemTemplate}
+                    showClear
+                    style={{margin: '10px'}}
+                />
+            )
+        },
+        {
+            label: 'Переименовать',
+            icon: 'pi pi-pencil',
+            command: onRename
+        },
+        {
+            label: 'Дублировать',
+            icon: 'pi pi-copy',
+            command: onDuplicate
+        },
+        {
+            label: 'Цвет карточки',
+            icon: 'pi pi-palette',
+            template: () => (
+                <div className="p-2" style={{padding: '0 12px 12px 12px'}}>
+                    <p>Цвет карточки</p>
+                    <ColorPicker
+                        value={normalizeColor(cardColor)}
+                        onChange={(e) => onColorChange(`#${e.value}80`)}
+                        format="hex"
+                    />
+                    <p>{cardColor}</p>
+                </div>
+            )
+        },
+        {
+            label: 'Убрать в архив',
+            icon: 'pi pi-box',
+            command: onDelete
         }
     ];
 
@@ -116,43 +149,14 @@ export const BoardCardMenu = ({
                 style={{ color: 'var(--text-color)' }}
             />
             <Menu model={items} popup ref={menuRef} id="card_menu"/>
-            {showEpicDropdown && (
-                <div className="p-dialog-mask p-component-overlay">
-                    <div className="p-dialog p-component" style={{
-                        position: 'absolute',
-                        top: '50%',
-                        left: '50%',
-                        transform: 'translate(-50%, -50%)',
-                        minWidth: '300px'
-                    }}>
-                        <div className="p-dialog-header">
-                            <h3 className="p-dialog-title">Выберите эпик</h3>
-                            <button 
-                                className="p-dialog-header-icon p-dialog-header-close p-link" 
-                                onClick={() => setShowEpicDropdown(false)}
-                                aria-label="Close"
-                            >
-                                <span className="p-dialog-header-close-icon pi pi-times"></span>
-                            </button>
-                        </div>
-                        <div className="p-dialog-content">
-                            <Dropdown
-                                value={null}
-                                options={epicOptions}
-                                onChange={handleEpicChange}
-                                placeholder="Выберите эпик"
-                                className="w-full"
-                                showClear
-                            />
-                        </div>
-                    </div>
-                </div>
-            )}
             {selectedEpic && (
                 <EpicSidebar
                     epic={selectedEpic}
                     visible={showEpicSidebar}
                     onHide={() => setShowEpicSidebar(false)}
+                    onUpdate={(updates) => {
+                        // Можно добавить обновление эпика, если нужно
+                    }}
                 />
             )}
         </>
