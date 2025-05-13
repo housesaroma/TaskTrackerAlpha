@@ -48,7 +48,6 @@ export const Column = ({
                            onSubtasksChange,
                            onEpicChange,
                            epics,
-                           onAddEpic,
                            onUpdateEpic,
                            getNextId
                        }: ColumnProps) => {
@@ -138,7 +137,6 @@ export const Column = ({
                                 onSubtasksChange={onSubtasksChange}
                                 onEpicChange={onEpicChange}
                                 epics={epics}
-                                onAddEpic={onAddEpic}
                                 onUpdateEpic={onUpdateEpic}
                             />
                         ))

@@ -1,11 +1,11 @@
-import {Sidebar} from 'primereact/sidebar';
+import { Sidebar } from 'primereact/sidebar';
 import { Calendar } from 'primereact/calendar';
 import { ColorPicker, ColorPickerChangeEvent } from 'primereact/colorpicker';
 import { InputText } from 'primereact/inputtext';
 import styles from './EpicSidebar.module.scss';
-import {useState, useEffect, useRef} from "react";
-import {EditableDescription} from "../InfoSidebar/EditableDescription/EditableDescription.tsx";
-import {EditableSummary} from "../InfoSidebar/EditableSummary/EditableSummary.tsx";
+import { useState, useEffect, useRef } from "react";
+import { EditableDescription } from "../InfoSidebar/EditableDescription/EditableDescription.tsx";
+import { EditableSummary } from "../InfoSidebar/EditableSummary/EditableSummary.tsx";
 import "primeicons/primeicons.css";
 
 interface EpicSidebarProps {
@@ -41,15 +41,25 @@ export const EpicSidebar = ({ epic, visible, onHide, onUpdate }: EpicSidebarProp
     const [newTitle, setNewTitle] = useState(epic.title);
     const titleInputRef = useRef<HTMLInputElement>(null);
 
+    // Добавляем useEffect для синхронизации состояния
     useEffect(() => {
+        setDescription(epic.description || '');
+        setSummary(epic.summary || '');
+        setColor(epic.color || '#e3e3e3');
+        setNewTitle(epic.title);
+
+        console.log(epic.color);
+
         if (epic.startDate && epic.endDate) {
             const parseDate = (dateStr: string) => {
                 const [day, month, year] = dateStr.split('.').map(Number);
                 return new Date(2000 + year, month - 1, day);
             };
             setDateRange([parseDate(epic.startDate), parseDate(epic.endDate)]);
+        } else {
+            setDateRange(null);
         }
-    }, [epic.startDate, epic.endDate]);
+    }, [epic]);
 
     useEffect(() => {
         if (isEditingTitle && titleInputRef.current) {
@@ -92,7 +102,14 @@ export const EpicSidebar = ({ epic, visible, onHide, onUpdate }: EpicSidebarProp
     const handleColorChange = (e: ColorPickerChangeEvent) => {
         const newColor = e.value as string;
         setColor(newColor);
-        onUpdate({ color: newColor });
+        onUpdate({ 
+            color: newColor,
+            title: newTitle,
+            description,
+            summary,
+            startDate: epic.startDate,
+            endDate: epic.endDate
+        });
     };
 
     const handleDateChange = (e: { value: any }) => {
@@ -103,14 +120,19 @@ export const EpicSidebar = ({ epic, visible, onHide, onUpdate }: EpicSidebarProp
             const formatDate = (date: Date) => {
                 return `${date.getDate().toString().padStart(2, '0')}.${(date.getMonth() + 1).toString().padStart(2, '0')}.${(date.getFullYear() - 2000).toString().padStart(2, '0')}`;
             };
-
+    
             const newStartDate = formatDate(dates[0]);
             const newEndDate = formatDate(dates[1]);
-            onUpdate({ startDate: newStartDate, endDate: newEndDate });
+            onUpdate({ 
+                startDate: newStartDate, 
+                endDate: newEndDate 
+            });
         } else {
-            onUpdate({ startDate: '', endDate: '' });
+            onUpdate({ 
+                startDate: '', 
+                endDate: '' 
+            });
         }
-        setShowCalendar(false);
     };
 
     const formatDisplayDate = () => {
@@ -139,16 +161,16 @@ export const EpicSidebar = ({ epic, visible, onHide, onUpdate }: EpicSidebarProp
                     />
                 ) : (
                     <h3 className={styles.name} onClick={handleTitleClick}>
-                        {epic.title} <span style={{fontSize: '0.9em'}}>#{epic.id}</span>
+                        {epic.title} <span style={{ fontSize: '0.9em' }}>#{epic.id}</span>
                     </h3>
                 )}
-                
+
                 <div className={styles.tabContent}>
                     <EditableSummary
                         summary={summary}
                         onSave={handleSummarySave}
                     />
-                    
+
                     <EditableDescription
                         description={description}
                         onSave={handleDescriptionSave}
@@ -161,8 +183,8 @@ export const EpicSidebar = ({ epic, visible, onHide, onUpdate }: EpicSidebarProp
                                 <span>Создано: {epic.createdAt}</span>
                             </div>
                         )}
-                        <div 
-                            className={styles.dates} 
+                        <div
+                            className={styles.dates}
                             onClick={() => setShowCalendar(true)}
                         >
                             <i className="pi pi-calendar" />
@@ -184,7 +206,7 @@ export const EpicSidebar = ({ epic, visible, onHide, onUpdate }: EpicSidebarProp
                             </div>
                         )}
                     </div>
-                    
+
                     <div className={styles.colorSection}>
                         <h3>Цвет</h3>
                         <ColorPicker

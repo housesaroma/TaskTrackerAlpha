@@ -92,6 +92,26 @@ const BoardCard = ({card, showMenu=true, onCheckClick, onRenameCard, onChangeCol
         }
     };
 
+	const handleEpicSidebarUpdate = (updates: Partial<IEpic>) => {
+		if (selectedEpic) {
+			// Обновляем локальное состояние
+			setSelectedEpic({...selectedEpic, ...updates});
+			
+			// Обновляем глобальное состояние
+			if (onUpdateEpic) {
+				onUpdateEpic(selectedEpic.id, updates);
+			}
+			
+			// Принудительно обновляем цвет в карточке
+			if (updates.color && card.epicId === selectedEpic.id) {
+				const updatedEpics = epics.map(epic => 
+					epic.id === selectedEpic.id ? {...epic, color: updates.color!} : epic
+				);
+				// Если нужно, можно передать обновленные эпики в родительский компонент
+			}
+		}
+	};
+
     return (
 			<>
 				<div
@@ -290,11 +310,7 @@ const BoardCard = ({card, showMenu=true, onCheckClick, onRenameCard, onChangeCol
 						epic={selectedEpic}
 						visible={showEpicSidebar}
 						onHide={() => setShowEpicSidebar(false)}
-						onUpdate={(updates) => {
-							if (onUpdateEpic && selectedEpic) {
-								onUpdateEpic(selectedEpic.id, updates);
-							}
-						}}
+						onUpdate={handleEpicSidebarUpdate}
 					/>
 				)}
 			</>

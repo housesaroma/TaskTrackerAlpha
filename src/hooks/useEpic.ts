@@ -22,9 +22,16 @@ export const useEpic = () => {
     };
 
     const handleUpdateEpic = (epicId: string, updates: Partial<IEpic>) => {
-        setEpics(prev => prev.map(epic => 
-            epic.id === epicId ? { ...epic, ...updates } : epic
-        ));
+        setEpics(epics.map(epic => {
+            if (epic.id === epicId) {
+                const updatedEpic = { ...epic, ...updates };
+                if (updates.color) {
+                    updatedEpic.color = updates.color.startsWith('#') ? updates.color : `#${updates.color}`;
+                }
+                return updatedEpic;
+            }
+            return epic;
+        }));
     };
 
     const handleDeleteEpic = (epicId: string) => {
