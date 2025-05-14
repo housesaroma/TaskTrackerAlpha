@@ -23,9 +23,10 @@ export const INITIAL_COLUMNS: IColumn[] = [
 				description:
 					'Подготовить паспорт проекта с описанием архитектуры и используемых технологий',
 				priority: 'Важно',
-				startDate: '12.10.25',
-				endDate: '12.10.25',
+				startDate: '12.08.25',
+				endDate: '19.10.25',
 				createdAt: '18 Мар 2024 14:45',
+				epicId: '1',
 			},
 			{
 				id: '3',
@@ -68,8 +69,9 @@ export const INITIAL_COLUMNS: IColumn[] = [
 				type: 'task',
 				description: 'Исправить критические баги перед релизом версии 1.0.0',
 				startDate: '16.10.25',
-				endDate: '17.10.25',
+				endDate: '17.11.25',
 				createdAt: '25 Мар 2024 11:05',
+				epicId: '2',
 			},
 		],
 	},
@@ -109,6 +111,6 @@ export const INITIAL_EPICS: IEpic[] = [
         description: 'Описание эпика 2',
         startDate: '10.01.25',
         endDate: '10.02.25',
-        color: '#EB28AE',
+        color: '#e84fbb',
     },
 ];

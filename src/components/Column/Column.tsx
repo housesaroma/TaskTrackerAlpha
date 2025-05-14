@@ -26,7 +26,7 @@ interface ColumnProps {
     onSubtasksChange: (cardId: string, subtasks: ISubtask[]) => void;
     onEpicChange: (cardId: string, epicId: string | null) => void;
     epics: IEpic[];
-    onAddEpic: () => void;
+    onAddEpic: () => IEpic;
     onUpdateEpic: (epicId: string, updates: Partial<IEpic>) => void;
     getNextId: () => number;
 }
@@ -48,6 +48,7 @@ export const Column = ({
                            onSubtasksChange,
                            onEpicChange,
                            epics,
+    onAddEpic,
                            onUpdateEpic,
                            getNextId
                        }: ColumnProps) => {
@@ -137,6 +138,7 @@ export const Column = ({
                                 onSubtasksChange={onSubtasksChange}
                                 onEpicChange={onEpicChange}
                                 epics={epics}
+                                onAddEpic={onAddEpic}
                                 onUpdateEpic={onUpdateEpic}
                             />
                         ))

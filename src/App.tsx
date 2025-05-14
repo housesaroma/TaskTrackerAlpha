@@ -18,6 +18,7 @@ import Metrics from './pages/Metrics/Metrics.tsx'
 import MyTasks from './pages/MyTasks/MyTasks.tsx'
 import AuthenticatedLayout from './components/AuthenticatedLayout/AuthenticatedLayout.tsx'
 import EisenhowerMatrix from './components/Matrix/matrix.tsx'
+import GanttChart from "./components/GanttChart/GanttChart.tsx";
 
 function AppContent() {
 	const dispatch = useDispatch()
@@ -54,6 +55,7 @@ function AppContent() {
 					<Route path='/metrics' element={<Metrics />} />
 					<Route path='/mytasks' element={<MyTasks />} />
 					<Route path='/matrix' element={<EisenhowerMatrix />} />
+					<Route path='/gantt' element={<GanttChart />} />
 				</Route>
 
 				<Route path='*' element={<div>404 Not Found</div>} />
