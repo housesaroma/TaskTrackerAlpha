@@ -9,6 +9,7 @@ interface AuthenticatedLayoutProps {
 }
 
 const AuthenticatedLayout: FC<AuthenticatedLayoutProps> = ({children, onThemeToggle}) => {
+
     return (
         <div className={styles.layout}>
             <div className={styles.header}>

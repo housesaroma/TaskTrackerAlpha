@@ -1,16 +1,21 @@
+import {useEffect, useRef, useState} from 'react';
+import {useSelector} from 'react-redux';
+import {RootState} from '../../store';
 import styles from './GanttChart.module.scss';
-import { useEffect, useRef, useState } from 'react';
 import * as am5 from '@amcharts/amcharts5';
 import * as am5xy from '@amcharts/amcharts5/xy';
 import am5themes_Animated from '@amcharts/amcharts5/themes/Animated';
-import { INITIAL_COLUMNS, INITIAL_EPICS } from '../../constants/mock-data';
+import am5themes_Dark from '@amcharts/amcharts5/themes/Dark';
+import {INITIAL_COLUMNS, INITIAL_EPICS} from '../../constants/mock-data';
 import am5locales_ru_RU from "@amcharts/amcharts5/locales/ru_RU";
 
-interface GanttChartProps {}
+interface GanttChartProps {
+}
 
 const GanttChart = ({}: GanttChartProps) => {
     const chartRef = useRef<am5.Root | null>(null);
     const [expandedEpics, setExpandedEpics] = useState<Record<string, boolean>>({});
+    const currentTheme = useSelector((state: RootState) => state.theme.currentTheme);
 
     const toggleEpic = (epicId: string) => {
         setExpandedEpics(prev => ({
@@ -30,8 +35,13 @@ const GanttChart = ({}: GanttChartProps) => {
             dateFields: ['valueX', 'openValueX'],
         });
 
-        // Set themes
-        root.setThemes([am5themes_Animated.new(root)]);
+        if (currentTheme === 'light') {
+            root.setThemes([am5themes_Animated.new(root)]);
+
+        } else {
+            root.setThemes([am5themes_Animated.new(root), am5themes_Dark.new(root)]);
+        }
+
 
         // Create chart
         const chart = root.container.children.push(
@@ -131,7 +141,7 @@ const GanttChart = ({}: GanttChartProps) => {
 
         const xAxis = chart.xAxes.push(
             am5xy.DateAxis.new(root, {
-                baseInterval: { timeUnit: 'minute', count: 1 },
+                baseInterval: {timeUnit: 'minute', count: 1},
                 renderer: am5xy.AxisRendererX.new(root, {
                     strokeOpacity: 0.1,
                     minorGridEnabled: true,
@@ -169,7 +179,7 @@ const GanttChart = ({}: GanttChartProps) => {
         series.data.setAll(filteredData);
 
         // Add scrollbars
-        chart.set('scrollbarX', am5.Scrollbar.new(root, { orientation: 'horizontal' }));
+        chart.set('scrollbarX', am5.Scrollbar.new(root, {orientation: 'horizontal'}));
 
         // Make stuff animate on load
         series.appear();
@@ -182,7 +192,7 @@ const GanttChart = ({}: GanttChartProps) => {
                 chartRef.current.dispose();
             }
         };
-    }, [expandedEpics]);
+    }, [expandedEpics, currentTheme]);
 
     return (
         <div className={styles.container}>
@@ -192,7 +202,7 @@ const GanttChart = ({}: GanttChartProps) => {
                         key={epic.id}
                         className={styles.epicItem}
                         onClick={() => toggleEpic(epic.id)}
-                        style={{ borderLeft: `4px solid ${epic.color}` }}
+                        style={{borderLeft: `4px solid ${epic.color}`}}
                     >
                         <div className={styles.epicTitle}>
                             {epic.title}
@@ -205,7 +215,7 @@ const GanttChart = ({}: GanttChartProps) => {
                 <div
                     className={styles.epicItem}
                     onClick={() => toggleEpic('no-epic')}
-                    style={{ borderLeft: '4px solid #CCCCCC' }}
+                    style={{borderLeft: '4px solid #CCCCCC'}}
                 >
                     <div className={styles.epicTitle}>
                         Без эпика
