@@ -35,11 +35,6 @@ const NavigationPanel = ({onThemeToggle}: NavigationPanelProps) => {
             icon: 'pi pi-comments',
             command: () => navigate('/chats')
         },
-        {
-            label: 'Метрики',
-            icon: 'pi pi-chart-line',
-            command: () => navigate('/metrics')
-        },
     ];
 
     return (

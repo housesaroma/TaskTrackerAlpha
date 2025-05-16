@@ -14,6 +14,9 @@ export const INITIAL_COLUMNS: IColumn[] = [
 				description:
 					'Создать макеты основных экранов приложения в Figma, включая светлую и темную темы',
 				createdAt: '15 Мар 2024 10:30',
+				startDate: '12.08.25',
+				endDate: '19.10.25',
+				epicId: '2',
 			},
 			{
 				id: '2',
@@ -37,8 +40,9 @@ export const INITIAL_COLUMNS: IColumn[] = [
 					'Провести анализ конкурентов и составить отчет по ключевым метрикам',
 				priority: 'Средне',
 				startDate: '10.05.25',
-				endDate: '10.09.25',
+				endDate: '15.05.25',
 				createdAt: '20 Мар 2024 09:15',
+				epicId: '1',
 			},
 		],
 	},
@@ -50,6 +54,8 @@ export const INITIAL_COLUMNS: IColumn[] = [
 			{
 				id: '4',
 				title: 'Документирование',
+				description:
+					'Провести документирование',
 				isDone: false,
 				type: 'task',
 				priority: 'Средне',

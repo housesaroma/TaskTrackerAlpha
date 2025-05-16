@@ -1,0 +1,14 @@
+.viewSwitcher {
+  display: flex;
+  gap: 8px;
+  padding: 8px;
+  background: var(--surface-b);
+  border-radius: 4px;
+  margin-bottom: 8px;
+
+  > [class~="p-button"] {
+    background: var(--text-color);
+    border: none;
+    box-shadow: none;
+  }
+}

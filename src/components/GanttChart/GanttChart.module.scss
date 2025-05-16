@@ -1,28 +1,30 @@
 .container {
   display: flex;
   width: 100%;
-  height: 100%;
+  height: 40vh;
 }
 
 .sidebar {
   width: 250px;
-  background: #f5f5f5;
-  border-right: 1px solid #e0e0e0;
+  background: var(--surface-b); // Фон сайдбара (адаптируется под тему)
+  border-right: 1px solid var(--surface-d); // Граница (адаптируется под тему)
   overflow-y: auto;
 }
 
 .chartContainer {
   flex: 1;
   height: 100%;
+  margin: 0 32px;
 }
 
 .epicItem {
   padding: 12px 16px;
   cursor: pointer;
   transition: background-color 0.2s;
+  color: var(--text-color); // Цвет текста (адаптируется под тему)
 
   &:hover {
-    background-color: #ebebeb;
+    background-color: var(--surface-c); // Цвет при наведении
   }
 }
 

@@ -37,7 +37,10 @@ export const useCard = (
 
     const handleTitleChange = useCallback(
         (e: React.ChangeEvent<HTMLInputElement>) => {
-            setNewTitle(e.target.value);
+            const maxLength = 15; // Максимальная длина текста
+            if (e.target.value.length <= maxLength) {
+                setNewTitle(e.target.value);
+            }
         },
         []
     );
