@@ -104,9 +104,9 @@ const BoardCard = ({card, showMenu=true, onCheckClick, onRenameCard, onChangeCol
 			
 			// Принудительно обновляем цвет в карточке
 			if (updates.color && card.epicId === selectedEpic.id) {
-				const updatedEpics = epics.map(epic => 
-					epic.id === selectedEpic.id ? {...epic, color: updates.color!} : epic
-				);
+				// const updatedEpics = epics.map(epic =>
+				// 	epic.id === selectedEpic.id ? {...epic, color: updates.color!} : epic
+				// );
 				// Если нужно, можно передать обновленные эпики в родительский компонент
 			}
 		}
@@ -148,7 +148,7 @@ const BoardCard = ({card, showMenu=true, onCheckClick, onRenameCard, onChangeCol
 																	{/* Epic tag */}
 								{card.epicId && (
 									<div className={styles.epicContainer}>
-										{epics.find(epic => epic.id === card.epicId) && (
+										{epics?.find(epic => epic.id === card.epicId) && (
 											<div 
 												className={styles.epicTag}
 												style={{ 
