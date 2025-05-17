@@ -9,7 +9,14 @@ const mockColumns: IColumn[] = INITIAL_COLUMNS.filter(
 	column => column.id === 'to-do' || column.id === 'in-work'
 )
 
-const EisenhowerMatrix: React.FC = () => {
+interface EisenhowerMatrixProps {
+	boardId: string;
+}
+
+const EisenhowerMatrix: React.FC<EisenhowerMatrixProps> = ({boardId}) => {
+
+	console.log(boardId);
+
 	// Собираем все задачи из всех колонок
 	const allCards: ICard[] = mockColumns.reduce((acc: ICard[], column) => {
 		return [...acc, ...column.cards]

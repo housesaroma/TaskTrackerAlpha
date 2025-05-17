@@ -17,9 +17,13 @@ const dropAnimationConfig = {
     }),
 };
 
-const Board = () => {
+interface BoardProps {
+    boardId: string;
+}
+
+const Board = ({ boardId }: BoardProps) => {
     const { getNextId } = useCardId();
-    const { epics, handleAddEpic, handleUpdateEpic, handleDeleteEpic } = useEpic();
+    const { epics, handleAddEpic, handleUpdateEpic } = useEpic();
     const {
         columns,
         activeCard,
@@ -41,7 +45,7 @@ const Board = () => {
         handlePriorityChange,
         handleSubtasksChange,
         handleEpicChange
-    } = useBoard(getNextId);
+    } = useBoard(getNextId, boardId);
 
     const handleAddNewEpic = () => {
         const newEpic = handleAddEpic();

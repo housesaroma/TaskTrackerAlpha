@@ -41,21 +41,23 @@ function AppContent() {
 			<Routes>
 				<Route path='/login' element={<Login />} />
 				<Route path='/register' element={<Register />} />
-				<Route path='/' element={<Navigate to='/main' />} />
+				<Route path='/' element={<Navigate to='/main/1' replace />} />
 
-				<Route
-					element={
-						<AuthenticatedLayout onThemeToggle={handleThemeChange}>
-							<Outlet />
-						</AuthenticatedLayout>
-					}
-				>
-					<Route path='/main' element={<Main />} />
+				{/* Общий layout для всех страниц */}
+				<Route element={
+					<AuthenticatedLayout onThemeToggle={handleThemeChange}>
+						<Outlet />
+					</AuthenticatedLayout>
+				}>
+					{/* Основные маршруты */}
+					<Route path='/main/:boardId' element={<Main />} />
 					<Route path='/chats' element={<Chats />} />
-					<Route path='/metrics' element={<Metrics />} />
 					<Route path='/mytasks' element={<MyTasks />} />
-					<Route path='/matrix' element={<EisenhowerMatrix />} />
-					<Route path='/gantt' element={<GanttChart />} />
+
+					{/* Маршруты, привязанные к конкретной доске */}
+					<Route path='/gantt/:boardId' element={<GanttChart />} />
+					<Route path='/matrix/:boardId' element={<EisenhowerMatrix />} />
+					<Route path='/metrics/:boardId' element={<Metrics />} />
 				</Route>
 
 				<Route path='*' element={<div>404 Not Found</div>} />

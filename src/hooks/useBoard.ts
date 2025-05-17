@@ -1,10 +1,58 @@
-import {useState} from 'react';
+import {useState, useEffect} from 'react';
 import {DragEndEvent} from '@dnd-kit/core';
 import {ICard, IColumn, ISubtask} from '../types/types.ts';
 import {INITIAL_COLUMNS} from '../constants/mock-data.ts';
 
-export const useBoard = (getNextId?: () => number) => {
-    const [columns, setColumns] = useState<IColumn[]>(INITIAL_COLUMNS);
+export const useBoard = (getNextId?: () => number, boardId?: string) => {
+    const [columns, setColumns] = useState<IColumn[]>(() => {
+        // Создаем начальные колонки для новой доски
+        if (boardId && boardId !== '1') {
+            return [
+                {
+                    id: 'artifacts',
+                    title: 'Артефакты',
+                    color: '#00E8F080',
+                    cards: [],
+                },
+                {
+                    id: 'to-do',
+                    title: 'Новые задачи',
+                    color: '#EF312480',
+                    cards: [],
+                },
+                {
+                    id: 'in-work',
+                    title: 'В работе',
+                    color: '#FA931980',
+                    cards: [],
+                },
+                {
+                    id: 'done',
+                    title: 'Готово',
+                    color: '#A8F00080',
+                    cards: [],
+                },
+            ];
+        }
+        return INITIAL_COLUMNS;
+    });
+
+    // Сохраняем состояние в localStorage при изменении
+    useEffect(() => {
+        if (boardId) {
+            const savedColumns = localStorage.getItem(`board-${boardId}-columns`);
+            if (savedColumns) {
+                setColumns(JSON.parse(savedColumns));
+            }
+        }
+    }, [boardId]);
+
+    useEffect(() => {
+        if (boardId) {
+            localStorage.setItem(`board-${boardId}-columns`, JSON.stringify(columns));
+        }
+    }, [columns, boardId]);
+
     const [activeCard, setActiveCard] = useState<ICard | null>(null);
     const [activeColumn, setActiveColumn] = useState<IColumn | null>(null);
 

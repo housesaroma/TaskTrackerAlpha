@@ -10,9 +10,11 @@ import {INITIAL_COLUMNS, INITIAL_EPICS} from '../../constants/mock-data';
 import am5locales_ru_RU from "@amcharts/amcharts5/locales/ru_RU";
 
 interface GanttChartProps {
+    boardId: string;
 }
 
-const GanttChart = ({}: GanttChartProps) => {
+
+const GanttChart = ({ boardId }: GanttChartProps) => {
     const chartRef = useRef<am5.Root | null>(null);
     const [expandedEpics, setExpandedEpics] = useState<Record<string, boolean>>({});
     const currentTheme = useSelector((state: RootState) => state.theme.currentTheme);

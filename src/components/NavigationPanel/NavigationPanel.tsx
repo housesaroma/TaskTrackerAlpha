@@ -1,7 +1,7 @@
 import styles from './NavigationPanel.module.scss';
 import {MenuItem} from "primereact/menuitem";
 import {Button} from "primereact/button";
-import {useNavigate} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import {useSelector} from "react-redux";
 import {RootState} from "../../store.ts";
 import {PanelMenu} from "primereact/panelmenu";
@@ -12,6 +12,7 @@ interface NavigationPanelProps {
 
 const NavigationPanel = ({onThemeToggle}: NavigationPanelProps) => {
     const navigate = useNavigate();
+    const { boardId } = useParams<{ boardId: string }>();
     const currentTheme = useSelector((state: RootState) => state.theme.currentTheme);
 
     const items: MenuItem[] = [
@@ -26,7 +27,7 @@ const NavigationPanel = ({onThemeToggle}: NavigationPanelProps) => {
             items: [
                 {
                     label: 'Chill Team',
-                    command: () => navigate('/main')
+                    command: () => navigate(boardId ? `/main/${boardId}` : '/main/1')
                 },
             ]
         },
