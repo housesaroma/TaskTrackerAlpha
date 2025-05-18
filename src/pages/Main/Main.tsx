@@ -2,10 +2,10 @@ import { useParams } from 'react-router-dom';
 import Board from "../../components/Board/Board.tsx";
 
 const Main = () => {
-    const { boardId } = useParams<{ boardId: string }>();
+    const { projectId, boardId } = useParams<{ projectId: string; boardId: string; }>();
 
     return <div>
-        <Board boardId={boardId || '1'} />
+        <Board boardId={boardId || '1'} projectId={projectId || '1'}/>
     </div>
 };
 

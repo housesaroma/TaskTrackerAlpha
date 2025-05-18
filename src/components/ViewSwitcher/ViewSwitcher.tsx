@@ -4,7 +4,8 @@ import styles from './ViewSwitcher.module.scss';
 
 const ViewSwitcher = () => {
     const navigate = useNavigate();
-    const { boardId } = useParams<{ boardId: string }>();
+    const { projectId, boardId } = useParams<{ projectId: string; boardId: string }>();
+    const currentProjectId = projectId || '1';
     const currentBoardId = boardId || '1';
 
     return (
@@ -12,25 +13,25 @@ const ViewSwitcher = () => {
             <Button
                 label="Доска"
                 icon="pi pi-table"
-                onClick={() => navigate(`/main/${currentBoardId}`)}
+                onClick={() => navigate(`/${currentProjectId}/main/${currentBoardId}`)}
                 className={styles.button}
             />
             <Button
                 label="По Ганту"
                 icon="pi pi-chart-bar"
-                onClick={() => navigate(`/gantt/${currentBoardId}`)}
+                onClick={() => navigate(`/${currentProjectId}/gantt/${currentBoardId}`)}
                 className={styles.button}
             />
             <Button
                 label="Матрица Эйзенхауэра"
                 icon="pi pi-th-large"
-                onClick={() => navigate(`/matrix/${currentBoardId}`)}
+                onClick={() => navigate(`/${currentProjectId}/matrix/${currentBoardId}`)}
                 className={styles.button}
             />
             <Button
                 label="Метрики"
                 icon="pi pi-chart-line"
-                onClick={() => navigate(`/metrics/${currentBoardId}`)}
+                onClick={() => navigate(`/${currentProjectId}/metrics/${currentBoardId}`)}
                 className={styles.button}
             />
         </div>

@@ -18,10 +18,11 @@ const dropAnimationConfig = {
 };
 
 interface BoardProps {
+    projectId: string;
     boardId: string;
 }
 
-const Board = ({ boardId }: BoardProps) => {
+const Board = ({ projectId, boardId }: BoardProps) => {
     const { getNextId } = useCardId();
     const { epics, handleAddEpic, handleUpdateEpic } = useEpic();
     const {

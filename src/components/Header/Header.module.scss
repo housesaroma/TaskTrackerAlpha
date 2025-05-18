@@ -122,4 +122,23 @@ header {
     border: var(--text-color) 1px solid;
     box-shadow: none;
   }
+
+  .dialogContent {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+
+    .p-inputtext {
+      width: 100%;
+      margin-bottom: 1rem;
+    }
+
+    .p-button {
+      width: 100%;
+    }
+  }
+
+  .saveButton {
+    margin-top: 1rem;
+  }
 }

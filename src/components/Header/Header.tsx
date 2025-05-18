@@ -1,7 +1,7 @@
 import '../../styles/typography.scss';
-import styles from './Header.module.scss'
+import styles from './Header.module.scss';
 import {Avatar} from "primereact/avatar";
-import icon from '../../assets/3.png'
+import icon from '../../assets/3.png';
 import {useSelector} from "react-redux";
 import {RootState} from "../../store.ts";
 import {OverlayPanel} from "primereact/overlaypanel";
@@ -22,8 +22,12 @@ const Header = () => {
     const [avatarUrl, setAvatarUrl] = useState(icon);
     const [showAvatarDialog, setShowAvatarDialog] = useState(false);
     const [boards, setBoards] = useState(["Доска 1"]);
-    const { boardId } = useParams<{ boardId: string }>();
+    const { projectId, boardId } = useParams<{ projectId: string; boardId: string }>();
     const currentBoardId = boardId ? parseInt(boardId) : 1;
+
+    // Состояния для диалога создания доски
+    const [showBoardDialog, setShowBoardDialog] = useState(false);
+    const [newBoardName, setNewBoardName] = useState("");
 
     const handleLogout = () => {
         navigate('/login');
@@ -65,16 +69,25 @@ const Header = () => {
         setShowAvatarDialog(false);
     };
 
-    const addNewBoard = () => {
-        const newBoardName = `Доска ${boards.length + 1}`;
-        const newBoardId = boards.length + 1;
-        setBoards([...boards, newBoardName]);
-        // Навигация на новую доску
-        navigate(`/main/${newBoardId}`);
+    const openAddBoardDialog = () => {
+        setNewBoardName(`Доска ${boards.length + 1}`);
+        setShowBoardDialog(true);
+    };
+
+    const handleAddBoard = () => {
+        if (newBoardName.trim() && projectId) {
+            const newBoardId = boards.length + 1;
+            setBoards([...boards, newBoardName.trim()]);
+            setShowBoardDialog(false);
+            // Навигация на новую доску
+            navigate(`/${projectId}/main/${newBoardId}`);
+        }
     };
 
     const switchBoard = (index: number) => {
-        navigate(`/main/${index + 1}`);
+        if (projectId) {
+            navigate(`/${projectId}/main/${index + 1}`);
+        }
     };
 
     return (
@@ -95,10 +108,34 @@ const Header = () => {
                 <Button
                     className={styles.addBoardButton}
                     icon="pi pi-plus"
-                    onClick={addNewBoard}
+                    onClick={openAddBoardDialog}
                     rounded
                 />
             </div>
+
+            {/* Диалог создания новой доски */}
+            <Dialog
+                header="Создать новую доску"
+                visible={showBoardDialog}
+                onHide={() => setShowBoardDialog(false)}
+                modal
+                className={styles.dialog}
+            >
+                <div className={styles.dialogContent}>
+                    <InputText
+                        value={newBoardName}
+                        onChange={(e) => setNewBoardName(e.target.value)}
+                        placeholder="Введите название доски"
+                        autoFocus
+                    />
+                    <Button
+                        label="Создать"
+                        onClick={handleAddBoard}
+                        disabled={!newBoardName.trim()}
+                        className={styles.saveButton}
+                    />
+                </div>
+            </Dialog>
 
             <div className={styles.right} onClick={handleProfileClick}>
                 <Avatar shape={"circle"} image={avatarUrl} size={"large"}></Avatar>

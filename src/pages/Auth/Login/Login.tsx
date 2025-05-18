@@ -4,13 +4,10 @@ import { Button } from 'primereact/button';
 import styles from '../Auth.module.scss';
 import { Divider } from 'primereact/divider';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAppDispatch } from '../../../hooks/redux.ts';
-import { login } from '../../../store/auth/authSlice.ts';
 import {useRef, useState} from 'react';
 import { Toast } from 'primereact/toast';
 
 const Login = () => {
-    const dispatch = useAppDispatch();
     const navigate = useNavigate();
     const toast = useRef<Toast>(null);
     const [formData, setFormData] = useState({
@@ -43,7 +40,7 @@ const Login = () => {
                     life: 5000
                 });
 
-                navigate('/main');
+                navigate('/');
             } else {
                 console.log('Login failed, not navigating');
                 setError('Неверные учетные данные'); // Устанавливаем сообщение об ошибке

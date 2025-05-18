@@ -41,7 +41,7 @@ function AppContent() {
 			<Routes>
 				<Route path='/login' element={<Login />} />
 				<Route path='/register' element={<Register />} />
-				<Route path='/' element={<Navigate to='/main/1' replace />} />
+				<Route path='/' element={<Navigate to='/1/main/1' replace />} />
 
 				{/* Общий layout для всех страниц */}
 				<Route element={
@@ -49,15 +49,15 @@ function AppContent() {
 						<Outlet />
 					</AuthenticatedLayout>
 				}>
-					{/* Основные маршруты */}
-					<Route path='/main/:boardId' element={<Main />} />
+					{/* Основные маршруты с проектами */}
+					<Route path='/:projectId/main/:boardId' element={<Main />} />
 					<Route path='/chats' element={<Chats />} />
 					<Route path='/mytasks' element={<MyTasks />} />
 
-					{/* Маршруты, привязанные к конкретной доске */}
-					<Route path='/gantt/:boardId' element={<GanttChart />} />
-					<Route path='/matrix/:boardId' element={<EisenhowerMatrix />} />
-					<Route path='/metrics/:boardId' element={<Metrics />} />
+					{/* Маршруты, привязанные к проекту и доске */}
+					<Route path='/:projectId/gantt/:boardId' element={<GanttChart />} />
+					<Route path='/:projectId/matrix/:boardId' element={<EisenhowerMatrix />} />
+					<Route path='/:projectId/metrics/:boardId' element={<Metrics />} />
 				</Route>
 
 				<Route path='*' element={<div>404 Not Found</div>} />

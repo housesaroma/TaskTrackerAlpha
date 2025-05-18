@@ -10,11 +10,13 @@ const mockColumns: IColumn[] = INITIAL_COLUMNS.filter(
 )
 
 interface EisenhowerMatrixProps {
+	projectId: string;
 	boardId: string;
 }
 
-const EisenhowerMatrix: React.FC<EisenhowerMatrixProps> = ({boardId}) => {
+const EisenhowerMatrix: React.FC<EisenhowerMatrixProps> = ({projectId, boardId}) => {
 
+	console.log(projectId);
 	console.log(boardId);
 
 	// Собираем все задачи из всех колонок

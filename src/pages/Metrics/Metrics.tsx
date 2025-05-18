@@ -5,12 +5,14 @@ import { Calendar } from 'primereact/calendar';
 import "primeicons/primeicons.css";
 
 interface MetricsProps {
+    projectId: string;
     boardId: string;
 }
 
-const Metrics = ({ boardId }: MetricsProps) => {
+const Metrics = ({ projectId, boardId }: MetricsProps) => {
 
     console.log(boardId);
+    console.log(projectId);
 
     const [chartType, setChartType] = useState<'stacked' | 'line'>('stacked');
     const [dateRange, setDateRange] = useState<Date[] | null>(null);
