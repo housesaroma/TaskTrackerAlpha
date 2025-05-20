@@ -1,11 +1,11 @@
+import { useParams } from 'react-router-dom';
 import Board from "../../components/Board/Board.tsx";
 
-interface MyComponentProps {
-}
+const Main = () => {
+    const { projectId, boardId } = useParams<{ projectId: string; boardId: string; }>();
 
-const Main = ({}: MyComponentProps) => {
     return <div>
-        <Board></Board>
+        <Board boardId={boardId || '1'} projectId={projectId || '1'}/>
     </div>
 };
 

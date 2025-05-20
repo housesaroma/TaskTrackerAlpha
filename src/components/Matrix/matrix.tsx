@@ -4,8 +4,14 @@ import Quadrant from './quardrant'
 import styles from './matrix.module.scss'
 import { INITIAL_COLUMNS } from '../../constants/mock-data'
 
-const EisenhowerMatrix: React.FC = () => {
-	// Получаем колонки, исключая колонку 'done'
+
+interface EisenhowerMatrixProps {
+	projectId: string;
+	boardId: string;
+}
+
+const EisenhowerMatrix: React.FC<EisenhowerMatrixProps> = ({projectId, boardId}) => {
+
 	const mockColumns: IColumn[] = React.useMemo(
 		() => INITIAL_COLUMNS.filter(column => column.id !== 'done'),
 		[]

@@ -4,7 +4,16 @@ import styles from './Metrics.module.scss'
 import { Calendar } from 'primereact/calendar';
 import "primeicons/primeicons.css";
 
-const Metrics = () => {
+interface MetricsProps {
+    projectId: string;
+    boardId: string;
+}
+
+const Metrics = ({ projectId, boardId }: MetricsProps) => {
+
+    console.log(boardId);
+    console.log(projectId);
+
     const [chartType, setChartType] = useState<'stacked' | 'line'>('stacked');
     const [dateRange, setDateRange] = useState<Date[] | null>(null);
     const [showCalendar, setShowCalendar] = useState(false);

@@ -48,8 +48,6 @@ export const EpicSidebar = ({ epic, visible, onHide, onUpdate }: EpicSidebarProp
         setColor(epic.color || '#e3e3e3');
         setNewTitle(epic.title);
 
-        console.log(epic.color);
-
         if (epic.startDate && epic.endDate) {
             const parseDate = (dateStr: string) => {
                 const [day, month, year] = dateStr.split('.').map(Number);

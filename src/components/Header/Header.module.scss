@@ -2,27 +2,60 @@ header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 28px 48px;
   margin: 0;
 
   p{
     margin: 0;
   }
 
-  .left, .right {
+  .left, .right, .boards {
     font: var(--text-22-bold);
-    user-select: none; // Запрет выделения текста
-    -webkit-user-select: none; // Для Safari
-    -moz-user-select: none; // Для Firefox
-    -ms-user-select: none; // Для IE/Edge
-    //pointer-events: none; // Запрет всех взаимодействий
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
     cursor: pointer;
+  }
+  .left, .right{
+  padding: 28px 48px;
   }
 
   .right{
     display: flex;
     align-items: center;
     gap: 16px;
+    margin-left: auto;
+  }
+
+  .left{
+    margin-right: 16px;
+  }
+}
+
+.boardButton {
+  border-radius: 12px 12px 0 0 !important;
+  border-bottom: none !important;
+  padding: 8px 16px !important;
+  background-color: var(--surface-ground) !important;
+
+  &:hover {
+    background-color: var(--surface-hover) !important;
+  }
+}
+
+.activeBoard {
+  background-color: var(--surface-card) !important;
+  font-weight: bold !important;
+}
+
+.addBoardButton {
+  border-radius: 12px 12px 0 0 !important;
+  border-bottom: none !important;
+  padding: 8px !important;
+  background-color: var(--surface-ground) !important;
+
+  &:hover {
+    background-color: var(--surface-hover) !important;
   }
 }
 
@@ -76,3 +109,36 @@ header {
   }
 }
 
+.boards {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  border: #0b5ed7;
+  margin-top: auto;
+
+  > [class~="p-button"] {
+    color: var(--text-color);
+    background: var(--surface-ground);
+    border: var(--text-color) 1px solid;
+    box-shadow: none;
+  }
+
+  .dialogContent {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+
+    .p-inputtext {
+      width: 100%;
+      margin-bottom: 1rem;
+    }
+
+    .p-button {
+      width: 100%;
+    }
+  }
+
+  .saveButton {
+    margin-top: 1rem;
+  }
+}
