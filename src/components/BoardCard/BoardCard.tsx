@@ -22,7 +22,7 @@ const BoardCard = ({card, showMenu=true, onCheckClick, onRenameCard, onChangeCol
     onDateChange?: (cardId: string, startDate: string, endDate: string) => void;
     onPriorityChange?: (cardId: string, priority: 'Важно' | 'Средне' | 'Незначительно') => void;
     onSubtasksChange?: (cardId: string, subtasks: ISubtask[]) => void;
-    epics: IEpic[];
+    epics?: IEpic[];
     onEpicChange?: (cardId: string, epicId: string | null) => void;
     onUpdateEpic?: (epicId: string, updates: Partial<IEpic>) => void;
     onAddEpic?: () => IEpic;
@@ -104,7 +104,7 @@ const BoardCard = ({card, showMenu=true, onCheckClick, onRenameCard, onChangeCol
 			
 			// Принудительно обновляем цвет в карточке
 			if (updates.color && card.epicId === selectedEpic.id) {
-				const updatedEpics = epics.map(epic => 
+				const updatedEpics = epics?.map(epic => 
 					epic.id === selectedEpic.id ? {...epic, color: updates.color!} : epic
 				);
 				// Если нужно, можно передать обновленные эпики в родительский компонент
@@ -266,45 +266,49 @@ const BoardCard = ({card, showMenu=true, onCheckClick, onRenameCard, onChangeCol
 									onRename={handleRenameClick}
 									onDelete={() => onDeleteCard?.(card.id)}
 									onDuplicate={() => onDuplicateCard?.(card.id)}
-									epics={epics}
+									epics={epics || []}
 									onEpicSelect={(epicId) => onEpicChange?.(card.id, epicId)}
 									onAddEpic={onAddEpic}/>
 							</div>
 						)}
 					</div>
 				</div>
-				{card.type === 'defect' ? (
-					<DefectSidebar
-						sidebarName={card.title}
-						sidebarDescription={card.description ?? 'Нет описания'}
-						sidebarSummary={card.summary ?? 'Нет резюме'}
-						visible={sidebarVisible}
-						onHide={handleSidebarHide}
-						cardId={card.id}
-						startDate={card.startDate}
-						endDate={card.endDate}
-						priority={card.priority}
-						createdAt={card.createdAt}
-						onDateChange={(...args) => onDateChange?.(...args)}
-						onPriorityChange={(...args) => onPriorityChange?.(...args)}
-					/>
-				) : (
-					<InfoSidebar
-						sidebarName={card.title}
-						sidebarDescription={card.description ?? 'Нет описания'}
-						visible={sidebarVisible}
-						onHide={handleSidebarHide}
-						cardId={card.id}
-						startDate={card.startDate}
-						endDate={card.endDate}
-						priority={card.priority}
-						onDateChange={(...args) => onDateChange?.(...args)}
-						onPriorityChange={(...args) => onPriorityChange?.(...args)}
-						createdAt={card.createdAt}
-						subtasks={card.subtasks}
-						onSubtasksChange={handleSubtasksChange}
-					/>
-				)}
+
+				{showMenu &&
+					(card.type === 'defect' ? (
+						<DefectSidebar
+							sidebarName={card.title}
+							sidebarDescription={card.description ?? 'Нет описания'}
+							sidebarSummary={card.summary ?? 'Нет резюме'}
+							visible={sidebarVisible}
+							onHide={handleSidebarHide}
+							cardId={card.id}
+							startDate={card.startDate}
+							endDate={card.endDate}
+							priority={card.priority}
+							createdAt={card.createdAt}
+							onDateChange={(...args) => onDateChange?.(...args)}
+							onPriorityChange={(...args) => onPriorityChange?.(...args)}
+						/>
+					) : (
+						<InfoSidebar
+							sidebarName={card.title}
+							sidebarDescription={card.description ?? 'Нет описания'}
+							visible={sidebarVisible}
+							onHide={handleSidebarHide}
+							cardId={card.id}
+							startDate={card.startDate}
+							endDate={card.endDate}
+							priority={card.priority}
+							onDateChange={(...args) => onDateChange?.(...args)}
+							onPriorityChange={(...args) => onPriorityChange?.(...args)}
+							createdAt={card.createdAt}
+							subtasks={card.subtasks}
+							onSubtasksChange={handleSubtasksChange}
+						/>
+					))
+
+				}
 				{selectedEpic && (
 					<EpicSidebar
 						epic={selectedEpic}

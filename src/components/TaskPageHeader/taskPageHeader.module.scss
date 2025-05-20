@@ -9,9 +9,53 @@
 
   &Title {
     margin: 0;
-    margin-left: 0.5rem;
+    margin-left: 0.7rem;
     font: var(--text-14-medium);
     color: var(--grey-800);
+  }
+
+  .headerLeft{
+    align-items: center;
+    display: flex;
+  }
+
+  .controls{
+    display: flex;
+    margin-left: 2rem;
+    gap: 1.5rem;
+    align-items: center;
+  }
+
+  .search{
+    border-radius: 1.3rem;
+    border-style: none;
+    background-color: var(--surface-50);
+
+    &:focus {
+      box-shadow: none;
+    }
+  }
+
+  .buttonFilter{
+    background-color: var(--surface-50);
+    color: var(--surface-900);
+    border-style: none;
+    border-radius: 1.3rem;
+
+    &:focus {
+      box-shadow: none;
+    }
+  }
+
+  .escFilt{
+    margin-left: 0.5rem;
+    background-color: var(--surface-50);
+    color: var(--surface-900);
+    border-style: none;
+    border-radius: 1.3rem;
+    &:focus {
+      box-shadow: none;
+    }
   }
 
   .projectButton {
@@ -20,7 +64,7 @@
     border-radius: 1.2rem;
     font: var(--text-14-medium);
     color: var(--grey-800);
-    margin-left: 7.3rem;
+    margin-right: 0,5rem;
     padding: 0.2rem 0.8rem;
 
     &:focus {
