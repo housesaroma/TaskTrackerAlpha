@@ -18,7 +18,7 @@ interface NavigationPanelProps {
 
 const NavigationPanel = ({onThemeToggle}: NavigationPanelProps) => {
     const navigate = useNavigate();
-    const { projectId, boardId } = useParams<{ projectId?: string; boardId?: string }>();
+    const { boardId } = useParams<{ projectId?: string; boardId?: string }>();
     const currentTheme = useSelector((state: RootState) => state.theme.currentTheme);
     const [projects, setProjects] = useState<IProject[]>([]);
     const [showAddProjectDialog, setShowAddProjectDialog] = useState(false);
@@ -64,8 +64,8 @@ const NavigationPanel = ({onThemeToggle}: NavigationPanelProps) => {
             setShowAddProjectDialog(false);
 
             // Переходим в новый проект (первая доска первого проекта)
-            const firstBoardId = newProject.boards?.[0]?.id || '1';
-            navigate(`/${newProject.id}/main/${firstBoardId}`);
+            const firstBoardId = newProject.boards?.[0]?.projectId || '1';
+            navigate(`/${newProject.projectId}/main/${firstBoardId}`);
 
             toast.current?.show({
                 severity: 'success',
@@ -86,7 +86,7 @@ const NavigationPanel = ({onThemeToggle}: NavigationPanelProps) => {
 
     const projectItems: MenuItem[] = projects.map(project => ({
         label: project.title,
-        command: () => navigate(`/${project.id}/main/${boardId || project.boards?.[0]?.id || '1'}`)
+        command: () => navigate(`/${project.projectId}/main/${boardId || project.boards?.[0]?.projectId || '1'}`)
     }));
 
     projectItems.push({

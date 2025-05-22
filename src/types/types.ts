@@ -86,22 +86,22 @@ export type ICard = ITask | IDefect;
 export interface IBoard {
     boardId: number;
     title: string;
-    description: string;
-    startDate: string;
-    endDate: string;
+    description?: string;
+    startDate?: string;
+    endDate?: string;
     projectId: number;
-    matrixId: number | null;
-    matrix: any | null;
-    columns: IColumn[];
+    columns?: IColumn[];
+    matrixId?: number;
+    matrix?: any;
 }
 
+
 export interface IColumn {
-    id: string;
-    columnID: number;
+    columnID: string;
     title: string;
     color: string;
-    tasks: ITask[] | null;
-    defects: IDefect[] | null;
+    tasks?: ITask[];
+    defects?: any[];
 }
 
 export interface IProject {

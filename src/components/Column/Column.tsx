@@ -52,7 +52,7 @@ export const Column = ({
                            onUpdateEpic,
                            getNextId
                        }: ColumnProps) => {
-    const {setNodeRef} = useDroppable({id: column.id});
+    const {setNodeRef} = useDroppable({id: column.columnID});
 
     const {
         attributes,
@@ -62,7 +62,7 @@ export const Column = ({
         transition,
         isDragging,
     } = useSortable({
-        id: column.id,
+        id: column.columnID,
     });
 
     const {
@@ -109,14 +109,14 @@ export const Column = ({
                 <div style={{pointerEvents: 'auto'}} onClick={handleMenuAction}>
                     <ColumnMenu
                         columnColor={column.color}
-                        onColorChange={(color) => onChangeColor(column.id, color)}
+                        onColorChange={(color) => onChangeColor(column.columnID, color)}
                         onRename={handleRenameClick}
-                        onDelete={() => onDeleteColumn(column.id)}
-                        onDuplicate={() => onDuplicateColumn(column.id)}
+                        onDelete={() => onDeleteColumn(column.columnID)}
+                        onDuplicate={() => onDuplicateColumn(column.columnID)}
                     /></div>
             </div>
 
-            {column.id !== 'done' && <SelectTaskType onAdd={handleAddCardLocal}/>}
+            {column.columnID !== 'done' && <SelectTaskType onAdd={handleAddCardLocal}/>}
 
             <SortableContext
                 items={column.cards.map(card => card.id)}

@@ -6,6 +6,10 @@ import {useBoard} from '../../hooks/useBoard';
 import { useCardId } from '../../hooks/useCardId';
 import { useEpic } from '../../hooks/useEpic';
 import BoardCard from '../BoardCard/BoardCard.tsx';
+import {useEffect} from 'react';
+import {projectService} from '../../services/project.service';
+import {Toast} from 'primereact/toast';
+import {useRef} from 'react';
 
 const dropAnimationConfig = {
     sideEffects: defaultDropAnimationSideEffects({
@@ -25,6 +29,7 @@ interface BoardProps {
 const Board = ({ projectId, boardId }: BoardProps) => {
     const { getNextId } = useCardId();
     const { epics, handleAddEpic, handleUpdateEpic } = useEpic();
+    const toast = useRef<Toast>(null);
     const {
         columns,
         activeCard,
@@ -45,8 +50,39 @@ const Board = ({ projectId, boardId }: BoardProps) => {
         handleChangeCardDates,
         handlePriorityChange,
         handleSubtasksChange,
-        handleEpicChange
+        handleEpicChange,
+        loadBoardData
     } = useBoard(getNextId, boardId);
+
+    useEffect(() => {
+        const fetchBoardData = async () => {
+            try {
+                const project = await projectService.getProjectById(parseInt(projectId));
+                const board = project.boards?.find(b => b.boardId === parseInt(boardId));
+
+                if (board) {
+                    loadBoardData(board);
+                } else {
+                    toast.current?.show({
+                        severity: 'error',
+                        summary: 'Ошибка',
+                        detail: 'Доска не найдена',
+                        life: 3000
+                    });
+                }
+            } catch (error) {
+                console.error('Failed to load board:', error);
+                toast.current?.show({
+                    severity: 'error',
+                    summary: 'Ошибка загрузки',
+                    detail: 'Не удалось загрузить данные доски',
+                    life: 5000
+                });
+            }
+        };
+
+        fetchBoardData();
+    }, [projectId, boardId]);
 
     const handleAddNewEpic = () => {
         const newEpic = handleAddEpic();
@@ -55,6 +91,7 @@ const Board = ({ projectId, boardId }: BoardProps) => {
 
     return (
         <div className={styles.board}>
+            <Toast ref={toast} />
             <DndContext
                 collisionDetection={closestCenter}
                 onDragStart={handleDragStart}

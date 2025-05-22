@@ -5,29 +5,61 @@ import icon from '../../assets/3.png';
 import {useSelector} from "react-redux";
 import {RootState} from "../../store.ts";
 import {OverlayPanel} from "primereact/overlaypanel";
-import {useRef, useState} from "react";
+import {useRef, useState, useEffect} from "react";
 import {useNavigate, useParams} from "react-router-dom";
 import {Button} from "primereact/button";
 import {Dialog} from "primereact/dialog";
 import {InputText} from "primereact/inputtext";
 import {FileUpload} from "primereact/fileupload";
+import {projectService} from "../../services/project.service";
+import {Toast} from "primereact/toast";
+import { IBoard } from '../../types/types.ts';
+import {boardService} from "../../services/board.service"; // Добавим сервис для досок
 
 const Header = () => {
     const currentTheme = useSelector((state: RootState) => state.theme.currentTheme);
     const op = useRef<OverlayPanel>(null);
     const navigate = useNavigate();
+    const toast = useRef<Toast>(null);
     const [nickname, setNickname] = useState("Никнейм");
     const [showNicknameDialog, setShowNicknameDialog] = useState(false);
     const [newNickname, setNewNickname] = useState("");
     const [avatarUrl, setAvatarUrl] = useState(icon);
     const [showAvatarDialog, setShowAvatarDialog] = useState(false);
-    const [boards, setBoards] = useState(["Доска 1"]);
+    const [boards, setBoards] = useState<IBoard[]>([]);
     const { projectId, boardId } = useParams<{ projectId: string; boardId: string }>();
-    const currentBoardId = boardId ? parseInt(boardId) : 1;
+    const currentBoardId = boardId ? parseInt(boardId) : boards[0]?.boardId || 0;
 
     // Состояния для диалога создания доски
     const [showBoardDialog, setShowBoardDialog] = useState(false);
     const [newBoardName, setNewBoardName] = useState("");
+    const [newBoardDescription, setNewBoardDescription] = useState("");
+
+    useEffect(() => {
+        const loadProjectBoards = async () => {
+            if (!projectId) return;
+
+            try {
+                const project = await projectService.getProjectById(parseInt(projectId));
+                setBoards(project.boards || []);
+
+                // Если нет активной доски, но есть доски в проекте - перенаправляем на первую
+                if (!boardId && project.boards?.length) {
+                    navigate(`/${projectId}/main/${project.boards[0].boardId}`, { replace: true });
+                }
+            } catch (error) {
+                console.error('Failed to load project boards:', error);
+                toast.current?.show({
+                    severity: 'error',
+                    summary: 'Ошибка загрузки',
+                    detail: error instanceof Error ? error.message : 'Не удалось загрузить доски проекта',
+                    life: 5000
+                });
+            }
+        };
+
+        loadProjectBoards();
+    }, [projectId, boardId, navigate]);
 
     const handleLogout = () => {
         localStorage.removeItem('token');
@@ -72,22 +104,49 @@ const Header = () => {
 
     const openAddBoardDialog = () => {
         setNewBoardName(`Доска ${boards.length + 1}`);
+        setNewBoardDescription("");
         setShowBoardDialog(true);
     };
 
-    const handleAddBoard = () => {
-        if (newBoardName.trim() && projectId) {
-            const newBoardId = boards.length + 1;
-            setBoards([...boards, newBoardName.trim()]);
+    const handleAddBoard = async () => {
+        if (!newBoardName.trim() || !projectId) return;
+
+        try {
+            const now = new Date().toISOString();
+            const newBoard = await boardService.createBoard({
+                title: newBoardName.trim(),
+                description: newBoardDescription.trim() || 'Новая доска',
+                startDate: now,
+                endDate: now,
+                projectId: parseInt(projectId)
+            });
+
+            setBoards([...boards, newBoard]);
             setShowBoardDialog(false);
-            // Навигация на новую доску
-            navigate(`/${projectId}/main/${newBoardId}`);
+
+            // Навигация на новую доску с реальным boardId из ответа сервера
+            navigate(`/${projectId}/main/${newBoard.boardId}`);
+
+            toast.current?.show({
+                severity: 'success',
+                summary: 'Успех',
+                detail: 'Доска успешно создана',
+                life: 3000
+            });
+        } catch (error) {
+            console.error('Failed to create board:', error);
+            toast.current?.show({
+                severity: 'error',
+                summary: 'Ошибка создания',
+                detail: error instanceof Error ? error.message : 'Не удалось создать доску',
+                life: 5000
+            });
         }
     };
 
-    const switchBoard = (index: number) => {
+    const switchBoard = (boardId: number) => {
         if (projectId) {
-            navigate(`/${projectId}/main/${index + 1}`);
+            navigate(`/${projectId}/main/${boardId}`);
         }
     };
 
@@ -98,20 +157,22 @@ const Header = () => {
             </div>
 
             <div className={styles.boards}>
-                {boards.map((board, index) => (
+                {boards.map((board) => (
                     <Button
-                        key={index}
-                        className={`${styles.boardButton} ${index + 1 === currentBoardId ? styles.activeBoard : ''}`}
-                        onClick={() => switchBoard(index)}
-                        label={board}
+                        key={board.boardId}
+                        className={`${styles.boardButton} ${board.boardId === currentBoardId ? styles.activeBoard : ''}`}
+                        onClick={() => switchBoard(board.boardId)}
+                        label={board.title}
                     />
                 ))}
-                <Button
-                    className={styles.addBoardButton}
-                    icon="pi pi-plus"
-                    onClick={openAddBoardDialog}
-                    rounded
-                />
+                {projectId && (
+                    <Button
+                        className={styles.addBoardButton}
+                        icon="pi pi-plus"
+                        onClick={openAddBoardDialog}
+                        rounded
+                    />
+                )}
             </div>
 
             {/* Диалог создания новой доски */}
@@ -123,12 +184,25 @@ const Header = () => {
                 className={styles.dialog}
             >
                 <div className={styles.dialogContent}>
-                    <InputText
-                        value={newBoardName}
-                        onChange={(e) => setNewBoardName(e.target.value)}
-                        placeholder="Введите название доски"
-                        autoFocus
-                    />
+                    <div className={styles.inputGroup}>
+                        <label htmlFor="boardName">Название доски</label>
+                        <InputText
+                            id="boardName"
+                            value={newBoardName}
+                            onChange={(e) => setNewBoardName(e.target.value)}
+                            placeholder="Введите название доски"
+                            autoFocus
+                        />
+                    </div>
+                    <div className={styles.inputGroup}>
+                        <label htmlFor="boardDescription">Описание (необязательно)</label>
+                        <InputText
+                            id="boardDescription"
+                            value={newBoardDescription}
+                            onChange={(e) => setNewBoardDescription(e.target.value)}
+                            placeholder="Введите описание доски"
+                        />
+                    </div>
                     <Button
                         label="Создать"
                         onClick={handleAddBoard}
@@ -219,6 +293,8 @@ const Header = () => {
                     />
                 </div>
             </Dialog>
+
+            <Toast ref={toast} />
         </header>
     );
 };

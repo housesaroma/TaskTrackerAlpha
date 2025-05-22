@@ -1,41 +1,75 @@
 import {useState, useEffect} from 'react';
 import {DragEndEvent} from '@dnd-kit/core';
 import {ICard, IColumn, ISubtask} from '../types/types.ts';
-import {INITIAL_COLUMNS} from '../constants/mock-data.ts';
+import {IBoard} from '../types/types.ts';
 
 export const useBoard = (getNextId?: () => number, boardId?: string) => {
-    const [columns, setColumns] = useState<IColumn[]>(() => {
-        // Создаем начальные колонки для новой доски
-        if (boardId && boardId !== '1') {
-            return [
+    const [columns, setColumns] = useState<IColumn[]>([]);
+    const [activeCard, setActiveCard] = useState<ICard | null>(null);
+    const [activeColumn, setActiveColumn] = useState<IColumn | null>(null);
+
+    const loadBoardData = (board: IBoard) => {
+        if (!board.columns) {
+            // Если нет колонок, создаем стандартные
+            setColumns([
                 {
-                    id: 'artifacts',
+                    columnID: 'artifacts',
                     title: 'Артефакты',
                     color: '#00E8F080',
                     cards: [],
                 },
                 {
-                    id: 'to-do',
+                    columnID: 'to-do',
                     title: 'Новые задачи',
                     color: '#EF312480',
                     cards: [],
                 },
                 {
-                    id: 'in-work',
+                    columnID: 'in-work',
                     title: 'В работе',
                     color: '#FA931980',
                     cards: [],
                 },
                 {
-                    id: 'done',
+                    columnID: 'done',
                     title: 'Готово',
                     color: '#A8F00080',
                     cards: [],
                 },
-            ];
+            ]);
+            return;
         }
-        return INITIAL_COLUMNS;
-    });
+
+        // Преобразуем колонки с сервера в наш формат
+        const mappedColumns = board.columns.map(serverColumn => {
+            const cards: ICard[] = serverColumn.tasks?.map(task => ({
+                id: `card-${task.taskId}`,
+                title: task.title,
+                description: task.description,
+                priority: task.priority?.title as 'Важно' | 'Средне' | 'Незначительно' || 'Средне',
+                status: task.status?.title || '',
+                color: task.status?.color || '#ffffff',
+                isDone: serverColumn.title === 'Готово',
+                startDate: task.deadline,
+                endDate: task.deadline,
+                createdAt: new Date(task.dateCreated).toLocaleString(),
+                subtasks: task.subTasks?.map(subTask => ({
+                    id: `subtask-${subTask.subTaskId}`,
+                    title: subTask.title,
+                    isDone: false
+                })) || []
+            })) || [];
+
+            return {
+                id: `column-${serverColumn.columnID}`,
+                title: serverColumn.title,
+                color: serverColumn.color,
+                cards
+            };
+        });
+
+        setColumns(mappedColumns);
+    };
 
     // Сохраняем состояние в localStorage при изменении
     useEffect(() => {
@@ -53,12 +87,9 @@ export const useBoard = (getNextId?: () => number, boardId?: string) => {
         }
     }, [columns, boardId]);
 
-    const [activeCard, setActiveCard] = useState<ICard | null>(null);
-    const [activeColumn, setActiveColumn] = useState<IColumn | null>(null);
-
     const handleDragStart = (event: any) => {
         const {active} = event;
-        
+
         // Check if we're dragging a column
         const column = columns.find(col => col.id === active.id);
         if (column) {
@@ -185,7 +216,7 @@ export const useBoard = (getNextId?: () => number, boardId?: string) => {
     const handleChangeColumnColor = (columnId: string, newColor: string) => {
         setColumns(prev =>
             prev.map(column =>
-                column.id === columnId
+                column.columnID === columnId
                     ? {...column, color: newColor}
                     : column
             )
@@ -318,23 +349,23 @@ export const useBoard = (getNextId?: () => number, boardId?: string) => {
 
     const handleDuplicateCard = (cardId: string) => {
         if (!getNextId) return;
-        
+
         const newId = getNextId();
         const now = new Date();
         const formattedDate = `${now.getDate()} ${getMonthName(now.getMonth())} ${now.getFullYear()} ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
-        
+
         setColumns(prev => {
             return prev.map(column => {
                 const cardToDuplicate = column.cards.find(card => card.id === cardId);
                 if (!cardToDuplicate) return column;
-    
+
                 const duplicatedCard = {
                     ...cardToDuplicate,
                     id: `${newId}`,
                     title: `${cardToDuplicate.title} (копия)`,
                     createdAt: formattedDate
                 };
-    
+
                 return {
                     ...column,
                     cards: [...column.cards, duplicatedCard]
@@ -342,7 +373,7 @@ export const useBoard = (getNextId?: () => number, boardId?: string) => {
             });
         });
     };
-    
+
     // Helper function to get month name in Russian
     const getMonthName = (month: number): string => {
         const months = [
@@ -366,7 +397,7 @@ export const useBoard = (getNextId?: () => number, boardId?: string) => {
     const handleSubtasksChange = (cardId: string, subtasks: ISubtask[]) => {
         setColumns(prev => {
             const newColumns = [...prev];
-            
+
             for (let i = 0; i < newColumns.length; i++) {
                 const cardIndex = newColumns[i].cards.findIndex(c => c.id === cardId);
                 if (cardIndex !== -1) {
@@ -377,7 +408,7 @@ export const useBoard = (getNextId?: () => number, boardId?: string) => {
                     break;
                 }
             }
-            
+
             return newColumns;
         });
     };
@@ -403,6 +434,7 @@ export const useBoard = (getNextId?: () => number, boardId?: string) => {
         columns,
         activeCard,
         activeColumn,
+        loadBoardData,
         handleDragStart,
         handleDragEnd,
         handleCheckClick,

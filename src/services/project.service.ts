@@ -41,6 +41,20 @@ export const projectService = {
         }
     },
 
+    async getProjectById(projectId: number): Promise<IProject> {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await axios.get<IProject>(`${API_URL}/${projectId}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
+    },
+
     async createProject(data: CreateProjectData): Promise<IProject> {
         try {
             const token = localStorage.getItem('token');
