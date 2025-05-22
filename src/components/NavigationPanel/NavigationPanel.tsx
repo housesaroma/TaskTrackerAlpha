@@ -5,44 +5,88 @@ import {useNavigate, useParams} from "react-router-dom";
 import {useSelector} from "react-redux";
 import {RootState} from "../../store.ts";
 import {PanelMenu} from "primereact/panelmenu";
-import {useState} from "react";
+import {useState, useEffect, useRef} from "react";
 import {Dialog} from "primereact/dialog";
 import {InputText} from "primereact/inputtext";
+import {Toast} from "primereact/toast";
+import {projectService} from "../../services/project.service";
+import { IProject } from '../../types/types.ts';
 
 interface NavigationPanelProps {
     onThemeToggle: () => void;
-}
-
-interface Project {
-    id: number;
-    name: string;
 }
 
 const NavigationPanel = ({onThemeToggle}: NavigationPanelProps) => {
     const navigate = useNavigate();
     const { projectId, boardId } = useParams<{ projectId?: string; boardId?: string }>();
     const currentTheme = useSelector((state: RootState) => state.theme.currentTheme);
-    const [projects, setProjects] = useState<Project[]>([{ id: 1, name: 'Chill Team' }]);
+    const [projects, setProjects] = useState<IProject[]>([]);
     const [showAddProjectDialog, setShowAddProjectDialog] = useState(false);
     const [newProjectName, setNewProjectName] = useState('');
+    const [newProjectDescription, setNewProjectDescription] = useState('');
+    const [isLoading, setIsLoading] = useState(true);
+    const toast = useRef<Toast>(null);
 
-    const handleAddProject = () => {
-        if (newProjectName.trim()) {
-            const newProject = {
-                id: projects.length + 1,
-                name: newProjectName.trim()
-            };
+    useEffect(() => {
+        const loadProjects = async () => {
+            try {
+                setIsLoading(true);
+                const projectsData = await projectService.getProjects();
+                setProjects(projectsData);
+            } catch (error) {
+                console.error('Failed to load projects:', error);
+                toast.current?.show({
+                    severity: 'error',
+                    summary: 'Ошибка загрузки',
+                    detail: error instanceof Error ? error.message : 'Не удалось загрузить проекты',
+                    life: 5000
+                });
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        loadProjects();
+    }, []);
+
+    const handleAddProject = async () => {
+        if (!newProjectName.trim()) return;
+
+        try {
+            const newProject = await projectService.createProject({
+                title: newProjectName.trim(),
+                description: newProjectDescription.trim() || 'Новый проект'
+            });
+
             setProjects([...projects, newProject]);
             setNewProjectName('');
+            setNewProjectDescription('');
             setShowAddProjectDialog(false);
-            // Автоматически переходим в новый проект
-            navigate(`/${newProject.id}/main/1`);
+
+            // Переходим в новый проект (первая доска первого проекта)
+            const firstBoardId = newProject.boards?.[0]?.id || '1';
+            navigate(`/${newProject.id}/main/${firstBoardId}`);
+
+            toast.current?.show({
+                severity: 'success',
+                summary: 'Успех',
+                detail: 'Проект успешно создан',
+                life: 3000
+            });
+        } catch (error) {
+            console.error('Failed to create project:', error);
+            toast.current?.show({
+                severity: 'error',
+                summary: 'Ошибка создания',
+                detail: error instanceof Error ? error.message : 'Не удалось создать проект',
+                life: 5000
+            });
         }
     };
 
     const projectItems: MenuItem[] = projects.map(project => ({
-        label: project.name,
-        command: () => navigate(`/${project.id}/main/${boardId || '1'}`)
+        label: project.title,
+        command: () => navigate(`/${project.id}/main/${boardId || project.boards?.[0]?.id || '1'}`)
     }));
 
     projectItems.push({
@@ -72,22 +116,47 @@ const NavigationPanel = ({onThemeToggle}: NavigationPanelProps) => {
     return (
         <div className={styles.navigationPanel}>
             <div className={styles.menuContainer}>
-                <PanelMenu model={items} className={styles.menu}/>
+                <PanelMenu
+                    model={items}
+                    className={styles.menu}
+                    disabled={isLoading}
+                />
             </div>
 
             <Dialog
                 header="Новый проект"
                 visible={showAddProjectDialog}
-                onHide={() => setShowAddProjectDialog(false)}
+                onHide={() => {
+                    setShowAddProjectDialog(false);
+                    setNewProjectName('');
+                    setNewProjectDescription('');
+                }}
                 className={styles.dialog}
             >
                 <div className={styles.dialogContent}>
-                    <InputText
-                        value={newProjectName}
-                        onChange={(e) => setNewProjectName(e.target.value)}
-                        placeholder="Введите название проекта"
-                        className={styles.input}
-                    />
+                    <div className={styles.inputGroup}>
+                        <label htmlFor="projectName">Название проекта</label>
+                        <InputText
+                            id="projectName"
+                            value={newProjectName}
+                            onChange={(e) => setNewProjectName(e.target.value)}
+                            placeholder="Введите название проекта"
+                            className={styles.input}
+                            autoFocus
+                        />
+                    </div>
+
+                    <div className={styles.inputGroup}>
+                        <label htmlFor="projectDescription">Описание (необязательно)</label>
+                        <InputText
+                            id="projectDescription"
+                            value={newProjectDescription}
+                            onChange={(e) => setNewProjectDescription(e.target.value)}
+                            placeholder="Введите описание проекта"
+                            className={styles.input}
+                        />
+                    </div>
+
                     <Button
                         label="Создать"
                         onClick={handleAddProject}
@@ -105,6 +174,8 @@ const NavigationPanel = ({onThemeToggle}: NavigationPanelProps) => {
                     </div>
                 </Button>
             </div>
+
+            <Toast ref={toast} />
         </div>
     );
 };
