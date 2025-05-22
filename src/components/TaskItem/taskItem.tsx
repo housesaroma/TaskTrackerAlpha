@@ -8,6 +8,7 @@ interface TaskItemProps {
 	isDone?: boolean
 	startDate?: string
 	endDate?: string
+	priority?: string,
 	onToggleComplete?: (id: string) => void
 }
 
@@ -18,6 +19,7 @@ function TaskItem({
 	isDone,
 	startDate,
 	endDate,
+	priority,
 	onToggleComplete,
 }: TaskItemProps) {
 	const getDueDateStatus = () => {
@@ -88,6 +90,7 @@ function TaskItem({
 			<div
 				className={classNames(styles.taskCheckbox, {
 					[styles.completed]: isDone,
+					[styles.important]: priority === 'Важно' && !isDone,
 				})}
 				onClick={handleClick}
 			>
@@ -102,6 +105,7 @@ function TaskItem({
 				<span
 					className={classNames(styles.taskTitle, {
 						[styles.completed]: isDone,
+						[styles.important]: priority === 'Важно' && !isDone,
 					})}
 				>
 					{title}

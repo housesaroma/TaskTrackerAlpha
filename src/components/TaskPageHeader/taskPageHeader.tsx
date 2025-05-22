@@ -8,23 +8,28 @@ import styles from './taskPageHeader.module.scss'
 interface TaskPageHeaderProps {
 	onSearchChange: (value: string) => void
 	onDateFilterChange: (type: 'created' | 'deadline' | null) => void
+	onProjectChange: (project: string) => void
 	activeFilter: 'created' | 'deadline' | null
+	projects: string[]
+	selectedProject: string
 }
 
 function TaskPageHeader({
 	onSearchChange,
 	onDateFilterChange,
+	onProjectChange,
 	activeFilter,
+	projects,
+	selectedProject,
 }: TaskPageHeaderProps) {
 	const menuRef = useRef<Menu>(null)
 	const opRef = useRef<OverlayPanel>(null)
 	const [searchValue, setSearchValue] = useState('')
 
-	const items = [
-		{ label: 'Проект 1' },
-		{ label: 'Проект 2' },
-		{ label: 'Проект 3' },
-	]
+	const items = projects.map(project => ({
+		label: project,
+		command: () => onProjectChange(project),
+	}))
 
 	const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const value = e.target.value
@@ -84,12 +89,22 @@ function TaskPageHeader({
 					<OverlayPanel ref={opRef} dismissable>
 						<div style={{ display: 'flex', gap: '0.5rem' }}>
 							<Button
-								style={{ backgroundColor: 'var(--surface-200)', borderStyle:'none',color: 'var(--surface-900)', boxShadow:'none' }}
+								style={{
+									backgroundColor: 'var(--surface-200)',
+									borderStyle: 'none',
+									color: 'var(--surface-900)',
+									boxShadow: 'none',
+								}}
 								label='По дате начала'
 								onClick={() => handleFilterSelect('created')}
 							/>
 							<Button
-								style={{ backgroundColor: 'var(--surface-200)', borderStyle:'none',color: 'var(--surface-900)', boxShadow:'none' }}
+								style={{
+									backgroundColor: 'var(--surface-200)',
+									borderStyle: 'none',
+									color: 'var(--surface-900)',
+									boxShadow: 'none',
+								}}
 								label='По дедлайну'
 								onClick={() => handleFilterSelect('deadline')}
 							/>
@@ -103,7 +118,7 @@ function TaskPageHeader({
 						icon='pi pi-folder-open'
 					>
 						<div className={styles.buttonContent}>
-							<span>Выбрать проект</span>
+							<span>{selectedProject}</span>
 							<i className='pi pi-chevron-down'></i>
 						</div>
 					</Button>
