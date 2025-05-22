@@ -30,6 +30,7 @@ const Header = () => {
     const [newBoardName, setNewBoardName] = useState("");
 
     const handleLogout = () => {
+        localStorage.removeItem('token');
         navigate('/login');
     };
 
