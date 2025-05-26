@@ -8,7 +8,7 @@ export const INITIAL_COLUMNS: IColumn[] = [
 		cards: [
 			// Первый проект (P1)
 			{
-				id: '1P1A0T0I0D',
+				id: '1',
 				title: 'Паспорт',
 				isDone: false,
 				type: 'task',
@@ -21,7 +21,7 @@ export const INITIAL_COLUMNS: IColumn[] = [
 				epicId: '1P1E',
 			},
 			{
-				id: '1P2A0T0I0D',
+				id: '2',
 				title: 'Аналитика',
 				isDone: false,
 				type: 'task',
@@ -33,7 +33,7 @@ export const INITIAL_COLUMNS: IColumn[] = [
 				createdAt: '20 Мар 2024 09:15',
 			},
 			{
-				id: '1P3A0T0I0D',
+				id: '3',
 				title: 'ТЕСТ',
 				isDone: false,
 				type: 'task',
@@ -46,7 +46,7 @@ export const INITIAL_COLUMNS: IColumn[] = [
 			},
 			// Второй проект (P2)
 			{
-				id: '2P1A0T0I0D',
+				id: '4',
 				title: 'Техническое задание',
 				isDone: false,
 				type: 'task',
@@ -56,7 +56,7 @@ export const INITIAL_COLUMNS: IColumn[] = [
 				priority: 'Важно',
 			},
 			{
-				id: '2P2A0T0I0D',
+				id: '5',
 				title: 'API документация',
 				isDone: false,
 				type: 'task',
@@ -74,7 +74,7 @@ export const INITIAL_COLUMNS: IColumn[] = [
 		cards: [
 			// Первый проект (P1)
 			{
-				id: '1P0A1T0I0D',
+				id: '6',
 				title: 'Документирование',
 				description:
 					'Провести документирование',
@@ -85,7 +85,7 @@ export const INITIAL_COLUMNS: IColumn[] = [
 			},
 			// Второй проект (P2)
 			{
-				id: '2P0A1T0I0D',
+				id: '7',
 				title: 'Интеграция с платежной системой',
 				isDone: false,
 				type: 'task',
@@ -102,7 +102,7 @@ export const INITIAL_COLUMNS: IColumn[] = [
 		cards: [
 			// Первый проект (P1)
 			{
-				id: '1P0A0T1I0D',
+				id: '8',
 				title: 'Финальные правки',
 				isDone: false,
 				type: 'task',
@@ -114,7 +114,7 @@ export const INITIAL_COLUMNS: IColumn[] = [
 			},
 			// Второй проект (P2)
 			{
-				id: '2P0A0T1I0D',
+				id: '9',
 				title: 'Разработка ядра системы',
 				isDone: false,
 				type: 'task',
@@ -133,7 +133,7 @@ export const INITIAL_COLUMNS: IColumn[] = [
 		cards: [
 			// Первый проект (P1)
 			{
-				id: '1P0A0T0I1D',
+				id: '10',
 				title: 'Правки по дизайну мобильной версии',
 				isDone: true,
 				type: 'task',
@@ -146,7 +146,7 @@ export const INITIAL_COLUMNS: IColumn[] = [
 			},
 			// Второй проект (P2)
 			{
-				id: '2P1A0T0I1D',
+				id: '11',
 				title: 'Прототип интерфейса',
 				isDone: true,
 				type: 'task',
