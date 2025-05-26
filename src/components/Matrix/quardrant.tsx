@@ -1,5 +1,5 @@
 import styles from './matrix.module.scss'
-import { ICard } from '../../types/types'
+import { ICard, IEpic} from '../../types/types'
 import BoardCard from '../BoardCard/BoardCard'
 
 interface QuadrantProps {

@@ -4,18 +4,22 @@ import { classNames } from 'primereact/utils'
 interface TaskItemProps {
 	id: string
 	title?: string
+	description?: string
 	isDone?: boolean
 	startDate?: string
 	endDate?: string
+	priority?: string,
 	onToggleComplete?: (id: string) => void
 }
 
 function TaskItem({
 	id,
 	title,
+	description,
 	isDone,
 	startDate,
 	endDate,
+	priority,
 	onToggleComplete,
 }: TaskItemProps) {
 	const getDueDateStatus = () => {
@@ -67,6 +71,11 @@ function TaskItem({
 	const status = getDueDateStatus()
 	const displayDate = formatDisplayDate()
 
+	const tooltipContent = `${
+		description ? `Описание: ${description}` : 'Нет описания'
+	}
+    Сроки: ${startDate && endDate ? `${startDate} - ${endDate}` : 'Не указаны'}`
+
 	const handleClick = () => {
 		if (onToggleComplete) {
 			onToggleComplete(id)
@@ -74,19 +83,29 @@ function TaskItem({
 	}
 
 	return (
-		<div className={styles.taskItem}>
+		<div
+			className={`task-item ${styles.taskItem}`}
+			data-pr-tooltip={tooltipContent}
+		>
 			<div
 				className={classNames(styles.taskCheckbox, {
 					[styles.completed]: isDone,
+					[styles.important]: priority === 'Важно' && !isDone,
 				})}
 				onClick={handleClick}
 			>
-				{isDone && <div className={styles.compInd}/>}
+				{isDone && (
+					<i
+						className='pi pi-check-circle'
+						style={{ color: 'var(--surface-900)', fontSize: '1.5rem' }}
+					/>
+				)}
 			</div>
 			<div className={styles.taskContent}>
 				<span
 					className={classNames(styles.taskTitle, {
 						[styles.completed]: isDone,
+						[styles.important]: priority === 'Важно' && !isDone,
 					})}
 				>
 					{title}
