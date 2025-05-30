@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
 export const useCardId = () => {
-    const [nextId, setNextId] = useState(7);
+    const [nextId, setNextId] = useState(12);
 
     const getNextId = () => {
         const currentId = nextId;

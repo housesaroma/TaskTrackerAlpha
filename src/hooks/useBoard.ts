@@ -1,95 +1,115 @@
-import {useState, useEffect} from 'react';
+// useBoard.ts
+import {useState, useEffect, useCallback} from 'react';
 import {DragEndEvent} from '@dnd-kit/core';
-import {ICard, IColumn, ISubtask} from '../types/types.ts';
-import {IBoard} from '../types/types.ts';
+import {ICard, IColumn, ISubtask, ITask, IDefect} from '../types/types';
+import {INITIAL_COLUMNS} from '../constants/mock-data';
+import {boardService} from '../services/board.service.ts';
+import {Toast} from 'primereact/toast';
+import {useRef} from 'react';
 
-export const useBoard = (getNextId?: () => number, boardId?: string) => {
+export const useBoard = (getNextId?: () => number, boardId?: string, projectId?:  string) => {
+    const toast = useRef<Toast>(null);
     const [columns, setColumns] = useState<IColumn[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
     const [activeCard, setActiveCard] = useState<ICard | null>(null);
     const [activeColumn, setActiveColumn] = useState<IColumn | null>(null);
 
-    const loadBoardData = (board: IBoard) => {
-        if (!board.columns) {
-            // Если нет колонок, создаем стандартные
-            setColumns([
-                {
-                    columnID: 'artifacts',
-                    title: 'Артефакты',
-                    color: '#00E8F080',
-                    cards: [],
-                },
-                {
-                    columnID: 'to-do',
-                    title: 'Новые задачи',
-                    color: '#EF312480',
-                    cards: [],
-                },
-                {
-                    columnID: 'in-work',
-                    title: 'В работе',
-                    color: '#FA931980',
-                    cards: [],
-                },
-                {
-                    columnID: 'done',
-                    title: 'Готово',
-                    color: '#A8F00080',
-                    cards: [],
-                },
-            ]);
+    // Функция для преобразования даты
+    const formatDate = (dateString) => {
+        const date = new Date(dateString);
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0'); // Месяцы начинаются с 0
+        const year = String(date.getFullYear()).slice(-2); // Берем последние 2 цифры года
+        return `${day}.${month}.${year}`;
+    };
+
+    const loadBoardData = async () => {
+        setIsLoading(true);
+        try {
+            const boardData = await boardService.getBoardById(parseInt(boardId));
+
+            // Преобразуем данные API в наш формат колонок
+            const transformedColumns = boardData.columns.map(apiColumn => {
+                const tasks: ITask[] = apiColumn.tasks?.map(task => ({
+                    id: `${task.taskId}`,
+                    title: task.title,
+                    description: task.description,
+                    priority: task.priorityId === 1 ? 'Важно' :
+                        task.priorityId === 2 ? 'Средне' : 'Незначительно',
+                    startDate: formatDate(task.dateCreated), // Преобразуем дату
+                    endDate: formatDate(task.deadline), // Преобразуем дату
+                    isDone: apiColumn.columnID === 4, // Предполагаем, что колонка 4 - "Готово"
+                    color: apiColumn.color,
+                    type: 'task',
+                    createdAt: task.dateCreated,
+                    subtasks: task.subTasks?.map((sub, index) => ({
+                        id: `subtask-${task.taskId}-${index}`,
+                        title: sub.title || `Подзадача ${index + 1}`,
+                        isDone: sub.isDone || false
+                    })) || [],
+                    // Остальные поля можно добавить по аналогии
+                })) || [];
+
+                const defects: IDefect[] = apiColumn.defects?.map(defect => ({
+                    id: `defect-${defect.defectId}`,
+                    title: defect.title,
+                    description: defect.description,
+                    priority: defect.priorityId === 1 ? 'Важно' :
+                        defect.priorityId === 2 ? 'Средне' : 'Незначительно',
+                    startDate: formatDate(defect.dateCreated), // Преобразуем дату
+                    endDate: formatDate(defect.deadline), // Преобразуем дату
+                    isDone: apiColumn.columnID === 4,
+                    color: '#FF000080', // Красный цвет для дефектов
+                    type: 'defect',
+                    createdAt: defect.dateCreated,
+                    subtasks: defect.subTasks?.map((sub, index) => ({
+                        id: `subtask-${defect.defectId}-${index}`,
+                        title: sub.title || `Подзадача ${index + 1}`,
+                        isDone: sub.isDone || false
+                    })) || [],
+                    // Остальные поля можно добавить по аналогии
+                })) || [];
+
+                const cards: ICard[] = [...tasks, ...defects];
+
+                return {
+                    id: `column-${apiColumn.columnID}`,
+                    title: apiColumn.title,
+                    color: apiColumn.color,
+                    cards
+                };
+            });
+
+            setColumns(transformedColumns);
+        } catch (error) {
+            toast.current?.show({
+                severity: 'error',
+                summary: 'Ошибка',
+                detail: error instanceof Error ? error.message : 'Не удалось загрузить доску',
+                life: 3000
+            });
+            // Если не удалось загрузить, используем начальные колонки
+            setColumns(INITIAL_COLUMNS);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    // Загрузка данных доски при монтировании или изменении boardId
+    useEffect(() => {
+        if (!boardId || !projectId) return;
+
+        if (boardId === '1' && projectId === '1') {
+            setColumns(INITIAL_COLUMNS);
             return;
         }
 
-        // Преобразуем колонки с сервера в наш формат
-        const mappedColumns = board.columns.map(serverColumn => {
-            const cards: ICard[] = serverColumn.tasks?.map(task => ({
-                id: `card-${task.taskId}`,
-                title: task.title,
-                description: task.description,
-                priority: task.priority?.title as 'Важно' | 'Средне' | 'Незначительно' || 'Средне',
-                status: task.status?.title || '',
-                color: task.status?.color || '#ffffff',
-                isDone: serverColumn.title === 'Готово',
-                startDate: task.deadline,
-                endDate: task.deadline,
-                createdAt: new Date(task.dateCreated).toLocaleString(),
-                subtasks: task.subTasks?.map(subTask => ({
-                    id: `subtask-${subTask.subTaskId}`,
-                    title: subTask.title,
-                    isDone: false
-                })) || []
-            })) || [];
-
-            return {
-                id: `column-${serverColumn.columnID}`,
-                title: serverColumn.title,
-                color: serverColumn.color,
-                cards
-            };
-        });
-
-        setColumns(mappedColumns);
-    };
-
-    // Сохраняем состояние в localStorage при изменении
-    useEffect(() => {
-        if (boardId) {
-            const savedColumns = localStorage.getItem(`board-${boardId}-columns`);
-            if (savedColumns) {
-                setColumns(JSON.parse(savedColumns));
-            }
-        }
+        loadBoardData();
     }, [boardId]);
-
-    useEffect(() => {
-        if (boardId) {
-            localStorage.setItem(`board-${boardId}-columns`, JSON.stringify(columns));
-        }
-    }, [columns, boardId]);
 
     const handleDragStart = (event: any) => {
         const {active} = event;
-
+        
         // Check if we're dragging a column
         const column = columns.find(col => col.id === active.id);
         if (column) {
@@ -216,7 +236,7 @@ export const useBoard = (getNextId?: () => number, boardId?: string) => {
     const handleChangeColumnColor = (columnId: string, newColor: string) => {
         setColumns(prev =>
             prev.map(column =>
-                column.columnID === columnId
+                column.id === columnId
                     ? {...column, color: newColor}
                     : column
             )
@@ -293,17 +313,74 @@ export const useBoard = (getNextId?: () => number, boardId?: string) => {
         });
     };
 
-    const handleAddCard = (columnId: string, newCard: ICard) => {
-        setColumns(columns.map(column => {
-            if (column.id === columnId) {
-                return {
-                    ...column,
-                    cards: [...column.cards, newCard]
+    const handleAddCard = useCallback(async (columnId: string, card: ICard) => {
+        if (!boardId) return;
+
+        try {
+            const boardIdNum = parseInt(boardId);
+            const projectIdNum = parseInt(projectId!);
+            const column = columns.find(c => c.id === columnId);
+
+            if (!column) return;
+
+            let createdCard: ICard;
+
+            if (card.type === 'task') {
+                const taskData = await boardService.createTask({
+                    title: card.title,
+                    description: card.description,
+                    deadline: card.endDate,
+                    boardId: boardIdNum,
+                    projectId: projectIdNum,
+                    currentColumn: column.title,
+                    priorityId: card.priority === 'Важно' ? 1 :
+                        card.priority === 'Средне' ? 2 : 3
+                });
+
+                createdCard = {
+                    ...card,
+                    id: `task-${taskData.taskId}`,
+                    createdAt: taskData.dateCreated,
+                    endDate: taskData.deadline
+                };
+            } else {
+                const defectData = await boardService.createDefect({
+                    title: card.title,
+                    description: card.description,
+                    deadline: card.endDate,
+                    boardId: boardIdNum,
+                    projectId: projectIdNum,
+                    currentColumn: column.title,
+                    priorityId: card.priority === 'Важно' ? 1 :
+                        card.priority === 'Средне' ? 2 : 3
+                });
+
+                createdCard = {
+                    ...card,
+                    id: `defect-${defectData.defectId}`,
+                    createdAt: defectData.dateCreated,
+                    endDate: defectData.deadline
                 };
             }
-            return column;
-        }));
-    };
+
+            setColumns(prevColumns =>
+                prevColumns.map(col =>
+                    col.id === columnId
+                        ? {...col, cards: [...col.cards, createdCard]}
+                        : col
+                )
+            );
+
+            loadBoardData();
+        } catch (error) {
+            toast.current?.show({
+                severity: 'error',
+                summary: 'Ошибка',
+                detail: error instanceof Error ? error.message : 'Не удалось создать карточку',
+                life: 3000
+            });
+        }
+    }, [boardId, columns]);
 
     const handleRenameCard = (cardId: string, newTitle: string) => {
         setColumns(prev =>
@@ -349,23 +426,23 @@ export const useBoard = (getNextId?: () => number, boardId?: string) => {
 
     const handleDuplicateCard = (cardId: string) => {
         if (!getNextId) return;
-
+        
         const newId = getNextId();
         const now = new Date();
         const formattedDate = `${now.getDate()} ${getMonthName(now.getMonth())} ${now.getFullYear()} ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
-
+        
         setColumns(prev => {
             return prev.map(column => {
                 const cardToDuplicate = column.cards.find(card => card.id === cardId);
                 if (!cardToDuplicate) return column;
-
+    
                 const duplicatedCard = {
                     ...cardToDuplicate,
                     id: `${newId}`,
                     title: `${cardToDuplicate.title} (копия)`,
                     createdAt: formattedDate
                 };
-
+    
                 return {
                     ...column,
                     cards: [...column.cards, duplicatedCard]
@@ -373,7 +450,7 @@ export const useBoard = (getNextId?: () => number, boardId?: string) => {
             });
         });
     };
-
+    
     // Helper function to get month name in Russian
     const getMonthName = (month: number): string => {
         const months = [
@@ -397,7 +474,7 @@ export const useBoard = (getNextId?: () => number, boardId?: string) => {
     const handleSubtasksChange = (cardId: string, subtasks: ISubtask[]) => {
         setColumns(prev => {
             const newColumns = [...prev];
-
+            
             for (let i = 0; i < newColumns.length; i++) {
                 const cardIndex = newColumns[i].cards.findIndex(c => c.id === cardId);
                 if (cardIndex !== -1) {
@@ -408,7 +485,7 @@ export const useBoard = (getNextId?: () => number, boardId?: string) => {
                     break;
                 }
             }
-
+            
             return newColumns;
         });
     };
@@ -434,7 +511,6 @@ export const useBoard = (getNextId?: () => number, boardId?: string) => {
         columns,
         activeCard,
         activeColumn,
-        loadBoardData,
         handleDragStart,
         handleDragEnd,
         handleCheckClick,
