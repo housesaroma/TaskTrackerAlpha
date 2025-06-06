@@ -24,13 +24,11 @@ const NavigationPanel = ({onThemeToggle}: NavigationPanelProps) => {
     const [showAddProjectDialog, setShowAddProjectDialog] = useState(false);
     const [newProjectName, setNewProjectName] = useState('');
     const [newProjectDescription, setNewProjectDescription] = useState('');
-    const [isLoading, setIsLoading] = useState(true);
     const toast = useRef<Toast>(null);
 
     useEffect(() => {
         const loadProjects = async () => {
             try {
-                setIsLoading(true);
                 const projectsData = await projectService.getProjects();
                 setProjects(projectsData);
             } catch (error) {
@@ -41,8 +39,6 @@ const NavigationPanel = ({onThemeToggle}: NavigationPanelProps) => {
                     detail: error instanceof Error ? error.message : 'Не удалось загрузить проекты',
                     life: 5000
                 });
-            } finally {
-                setIsLoading(false);
             }
         };
 
@@ -119,7 +115,6 @@ const NavigationPanel = ({onThemeToggle}: NavigationPanelProps) => {
                 <PanelMenu
                     model={items}
                     className={styles.menu}
-                    disabled={isLoading}
                 />
             </div>
 
