@@ -6,48 +6,76 @@ import { Divider } from 'primereact/divider';
 import { Link, useNavigate } from 'react-router-dom';
 import {useRef, useState} from 'react';
 import { Toast } from 'primereact/toast';
+import { authService } from '../../../services/auth.service';
 
 const Login = () => {
     const navigate = useNavigate();
     const toast = useRef<Toast>(null);
     const [formData, setFormData] = useState({
-        email: '',
+        username: '',
         password: ''
     });
 
     const [error, setError] = useState<string | null>(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setError(null); // Сбрасываем ошибку перед новым запросом
-        console.log('Submitting form with:', formData);
+
+        // Валидация полей
+        if (!formData.username.trim()) {
+            setError('Введите имя пользователя');
+            return;
+        }
+
+        if (!formData.password) {
+            setError('Введите пароль');
+            return;
+        }
+
+        setError(null);
+        setIsSubmitting(true);
+
         try {
-            console.log('Dispatching login action...');
-            // const result = await dispatch(login(formData.email, formData.password));
+            const { token } = await authService.login({
+                username: formData.username,
+                password: formData.password
+            });
 
-            // Проверяем, был ли успешный login (проверяем наличие токена в состоянии)
-            const token = localStorage.getItem('token');
-            if (token) {
-                console.log('Login successful, navigating to /main');
+            localStorage.setItem('token', token);
 
-                console.log('Login successful, token:', token);
+            toast.current?.show({
+                severity: 'success',
+                summary: 'Успешный вход',
+                detail: 'Добро пожаловать!',
+                life: 3000
+            });
 
-                // Показываем токен в тосте (временное сообщение)
-                toast.current?.show({
-                    severity: 'success',
-                    summary: 'Успешный вход',
-                    detail: `Токен: ${token.substring(0, 15)}...`, // Показываем первые 15 символов
-                    life: 5000
-                });
-
-                navigate('/');
-            } else {
-                console.log('Login failed, not navigating');
-                setError('Неверные учетные данные'); // Устанавливаем сообщение об ошибке
-            }
+            navigate('/');
         } catch (error) {
             console.error('Login error:', error);
-            setError(error instanceof Error ? error.message : 'Произошла ошибка при входе');
+
+            // Более дружелюбные сообщения об ошибках
+            let errorMessage = 'Произошла ошибка при входе';
+
+            if (error instanceof Error) {
+                errorMessage = error.message;
+
+                // Дополнительная обработка конкретных ошибок
+                if (error.message.includes('Нет соединения')) {
+                    errorMessage = 'Нет соединения с сервером. Проверьте интернет-соединение.';
+                }
+            }
+
+            setError(errorMessage);
+            toast.current?.show({
+                severity: 'error',
+                summary: 'Ошибка входа',
+                detail: errorMessage,
+                life: 5000
+            });
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -55,7 +83,6 @@ const Login = () => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
     };
-
 
     return (
         <div className={styles.formContainer}>
@@ -65,15 +92,15 @@ const Login = () => {
             {error && <div className={styles.errorMessage}>{error}</div>}
 
             <form onSubmit={handleSubmit} className="p-fluid">
-                <p className={styles.inputSubtitle}>Введите E-mail</p>
+                <p className={styles.inputSubtitle}>Имя пользователя</p>
                 <div className={styles.inputWrapper}>
                     <InputText
-                        name="email"
-                        value={formData.email}
+                        name="username"
+                        value={formData.username}
                         onChange={handleChange}
-                        placeholder="pochtа@mail.ru"
-                        // type="email"
+                        placeholder="Имя"
                         pt={{ root: { style: { borderRadius: '12px' } }}}
+                        disabled={isSubmitting}
                     />
                 </div>
 
@@ -86,6 +113,7 @@ const Login = () => {
                         placeholder="Пароль"
                         toggleMask
                         feedback={false}
+                        disabled={isSubmitting}
                         pt={{
                             input: { className: styles.passwordInput, style: { borderRadius: '12px' } },
                             root: { style: { borderRadius: '12px' } }
@@ -96,7 +124,8 @@ const Login = () => {
                 <div className={styles.buttonWrapper}>
                     <Button
                         type="submit"
-                        label="Войти"
+                        label={isSubmitting ? 'Вход...' : 'Войти'}
+                        disabled={isSubmitting}
                         pt={{ root: { style: { borderRadius: '12px' } }}}
                     />
                 </div>
@@ -110,6 +139,8 @@ const Login = () => {
                     Регистрация
                 </Link>
             </div>
+
+            <Toast ref={toast} />
         </div>
     );
 };

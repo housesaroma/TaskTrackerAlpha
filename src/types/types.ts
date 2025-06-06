@@ -89,3 +89,31 @@ export interface IColumn {
     cards: ICard[];
     color: string;
 }
+
+export interface IProject {
+    projectId: number;
+    title: string;
+    description: string;
+    startDate: string;
+    endDate: string;
+    boards: IBoard[];
+}
+
+export interface IBoard {
+    boardId: number;
+    columns: IColumn[];
+    title: string;
+    description: string;
+    startDate: string;
+    endDate: string;
+    projectId: number;
+    matrixId: number | null;
+    matrix: any | null;
+}
+
+
+export interface CreateBoardData {
+    title: string;
+    description?: string;
+    projectId: number;
+}

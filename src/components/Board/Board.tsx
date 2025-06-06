@@ -46,7 +46,7 @@ const Board = ({ projectId, boardId }: BoardProps) => {
         handlePriorityChange,
         handleSubtasksChange,
         handleEpicChange
-    } = useBoard(getNextId, boardId);
+    } = useBoard(getNextId, boardId, projectId);
 
     const handleAddNewEpic = () => {
         const newEpic = handleAddEpic();

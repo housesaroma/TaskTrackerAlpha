@@ -1,60 +1,111 @@
-import {useState, useEffect} from 'react';
+// useBoard.ts
+import {useState, useEffect, useCallback} from 'react';
 import {DragEndEvent} from '@dnd-kit/core';
-import {ICard, IColumn, ISubtask} from '../types/types.ts';
-import {INITIAL_COLUMNS} from '../constants/mock-data.ts';
+import {ICard, IColumn, ISubtask, ITask, IDefect} from '../types/types';
+import {INITIAL_COLUMNS} from '../constants/mock-data';
+import {boardService} from '../services/board.service.ts';
+import {Toast} from 'primereact/toast';
+import {useRef} from 'react';
 
-export const useBoard = (getNextId?: () => number, boardId?: string) => {
-    const [columns, setColumns] = useState<IColumn[]>(() => {
-        // Создаем начальные колонки для новой доски
-        if (boardId && boardId !== '1') {
-            return [
-                {
-                    id: 'artifacts',
-                    title: 'Артефакты',
-                    color: '#00E8F080',
-                    cards: [],
-                },
-                {
-                    id: 'to-do',
-                    title: 'Новые задачи',
-                    color: '#EF312480',
-                    cards: [],
-                },
-                {
-                    id: 'in-work',
-                    title: 'В работе',
-                    color: '#FA931980',
-                    cards: [],
-                },
-                {
-                    id: 'done',
-                    title: 'Готово',
-                    color: '#A8F00080',
-                    cards: [],
-                },
-            ];
-        }
-        return INITIAL_COLUMNS;
-    });
-
-    // Сохраняем состояние в localStorage при изменении
-    useEffect(() => {
-        if (boardId) {
-            const savedColumns = localStorage.getItem(`board-${boardId}-columns`);
-            if (savedColumns) {
-                setColumns(JSON.parse(savedColumns));
-            }
-        }
-    }, [boardId]);
-
-    useEffect(() => {
-        if (boardId) {
-            localStorage.setItem(`board-${boardId}-columns`, JSON.stringify(columns));
-        }
-    }, [columns, boardId]);
-
+export const useBoard = (getNextId?: () => number, boardId?: string, projectId?:  string) => {
+    const toast = useRef<Toast>(null);
+    const [columns, setColumns] = useState<IColumn[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
     const [activeCard, setActiveCard] = useState<ICard | null>(null);
     const [activeColumn, setActiveColumn] = useState<IColumn | null>(null);
+
+    // Функция для преобразования даты
+    const formatDate = (dateString) => {
+        const date = new Date(dateString);
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0'); // Месяцы начинаются с 0
+        const year = String(date.getFullYear()).slice(-2); // Берем последние 2 цифры года
+        return `${day}.${month}.${year}`;
+    };
+
+    const loadBoardData = async () => {
+        setIsLoading(true);
+        try {
+            const boardData = await boardService.getBoardById(parseInt(boardId));
+
+            // Преобразуем данные API в наш формат колонок
+            const transformedColumns = boardData.columns.map(apiColumn => {
+                const tasks: ITask[] = apiColumn.tasks?.map(task => ({
+                    id: `${task.taskId}`,
+                    title: task.title,
+                    description: task.description,
+                    priority: task.priorityId === 1 ? 'Важно' :
+                        task.priorityId === 2 ? 'Средне' : 'Незначительно',
+                    startDate: formatDate(task.dateCreated), // Преобразуем дату
+                    endDate: formatDate(task.deadline), // Преобразуем дату
+                    isDone: apiColumn.columnID === 4, // Предполагаем, что колонка 4 - "Готово"
+                    color: apiColumn.color,
+                    type: 'task',
+                    createdAt: task.dateCreated,
+                    subtasks: task.subTasks?.map((sub, index) => ({
+                        id: `subtask-${task.taskId}-${index}`,
+                        title: sub.title || `Подзадача ${index + 1}`,
+                        isDone: sub.isDone || false
+                    })) || [],
+                    // Остальные поля можно добавить по аналогии
+                })) || [];
+
+                const defects: IDefect[] = apiColumn.defects?.map(defect => ({
+                    id: `defect-${defect.defectId}`,
+                    title: defect.title,
+                    description: defect.description,
+                    priority: defect.priorityId === 1 ? 'Важно' :
+                        defect.priorityId === 2 ? 'Средне' : 'Незначительно',
+                    startDate: formatDate(defect.dateCreated), // Преобразуем дату
+                    endDate: formatDate(defect.deadline), // Преобразуем дату
+                    isDone: apiColumn.columnID === 4,
+                    color: '#FF000080', // Красный цвет для дефектов
+                    type: 'defect',
+                    createdAt: defect.dateCreated,
+                    subtasks: defect.subTasks?.map((sub, index) => ({
+                        id: `subtask-${defect.defectId}-${index}`,
+                        title: sub.title || `Подзадача ${index + 1}`,
+                        isDone: sub.isDone || false
+                    })) || [],
+                    // Остальные поля можно добавить по аналогии
+                })) || [];
+
+                const cards: ICard[] = [...tasks, ...defects];
+
+                return {
+                    id: `column-${apiColumn.columnID}`,
+                    title: apiColumn.title,
+                    color: apiColumn.color,
+                    cards
+                };
+            });
+
+            setColumns(transformedColumns);
+        } catch (error) {
+            toast.current?.show({
+                severity: 'error',
+                summary: 'Ошибка',
+                detail: error instanceof Error ? error.message : 'Не удалось загрузить доску',
+                life: 3000
+            });
+            // Если не удалось загрузить, используем начальные колонки
+            setColumns(INITIAL_COLUMNS);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    // Загрузка данных доски при монтировании или изменении boardId
+    useEffect(() => {
+        if (!boardId || !projectId) return;
+
+        if (boardId === '1' && projectId === '1') {
+            setColumns(INITIAL_COLUMNS);
+            return;
+        }
+
+        loadBoardData();
+    }, [boardId]);
 
     const handleDragStart = (event: any) => {
         const {active} = event;
@@ -262,17 +313,74 @@ export const useBoard = (getNextId?: () => number, boardId?: string) => {
         });
     };
 
-    const handleAddCard = (columnId: string, newCard: ICard) => {
-        setColumns(columns.map(column => {
-            if (column.id === columnId) {
-                return {
-                    ...column,
-                    cards: [...column.cards, newCard]
+    const handleAddCard = useCallback(async (columnId: string, card: ICard) => {
+        if (!boardId) return;
+
+        try {
+            const boardIdNum = parseInt(boardId);
+            const projectIdNum = parseInt(projectId!);
+            const column = columns.find(c => c.id === columnId);
+
+            if (!column) return;
+
+            let createdCard: ICard;
+
+            if (card.type === 'task') {
+                const taskData = await boardService.createTask({
+                    title: card.title,
+                    description: card.description,
+                    deadline: card.endDate,
+                    boardId: boardIdNum,
+                    projectId: projectIdNum,
+                    currentColumn: column.title,
+                    priorityId: card.priority === 'Важно' ? 1 :
+                        card.priority === 'Средне' ? 2 : 3
+                });
+
+                createdCard = {
+                    ...card,
+                    id: `task-${taskData.taskId}`,
+                    createdAt: taskData.dateCreated,
+                    endDate: taskData.deadline
+                };
+            } else {
+                const defectData = await boardService.createDefect({
+                    title: card.title,
+                    description: card.description,
+                    deadline: card.endDate,
+                    boardId: boardIdNum,
+                    projectId: projectIdNum,
+                    currentColumn: column.title,
+                    priorityId: card.priority === 'Важно' ? 1 :
+                        card.priority === 'Средне' ? 2 : 3
+                });
+
+                createdCard = {
+                    ...card,
+                    id: `defect-${defectData.defectId}`,
+                    createdAt: defectData.dateCreated,
+                    endDate: defectData.deadline
                 };
             }
-            return column;
-        }));
-    };
+
+            setColumns(prevColumns =>
+                prevColumns.map(col =>
+                    col.id === columnId
+                        ? {...col, cards: [...col.cards, createdCard]}
+                        : col
+                )
+            );
+
+            loadBoardData();
+        } catch (error) {
+            toast.current?.show({
+                severity: 'error',
+                summary: 'Ошибка',
+                detail: error instanceof Error ? error.message : 'Не удалось создать карточку',
+                life: 3000
+            });
+        }
+    }, [boardId, columns]);
 
     const handleRenameCard = (cardId: string, newTitle: string) => {
         setColumns(prev =>

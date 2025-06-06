@@ -97,7 +97,7 @@ export const InfoSidebar = ({
                     <TabView className={styles.tabView}>
                         <TabPanel header="Чат">
                             <div className={styles.tabContent}>
-                                <Chat />
+                                <Chat cardId={cardId} />
                             </div>
                         </TabPanel>
 

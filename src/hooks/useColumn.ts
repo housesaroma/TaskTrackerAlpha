@@ -57,13 +57,18 @@ export const useColumn = (
         (type: "task" | "defect"): ICard => {
             const now = new Date();
             const formattedDate = `${now.getDate()} ${getMonthName(now.getMonth())} ${now.getFullYear()} ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
-            
+
             const baseCard = {
-                id: `${getNextId()}`,
+                id: `temp-${getNextId()}`,
                 title: type === "task" ? "Новая задача" : "Новый дефект",
+                description: "",
+                priority: 'Средне' as const,
+                startDate: formattedDate,
+                endDate: formattedDate,
                 isDone: false,
                 type,
-                createdAt: formattedDate
+                createdAt: formattedDate,
+                color: type === "task" ? "#00E8F080" : "#FF000080"
             };
 
             return type === "task" ? (baseCard as ITask) : (baseCard as IDefect);
