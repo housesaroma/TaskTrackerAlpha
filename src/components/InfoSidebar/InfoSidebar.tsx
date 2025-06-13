@@ -7,6 +7,7 @@ import SubtaskSection from '../SubtaskSection/subtaskSection';
 import { TaskInformation } from './TaskInformation/TaskInformation';
 import { Chat } from '../Chat/Chat';
 import { ISubtask } from '../../types/types';
+import {boardService} from "../../services/board.service.ts";
 
 interface InfoSidebarProps {
     sidebarName: string;
@@ -46,9 +47,16 @@ export const InfoSidebar = ({
         setSubtasks(initialSubtasks);
     }, []);
 
-    const handleDescriptionSave = (newDescription: string) => {
-        setDescription(newDescription);
-        // Здесь можно добавить API-вызов для сохранения на сервере
+    const handleDescriptionSave = async (newDescription: string) => {
+        try {
+            await boardService.updateTask(parseInt(cardId), {
+                description: newDescription
+            });
+            setDescription(newDescription);
+        } catch (error) {
+            console.error('Failed to update description:', error);
+            // Optionally show error to user or revert changes
+        }
     };
 
     const handleAddSubtask = () => {

@@ -191,6 +191,38 @@ export const boardService = {
         }
     },
 
+    async updateTask(taskId: number, updates: { title?: string, description?: string }): Promise<void> {
+        try {
+            const token = localStorage.getItem('token');
+            await axios.put(
+                `${API_URL}/Tasks`,
+                {
+                    taskId: taskId,
+                    ...updates
+                },
+                {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                }
+            );
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                if (!error.response) {
+                    throw new Error('Нет соединения с сервером. Проверьте интернет-соединение.');
+                }
+
+                if (error.response.status === 401) {
+                    throw new Error('Необходима авторизация');
+                }
+
+                throw new Error(error.response.data.message || 'Не удалось обновить задачу');
+            }
+            throw new Error('Произошла непредвиденная ошибка');
+        }
+    },
+
     async createDefect(data: {
         title: string;
         description?: string;

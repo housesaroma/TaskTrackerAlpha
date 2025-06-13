@@ -1,5 +1,6 @@
 import React, {useCallback, useEffect, useRef, useState} from "react";
 import {ICard} from "../types/types";
+import {boardService} from "../services/board.service.ts";
 
 export const useCard = (
     card: ICard,
@@ -47,7 +48,16 @@ export const useCard = (
 
     const handleTitleBlur = useCallback(() => {
         if (newTitle.trim() && newTitle !== card.title) {
-            callbacks.onRenameCard?.(card.id, newTitle);
+            boardService.updateTask(parseInt(card.id), {
+                title: newTitle
+            })
+                .then(() => {
+                    callbacks.onRenameCard?.(card.id, newTitle);
+                })
+                .catch(error => {
+                    setNewTitle(card.title);
+                    console.error('Error renaming task:', error);
+                });
         } else {
             setNewTitle(card.title);
         }

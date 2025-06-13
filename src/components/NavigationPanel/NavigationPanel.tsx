@@ -102,11 +102,11 @@ const NavigationPanel = ({onThemeToggle}: NavigationPanelProps) => {
             icon: 'pi pi-sitemap',
             items: projectItems
         },
-        {
-            label: 'Чаты',
-            icon: 'pi pi-comments',
-            command: () => navigate('/chats')
-        },
+        // {
+        //     label: 'Чаты',
+        //     icon: 'pi pi-comments',
+        //     command: () => navigate('/chats')
+        // },
     ];
 
     return (
