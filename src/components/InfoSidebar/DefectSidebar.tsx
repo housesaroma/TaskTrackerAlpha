@@ -4,6 +4,9 @@ import {useState} from "react";
 import {EditableDescription} from "./EditableDescription/EditableDescription.tsx";
 import {EditableSummary} from "./EditableSummary/EditableSummary.tsx";
 import { TaskInfoSection } from './TaskInformation/TaskInfoSection.tsx';
+import {TabPanel, TabView} from "primereact/tabview";
+import {Chat} from "../Chat/Chat.tsx";
+import {TaskInformation} from "./TaskInformation/TaskInformation.tsx";
 
 interface DefectSidebarProps {
     sidebarName: string;
@@ -57,7 +60,18 @@ export const DefectSidebar = ({
             >
                 <div className={styles.sidebarContent}>
                     <h3 className={styles.name}>{sidebarName} <span style={{fontSize: '0.9em'}}>#{cardId}</span></h3>
-                    
+
+                    <TabView className={styles.tabView}>
+                        <TabPanel header="Чат">
+                            <div className={styles.tabContent}>
+                                <Chat cardId={cardId} />
+                            </div>
+                        </TabPanel>
+
+                        <TabPanel header="Информация">
+
+
+
                     <div className={styles.tabContent}>
                         <EditableSummary
                             summary={summary}
@@ -79,6 +93,7 @@ export const DefectSidebar = ({
                             onPriorityChange={onPriorityChange}
                         />
                     </div>
+                        </TabPanel> </TabView>
                 </div>
             </Sidebar>
         </div>

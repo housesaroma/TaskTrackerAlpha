@@ -4,6 +4,7 @@ import {IBoard, CreateBoardData, ITask, IDefect} from '../types/types';
 
 const API_URL = 'http://158.160.188.138/api'
 
+
 export const boardService = {
     async getBoardsByProjectId(projectId: number): Promise<IBoard[]> {
         try {
@@ -203,7 +204,17 @@ export const boardService = {
     }): Promise<IDefect> {
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.post<IDefect>(`${API_URL}/Defects`, data, {
+            const response = await axios.post<IDefect>(`${API_URL}/Tasks/newDefect`, {
+                title: data.title || 'Новый дефект',
+                description: data.description || '',
+                boardId: data.boardId,
+                projectId: data.projectId,
+                deadline: "2025-05-26T16:27:37.237Z",
+                currentColumn: data.currentColumn || 'Новые задачи',
+                statusId: data.statusId || 1,
+                priorityId: data.priorityId || 1,
+                assignedUserRoleId: data.assignedUserRoleId || 1
+            }, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
