@@ -1,7 +1,8 @@
 import axios from 'axios';
 import {IProject} from '../types/types.ts'
+import {host} from '../constants/host.ts'
 
-const API_URL = 'http://158.160.188.138/api/projects'
+const API_URL = `${host}/api/projects`;
 
 interface CreateProjectData {
     title: string;

@@ -5,6 +5,7 @@ import styles from './TaskInformation.module.scss';
 import "primeicons/primeicons.css";
 import axios from 'axios';
 import { Toast } from 'primereact/toast';
+import {host} from '../../../constants/host.ts'
 
 interface TaskInfoSectionProps {
     cardId: string;
@@ -42,7 +43,7 @@ export const TaskInfoSection = ({
     const [showCalendar, setShowCalendar] = useState(false);
     const [dateRange, setDateRange] = useState<Date[] | null>(null);
     const toast = useRef<Toast>(null);
-    const apiUrl = 'http://localhost:5001';
+    const apiUrl = `${host}`;
 
     useEffect(() => {
         if (startDate && endDate) {

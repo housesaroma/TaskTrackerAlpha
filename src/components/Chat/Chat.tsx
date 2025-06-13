@@ -5,6 +5,7 @@ import { InputText } from 'primereact/inputtext';
 import { FileUpload } from 'primereact/fileupload';
 import icon from '../../assets/3.png';
 import axios from 'axios';
+import {host} from '../../constants/host.ts'
 
 interface Message {
     id: string;
@@ -27,7 +28,7 @@ export const Chat = ({ cardId }: { cardId: string }) => {
     const [messages, setMessages] = useState<Message[]>([]);
     const [newMessage, setNewMessage] = useState('');
     const fileUploadRef = useRef<FileUpload>(null);
-    const apiUrl = 'http://localhost:5001';
+    const apiUrl = `${host}`;
 
     // Загрузка комментариев при монтировании и при изменении cardId
     useEffect(() => {

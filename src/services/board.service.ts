@@ -1,8 +1,9 @@
 // boardService.ts
 import axios from 'axios';
 import {IBoard, CreateBoardData, ITask, IDefect} from '../types/types';
+import {host} from '../constants/host.ts'
 
-const API_URL = 'http://158.160.188.138/api'
+const API_URL = `${host}/api`;
 
 export const boardService = {
     async getBoardsByProjectId(projectId: number): Promise<IBoard[]> {

@@ -1,6 +1,7 @@
 import axios from 'axios';
+import {host} from '../constants/host.ts'
 
-const API_URL = 'http://158.160.188.138/api/Auth'
+const API_URL = `${host}/api/Auth`;
 
 interface LoginData {
     username: string;
