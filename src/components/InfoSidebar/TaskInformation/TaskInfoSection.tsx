@@ -1,8 +1,10 @@
 import { Calendar } from 'primereact/calendar';
 import { SelectButton } from 'primereact/selectbutton';
-import { useState, useEffect } from 'react';
+import {useState, useEffect, useRef} from 'react';
 import styles from './TaskInformation.module.scss';
 import "primeicons/primeicons.css";
+import axios from 'axios';
+import { Toast } from 'primereact/toast';
 
 interface TaskInfoSectionProps {
     cardId: string;
@@ -12,6 +14,7 @@ interface TaskInfoSectionProps {
     createdAt?: string;
     onDateChange: (cardId: string, startDate: string, endDate: string) => void;
     onPriorityChange: (cardId: string, priority: 'Важно' | 'Средне' | 'Незначительно') => void;
+    type: 'task' | 'defect';
 }
 
 const priorityOptions = [
@@ -20,9 +23,26 @@ const priorityOptions = [
     { label: 'Незначительно', value: 'Незначительно' as const }
 ];
 
-export const TaskInfoSection = ({ cardId, startDate, endDate, priority, createdAt, onDateChange, onPriorityChange }: TaskInfoSectionProps) => {
+const priorityToId = {
+    'Важно': 1,
+    'Средне': 2,
+    'Незначительно': 3
+};
+
+export const TaskInfoSection = ({
+                                    cardId,
+                                    startDate,
+                                    endDate,
+                                    priority,
+                                    createdAt,
+                                    onDateChange,
+                                    onPriorityChange,
+                                    type
+                                }: TaskInfoSectionProps) => {
     const [showCalendar, setShowCalendar] = useState(false);
     const [dateRange, setDateRange] = useState<Date[] | null>(null);
+    const toast = useRef<Toast>(null);
+    const apiUrl = 'http://localhost:5001';
 
     useEffect(() => {
         if (startDate && endDate) {
@@ -34,10 +54,32 @@ export const TaskInfoSection = ({ cardId, startDate, endDate, priority, createdA
         }
     }, [startDate, endDate]);
 
-    const handleDateChange = (e: { value: any }) => {
+    const updateTaskOnServer = async (updates: any) => {
+        try {
+            const token = localStorage.getItem('token');
+            const endpoint = type === 'task' ? 'Tasks' : 'Tasks';
+
+            await axios.put(`${apiUrl}/api/${endpoint}/${cardId}`, updates, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+        } catch (error) {
+            console.error('Error updating task:', error);
+            toast.current?.show({
+                severity: 'error',
+                summary: 'Ошибка',
+                detail: 'Не удалось обновить задачу',
+                life: 3000
+            });
+        }
+    };
+
+    const handleDateChange = async (e: { value: any }) => {
         const dates = e.value as Date[];
         setDateRange(dates);
-        
+
         if (dates && dates.length === 2) {
             const formatDate = (date: Date) => {
                 return `${date.getDate().toString().padStart(2, '0')}.${(date.getMonth() + 1).toString().padStart(2, '0')}.${(date.getFullYear() - 2000).toString().padStart(2, '0')}`;
@@ -45,16 +87,37 @@ export const TaskInfoSection = ({ cardId, startDate, endDate, priority, createdA
 
             const newStartDate = formatDate(dates[0]);
             const newEndDate = formatDate(dates[1]);
+
+            // Обновляем на сервере
+            await updateTaskOnServer({
+                deadline: dates[1].toISOString() // Отправляем дату в ISO формате
+            });
+
+            // Обновляем локальное состояние
             onDateChange(cardId, newStartDate, newEndDate);
         } else {
-            // Если даты не выбраны или очищены, передаем пустые строки
+            // Если даты не выбраны или очищены
+            await updateTaskOnServer({ deadline: null });
             onDateChange(cardId, '', '');
         }
         setShowCalendar(false);
     };
 
+    const handlePriorityChange = async (e: { value: 'Важно' | 'Средне' | 'Незначительно' }) => {
+        const newPriority = e.value;
+
+        // Обновляем на сервере
+        await updateTaskOnServer({
+            priorityId: priorityToId[newPriority]
+        });
+
+        // Обновляем локальное состояние
+        onPriorityChange(cardId, newPriority);
+    };
+
     return (
         <div className={styles.taskInfoContainer}>
+            <Toast ref={toast} />
             <div className={styles.dateContainer}>
                 {createdAt && (
                     <div className={styles.createdAt}>
@@ -62,8 +125,8 @@ export const TaskInfoSection = ({ cardId, startDate, endDate, priority, createdA
                         <span>Создано: {createdAt}</span>
                     </div>
                 )}
-                <div 
-                    className={styles.dates} 
+                <div
+                    className={styles.dates}
                     onClick={() => setShowCalendar(true)}
                 >
                     <i style={{color: 'var(--text-color)'}} className="pi pi-calendar" />
@@ -85,16 +148,16 @@ export const TaskInfoSection = ({ cardId, startDate, endDate, priority, createdA
                     </div>
                 )}
             </div>
-            
+
             <div className={styles.priorityContainer}>
                 <label>Приоритет</label>
                 <SelectButton
                     value={priority}
                     options={priorityOptions}
-                    onChange={(e) => onPriorityChange(cardId, e.value)}
+                    onChange={handlePriorityChange}
                     className={styles.prioritySelect}
                 />
             </div>
         </div>
     );
-}; 
+};

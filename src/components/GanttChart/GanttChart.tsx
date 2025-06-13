@@ -6,22 +6,25 @@ import * as am5 from '@amcharts/amcharts5';
 import * as am5xy from '@amcharts/amcharts5/xy';
 import am5themes_Animated from '@amcharts/amcharts5/themes/Animated';
 import am5themes_Dark from '@amcharts/amcharts5/themes/Dark';
-import {INITIAL_COLUMNS, INITIAL_EPICS} from '../../constants/mock-data';
 import am5locales_ru_RU from "@amcharts/amcharts5/locales/ru_RU";
+import {useParams} from "react-router-dom";
+import {boardService} from '../../services/board.service';
+import {Toast} from 'primereact/toast';
 
-interface GanttChartProps {
-    projectId: string;
-    boardId: string;
+interface Epic {
+    id: string;
+    title: string;
+    color: string;
 }
 
-
-const GanttChart = ({ projectId, boardId }: GanttChartProps) => {
-
-    console.log(projectId);
-    console.log(boardId);
-
+const GanttChart = () => {
+    const { projectId, boardId } = useParams<{ projectId: string; boardId: string; }>();
     const chartRef = useRef<am5.Root | null>(null);
     const [expandedEpics, setExpandedEpics] = useState<Record<string, boolean>>({});
+    const [epics, setEpics] = useState<Epic[]>([]);
+    const [columns, setColumns] = useState<any[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const toast = useRef<Toast>(null);
     const currentTheme = useSelector((state: RootState) => state.theme.currentTheme);
 
     const toggleEpic = (epicId: string) => {
@@ -31,7 +34,101 @@ const GanttChart = ({ projectId, boardId }: GanttChartProps) => {
         }));
     };
 
+    // Функция для преобразования даты
+    const formatDate = (dateString: string) => {
+        if (!dateString) return '';
+        const date = new Date(dateString);
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = String(date.getFullYear()).slice(-2);
+        return `${day}.${month}.${year}`;
+    };
+
+    // Загрузка данных доски
+    const loadBoardData = async () => {
+        setIsLoading(true);
+        try {
+            const boardData = await boardService.getBoardById(parseInt(boardId!));
+
+            // Преобразуем данные API в наш формат колонок
+            const transformedColumns = boardData.columns.map((apiColumn: any) => {
+                const tasks: any[] = apiColumn.tasks?.map((task: any) => ({
+                    id: `${task.taskId}`,
+                    title: task.title,
+                    description: task.description,
+                    priority: task.priorityId === 1 ? 'Важно' :
+                        task.priorityId === 2 ? 'Средне' : 'Незначительно',
+                    startDate: formatDate(task.dateCreated),
+                    endDate: formatDate(task.deadline),
+                    isDone: apiColumn.columnID === 4,
+                    color: apiColumn.color,
+                    type: 'task',
+                    epicId: task.epicId || null,
+                    createdAt: task.dateCreated,
+                })) || [];
+
+                const defects: any[] = apiColumn.defects?.map((defect: any) => ({
+                    id: `defect-${defect.defectId}`,
+                    title: defect.title,
+                    description: defect.description,
+                    priority: defect.priorityId === 1 ? 'Важно' :
+                        defect.priorityId === 2 ? 'Средне' : 'Незначительно',
+                    startDate: formatDate(defect.dateCreated),
+                    endDate: formatDate(defect.deadline),
+                    isDone: apiColumn.columnID === 4,
+                    color: '#FF000080',
+                    type: 'defect',
+                    epicId: defect.epicId || null,
+                    createdAt: defect.dateCreated,
+                })) || [];
+
+                return [...tasks, ...defects];
+            });
+
+            // Получаем все карточки из всех колонок
+            const allCards = transformedColumns.flat();
+
+            // Получаем уникальные эпики из карточек
+            const uniqueEpicIds = [...new Set(allCards.map(card => card.epicId).filter(Boolean))];
+
+            // Создаем массив эпиков (здесь нужно заменить на реальный запрос к API для получения эпиков)
+            const loadedEpics = uniqueEpicIds.map(epicId => ({
+                id: epicId,
+                title: `Эпик ${epicId}`,
+                color: `#${Math.floor(Math.random()*16777215).toString(16)}`
+            }));
+
+            // Добавляем вариант "Без эпика"
+            loadedEpics.push({
+                id: 'no-epic',
+                title: 'Без эпика',
+                color: '#CCCCCC'
+            });
+
+            setEpics(loadedEpics);
+            setColumns(transformedColumns);
+        } catch (error) {
+            console.error('Error loading board data:', error);
+            toast.current?.show({
+                severity: 'error',
+                summary: 'Ошибка',
+                detail: 'Не удалось загрузить данные для диаграммы Ганта',
+                life: 3000
+            });
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     useEffect(() => {
+        if (boardId && projectId) {
+            loadBoardData();
+        }
+    }, [boardId, projectId]);
+
+    useEffect(() => {
+        if (isLoading || !columns.length || !epics.length) return;
+
         // Create root element
         const root = am5.Root.new("chartdiv");
         root._logo?.dispose();
@@ -44,11 +141,9 @@ const GanttChart = ({ projectId, boardId }: GanttChartProps) => {
 
         if (currentTheme === 'light') {
             root.setThemes([am5themes_Animated.new(root)]);
-
         } else {
             root.setThemes([am5themes_Animated.new(root), am5themes_Dark.new(root)]);
         }
-
 
         // Create chart
         const chart = root.container.children.push(
@@ -63,22 +158,23 @@ const GanttChart = ({ projectId, boardId }: GanttChartProps) => {
         );
 
         // Prepare data
-        const allCards = INITIAL_COLUMNS.flatMap(column => column.cards);
-        const cardsWithEpics = allCards.filter(card => card.epicId);
-        const cardsWithoutEpics = allCards.filter(card => !card.epicId);
+        const allCards = columns.flat();
+        const cardsWithEpics = allCards.filter((card: any) => card.epicId);
+        const cardsWithoutEpics = allCards.filter((card: any) => !card.epicId);
 
         // Group cards by epic
         const epicGroups: Record<string, any[]> = {};
-        INITIAL_EPICS.forEach(epic => {
-            epicGroups[epic.id] = cardsWithEpics.filter(card => card.epicId === epic.id);
+        epics.forEach(epic => {
+            if (epic.id === 'no-epic') return;
+            epicGroups[epic.id] = cardsWithEpics.filter((card: any) => card.epicId === epic.id);
         });
         epicGroups['no-epic'] = cardsWithoutEpics;
 
         // Prepare data for chart
         const data = Object.entries(epicGroups).flatMap(([epicId, cards]) => {
             return cards
-                .filter(card => card.startDate && card.endDate)
-                .map(card => {
+                .filter((card: any) => card.startDate && card.endDate)
+                .map((card: any) => {
                     const startDateParts = card.startDate.split('.');
                     const endDateParts = card.endDate.split('.');
 
@@ -94,8 +190,8 @@ const GanttChart = ({ projectId, boardId }: GanttChartProps) => {
                         parseInt(endDateParts[0])
                     );
 
-                    const epic = INITIAL_EPICS.find(e => e.id === card.epicId);
-                    const color = epic ? epic.color! : '#CCCCCC';
+                    const epic = epics.find(e => e.id === card.epicId);
+                    const color = epic ? epic.color : '#CCCCCC';
 
                     return {
                         category: epicId,
@@ -129,16 +225,11 @@ const GanttChart = ({ projectId, boardId }: GanttChartProps) => {
 
         // Create custom labels for epics
         yAxis.data.setAll([
-            ...INITIAL_EPICS.map(epic => ({
+            ...epics.map(epic => ({
                 category: epic.id,
                 name: epic.title,
                 color: epic.color
-            })),
-            {
-                category: 'no-epic',
-                name: 'Без эпика',
-                color: '#CCCCCC'
-            }
+            }))
         ]);
 
         // Customize labels
@@ -199,12 +290,16 @@ const GanttChart = ({ projectId, boardId }: GanttChartProps) => {
                 chartRef.current.dispose();
             }
         };
-    }, [expandedEpics, currentTheme]);
+    }, [expandedEpics, currentTheme, columns, epics, isLoading]);
+
+    if (isLoading) {
+        return <div className={styles.loading}>Загрузка данных...</div>;
+    }
 
     return (
         <div className={styles.container}>
             <div className={styles.sidebar}>
-                {INITIAL_EPICS.map(epic => (
+                {epics.map(epic => (
                     <div
                         key={epic.id}
                         className={styles.epicItem}
@@ -219,20 +314,9 @@ const GanttChart = ({ projectId, boardId }: GanttChartProps) => {
                         </div>
                     </div>
                 ))}
-                <div
-                    className={styles.epicItem}
-                    onClick={() => toggleEpic('no-epic')}
-                    style={{borderLeft: '4px solid #CCCCCC'}}
-                >
-                    <div className={styles.epicTitle}>
-                        Без эпика
-                        <span className={styles.toggleIcon}>
-              {expandedEpics['no-epic'] ? '−' : '+'}
-            </span>
-                    </div>
-                </div>
             </div>
             <div id="chartdiv" className={styles.chartContainer}></div>
+            <Toast ref={toast} />
         </div>
     );
 };

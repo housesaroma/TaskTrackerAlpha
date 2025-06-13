@@ -89,7 +89,7 @@ export const useBoard = (getNextId?: () => number, boardId?: string, projectId?:
                 life: 3000
             });
             // Если не удалось загрузить, используем начальные колонки
-            setColumns(INITIAL_COLUMNS);
+            // setColumns(INITIAL_COLUMNS);
         } finally {
             setIsLoading(false);
         }
@@ -99,10 +99,10 @@ export const useBoard = (getNextId?: () => number, boardId?: string, projectId?:
     useEffect(() => {
         if (!boardId || !projectId) return;
 
-        if (boardId === '1' && projectId === '1') {
-            setColumns(INITIAL_COLUMNS);
-            return;
-        }
+        // if (boardId === '1' && projectId === '1') {
+        //     setColumns(INITIAL_COLUMNS);
+        //     return;
+        // }
 
         loadBoardData();
     }, [boardId]);

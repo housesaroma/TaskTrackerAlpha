@@ -3,17 +3,11 @@ import {useState, useRef} from "react";
 import styles from './Metrics.module.scss'
 import { Calendar } from 'primereact/calendar';
 import "primeicons/primeicons.css";
+import {useParams} from "react-router-dom";
 
-interface MetricsProps {
-    projectId: string;
-    boardId: string;
-}
+const Metrics = () => {
 
-const Metrics = ({ projectId, boardId }: MetricsProps) => {
-
-    console.log(boardId);
-    console.log(projectId);
-
+    const { projectId, boardId } = useParams<{ projectId: string; boardId: string; }>();
     const [chartType, setChartType] = useState<'stacked' | 'line'>('stacked');
     const [dateRange, setDateRange] = useState<Date[] | null>(null);
     const [showCalendar, setShowCalendar] = useState(false);

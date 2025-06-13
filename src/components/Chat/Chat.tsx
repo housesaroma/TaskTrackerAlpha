@@ -5,54 +5,65 @@ import { InputText } from 'primereact/inputtext';
 import { FileUpload } from 'primereact/fileupload';
 import icon from '../../assets/3.png';
 import axios from 'axios';
-import * as signalR from '@microsoft/signalr';
 
-export const Chat = ( cardId ) => {
+interface Message {
+    id: string;
+    text: string;
+    date?: string;
+    authorId?: string;
+    sender?: {
+        id: string;
+        name: string;
+    };
+    timestamp?: Date;
+    attachments?: Array<{
+        name: string;
+        url: string;
+        size: number;
+    }>;
+}
+
+export const Chat = ({ cardId }: { cardId: string }) => {
     const [messages, setMessages] = useState<Message[]>([]);
     const [newMessage, setNewMessage] = useState('');
     const fileUploadRef = useRef<FileUpload>(null);
-    const [connection, setConnection] = useState<signalR.HubConnection | null>(null);
-    const apiUrl = 'http://localhost:5000';
+    const apiUrl = 'http://localhost:5001';
 
+    // Загрузка комментариев при монтировании и при изменении cardId
     useEffect(() => {
-        const token = localStorage.getItem('token');
-        const connect = async () => {
-            const conn = new signalR.HubConnectionBuilder()
-                .withUrl(`${apiUrl}/hubs/comments?taskId=${cardId.cardId}`, {
-                    accessTokenFactory: () => token,
-                    skipNegotiation: true,
-                    transport: signalR.HttpTransportType.WebSockets,
-                })
-                .configureLogging(signalR.LogLevel.Debug)
-                .withAutomaticReconnect()
-                .build();
-
-            conn.on('ReceiveComment', comment => {
-                setMessages(prev => [
-                    ...prev,
-                    {
-                        id: comment.commentId,
-                        text: comment.text,
-                        date: comment.dateCreated,
-                        authorId: comment.authorId,
-                    },
-                ])
-            })
-
+        const fetchComments = async () => {
             try {
-                await conn.start();
-                console.log('Connected to SignalR hub');
-                setConnection(conn);
-            } catch (err) {
-                console.error('Connection failed: ', err);
+                const token = localStorage.getItem('token');
+                const response = await axios.get(`${apiUrl}/api/tasks/${cardId}/comments`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+
+                // Преобразуем полученные комментарии в формат сообщений
+                const fetchedMessages = response.data.map((comment: any) => ({
+                    id: comment.commentId,
+                    text: comment.text,
+                    date: comment.dateCreated,
+                    authorId: comment.authorId,
+                    sender: {
+                        id: comment.authorId,
+                        name: comment.authorName || 'Anonymous', // Замените на реальное имя автора, если доступно
+                    },
+                }));
+
+                setMessages(fetchedMessages);
+            } catch (error) {
+                console.error('Error fetching comments:', error);
             }
         };
 
-        connect();
+        fetchComments();
 
-        return () => {
-            connection?.stop();
-        };
+        // Опционально: можно добавить интервал для периодического обновления
+        const intervalId = setInterval(fetchComments, 5000); // Обновление каждые 5 секунд
+
+        return () => clearInterval(intervalId);
     }, [cardId]);
 
     const handleSendMessage = async () => {
@@ -65,32 +76,36 @@ export const Chat = ( cardId ) => {
             }));
 
             const messagePayload = {
-                taskId: cardId.cardId,
+                taskId: cardId,
                 text: newMessage,
             };
 
             try {
                 const token = localStorage.getItem('token');
-                await axios.post(`${apiUrl}/api/tasks/${cardId.cardId}/comments`, messagePayload, {
-                    headers: {
-                        'Content-Type': 'application/json',
-                        Authorization: `Bearer ${token}`, // Замените на ваш токен
-                    },
-                });
-
-                setMessages((prev) => [
-                    ...prev,
+                const response = await axios.post(
+                    `${apiUrl}/api/tasks/${cardId}/comments`,
+                    messagePayload,
                     {
-                        id: Date.now().toString(),
-                        text: newMessage,
-                        sender: {
-                            id: '1',
-                            name: 'housesaroma', // Для реальных пользователей замените на актуальные данные
+                        headers: {
+                            'Content-Type': 'application/json',
+                            Authorization: `Bearer ${token}`,
                         },
-                        timestamp: new Date(),
-                        attachments: attachments.length > 0 ? attachments : undefined,
+                    }
+                );
+
+                // Добавляем новый комментарий в список сообщений
+                const newComment = {
+                    id: response.data.commentId, // Предполагаем, что сервер возвращает ID нового комментария
+                    text: newMessage,
+                    sender: {
+                        id: response.data.authorId || '1',
+                        name: 'housesaroma', // Замените на реальные данные пользователя
                     },
-                ]);
+                    timestamp: new Date(),
+                    attachments: attachments.length > 0 ? attachments : undefined,
+                };
+
+                setMessages((prev) => [...prev, newComment]);
                 setNewMessage('');
                 fileUploadRef.current?.clear();
             } catch (error) {
@@ -105,8 +120,8 @@ export const Chat = ( cardId ) => {
                 {messages.map((message) => (
                     <div key={message.id} className={styles.messageItem}>
                         <div className={styles.messageHeader}>
-                            <img src={icon} alt={message.sender} className={styles.avatar} />
-                            <span className={styles.senderName}>{message.sender}</span>
+                            <img src={icon} alt={message.sender?.name} className={styles.avatar} />
+                            <span className={styles.senderName}>{message.sender?.name}</span>
                         </div>
                         {message.text && <div className={styles.messageText}>{message.text}</div>}
                         {message.attachments && (
@@ -135,22 +150,7 @@ export const Chat = ( cardId ) => {
                         fileInput.onchange = (e) => {
                             const files = (e.target as HTMLInputElement).files;
                             if (files && files.length > 0) {
-                                const attachments = Array.from(files).map((file) => ({
-                                    name: file.name,
-                                    url: URL.createObjectURL(file),
-                                    size: file.size,
-                                }));
-
-                                const message = {
-                                    id: Date.now().toString(),
-                                    text: newMessage,
-                                    sender: { id: '1', name: 'housesaroma' },
-                                    timestamp: new Date(),
-                                    attachments,
-                                };
-
-                                setMessages((prev) => [...prev, message]);
-                                setNewMessage('');
+                                fileUploadRef.current?.setFiles(Array.from(files));
                             }
                         };
                         fileInput.click();
