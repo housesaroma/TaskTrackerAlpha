@@ -31,28 +31,30 @@ export interface ITaskAction {
 }
 
 export interface ITask {
-    id: string;
-    title: string;
-    description?: string;
-    priority?: 'Важно' | 'Средне' | 'Незначительно';
-    startDate?: string;
-    endDate?: string;
-    isDone?: boolean;
-    color?: string;
-    type: 'task';
-    epicId?: string | null;
-    subtasks?: ISubtask[];
-    createdAt?: string;
-    createdBy?: IUser;
-    assignedTo?: IUser;
-    responsibleUser?: IUser;
-    viewers?: IUser[];
-    linkedTasks?: string[];
-    actions?: ITaskAction[];
-    location?: {
-        board: string;
-        section: string;
-    };
+	id: string
+	title: string
+	description?: string
+	priority?: {
+		title: 'Важно' | 'Средне' | 'Незначительно'
+	}
+	startDate?: string
+	endDate?: string
+	isDone?: boolean
+	color?: string
+	type: 'task'
+	epicId?: string | null
+	subtasks?: ISubtask[]
+	createdAt?: string
+	createdBy?: IUser
+	assignedTo?: IUser
+	responsibleUser?: IUser
+	viewers?: IUser[]
+	linkedTasks?: string[]
+	actions?: ITaskAction[]
+	location?: {
+		board: string
+		section: string
+	}
 }
 
 export interface IDefect {

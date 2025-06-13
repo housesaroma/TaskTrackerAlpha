@@ -8,10 +8,10 @@ import styles from './taskPageHeader.module.scss'
 interface TaskPageHeaderProps {
 	onSearchChange: (value: string) => void
 	onDateFilterChange: (type: 'created' | 'deadline' | null) => void
-	onProjectChange: (project: string) => void
+	onProjectChange: (projectId: number | null) => void
 	activeFilter: 'created' | 'deadline' | null
-	projects: string[]
-	selectedProject: string
+	projects: { id: number; title: string }[]
+	selectedProject: number | null
 }
 
 function TaskPageHeader({
@@ -26,10 +26,20 @@ function TaskPageHeader({
 	const opRef = useRef<OverlayPanel>(null)
 	const [searchValue, setSearchValue] = useState('')
 
-	const items = projects.map(project => ({
-		label: project,
-		command: () => onProjectChange(project),
-	}))
+	const items = [
+		{
+			label: 'Все проекты',
+			command: () => onProjectChange(null),
+		},
+		...projects.map(project => ({
+			label: project.title,
+			command: () => onProjectChange(project.id),
+		})),
+	]
+
+	const selectedProjectTitle = selectedProject
+		? projects.find(p => p.id === selectedProject)?.title || 'Выберите проект'
+		: 'Все проекты'
 
 	const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const value = e.target.value
@@ -118,7 +128,7 @@ function TaskPageHeader({
 						icon='pi pi-folder-open'
 					>
 						<div className={styles.buttonContent}>
-							<span>{selectedProject}</span>
+							<span>{selectedProjectTitle}</span>
 							<i className='pi pi-chevron-down'></i>
 						</div>
 					</Button>

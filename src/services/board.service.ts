@@ -2,7 +2,7 @@
 import axios from 'axios';
 import {IBoard, CreateBoardData, ITask, IDefect} from '../types/types';
 
-const API_URL = 'http://localhost:5000/api';
+const API_URL = 'http://158.160.188.138/api'
 
 export const boardService = {
     async getBoardsByProjectId(projectId: number): Promise<IBoard[]> {

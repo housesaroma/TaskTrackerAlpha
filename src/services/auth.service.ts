@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5000/api/Auth';
+const API_URL = 'http://158.160.188.138/api/Auth'
 
 interface LoginData {
     username: string;
