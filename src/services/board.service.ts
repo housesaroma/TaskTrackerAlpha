@@ -4,7 +4,6 @@ import {IBoard, CreateBoardData, ITask, IDefect} from '../types/types';
 
 const API_URL = 'http://158.160.188.138/api'
 
-
 export const boardService = {
     async getBoardsByProjectId(projectId: number): Promise<IBoard[]> {
         try {
