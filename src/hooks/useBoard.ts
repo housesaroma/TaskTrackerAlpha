@@ -2,7 +2,6 @@
 import {useState, useEffect, useCallback} from 'react';
 import {DragEndEvent} from '@dnd-kit/core';
 import {ICard, IColumn, ISubtask, ITask, IDefect} from '../types/types';
-import {INITIAL_COLUMNS} from '../constants/mock-data';
 import {boardService} from '../services/board.service.ts';
 import {Toast} from 'primereact/toast';
 import {useRef} from 'react';
@@ -127,7 +126,7 @@ export const useBoard = (getNextId?: () => number, boardId?: string, projectId?:
         }
     };
 
-    const handleDragEnd = (event: DragEndEvent) => {
+    const handleDragEnd = async (event: DragEndEvent) => {
         setActiveCard(null);
         setActiveColumn(null);
         const {active, over} = event;
@@ -168,7 +167,7 @@ export const useBoard = (getNextId?: () => number, boardId?: string, projectId?:
             const [removed] = newColumns[activeColumnIndex].cards.splice(activeCardIndex, 1);
             const updatedCard = {
                 ...removed,
-                isDone: newColumns[overColumnIndex].id === 'done'
+                // isDone: newColumns[overColumnIndex].id === 'done'
             };
 
             if (activeColumnIndex === overColumnIndex) {
@@ -190,9 +189,48 @@ export const useBoard = (getNextId?: () => number, boardId?: string, projectId?:
 
             return newColumns;
         });
+
+        // Сначала создаем копию состояния для оптимистичного обновления
+        const activeColumnIndex = columns.findIndex(col =>
+            col.cards.some(card => card.id === active.id)
+        );
+        const overColumnIndex = columns.findIndex(col =>
+            col.id === over.id || col.cards.some(card => card.id === over.id)
+        );
+
+        if (activeColumnIndex === -1 || overColumnIndex === -1) return;
+
+        const activeCardIndex = columns[activeColumnIndex].cards.findIndex(
+            card => card.id === active.id
+        );
+
+        const cardToMove = columns[activeColumnIndex].cards[activeCardIndex];
+        const targetColumn = columns[overColumnIndex];
+
+        try {
+            const taskId = parseInt(cardToMove.id.replace('task-', '').replace('defect-', ''));
+            await boardService.updateTaskColumn(taskId, targetColumn.title);
+        }catch (error) {
+            toast.current?.show({
+                severity: 'error',
+                summary: 'Ошибка',
+                detail: error instanceof Error ? error.message : 'Не удалось переместить карточку',
+                life: 3000
+            });
+
+            setColumns(columns);
+        }
     };
 
     const handleCheckClick = (id: string, isDone: boolean) => {
+        if (isDone) {
+            // Перемещаем карточку в колонку "Готово"
+            boardService.updateTaskColumn(parseInt(id.replace('task-', '')), 'Готово')
+                .catch(error => {
+                    console.error('Ошибка при перемещении карточки:', error);
+                });
+        }
+
         setColumns(prev => {
             const newColumns = [...prev];
             let sourceColumnIndex = -1;
@@ -215,13 +253,13 @@ export const useBoard = (getNextId?: () => number, boardId?: string, projectId?:
 
             if (isDone && newColumns[sourceColumnIndex].id !== 'done') {
                 newColumns[sourceColumnIndex].cards.splice(cardIndex, 1);
-                const doneColumnIndex = newColumns.findIndex(col => col.id === 'done');
+                const doneColumnIndex = newColumns.findIndex(col => col.title === 'Готово');
                 if (doneColumnIndex !== -1) {
                     newColumns[doneColumnIndex].cards.push(updatedCard);
                 }
             } else if (!isDone && newColumns[sourceColumnIndex].id === 'done') {
                 newColumns[sourceColumnIndex].cards.splice(cardIndex, 1);
-                const inWorkColumnIndex = newColumns.findIndex(col => col.id === 'in-work');
+                const inWorkColumnIndex = newColumns.findIndex(col => col.title === 'В работе');
                 if (inWorkColumnIndex !== -1) {
                     newColumns[inWorkColumnIndex].cards.push(updatedCard);
                 }
