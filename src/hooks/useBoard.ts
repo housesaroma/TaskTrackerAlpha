@@ -37,8 +37,8 @@ export const useBoard = (getNextId?: () => number, boardId?: string, projectId?:
                         task.priorityId === 2 ? 'Средне' : 'Незначительно',
                     startDate: formatDate(task.dateCreated), // Преобразуем дату
                     endDate: formatDate(task.deadline), // Преобразуем дату
-                    isDone: apiColumn.columnID === 4, // Предполагаем, что колонка 4 - "Готово"
-                    color: apiColumn.color,
+                    isDone: apiColumn.title === 'Готово', // Предполагаем, что колонка 4 - "Готово"
+                    color: '#ccc',
                     type: 'task',
                     createdAt: task.dateCreated,
                     subtasks: task.subTasks?.map((sub, index) => ({
@@ -57,8 +57,8 @@ export const useBoard = (getNextId?: () => number, boardId?: string, projectId?:
                         defect.priorityId === 2 ? 'Средне' : 'Незначительно',
                     startDate: formatDate(defect.dateCreated), // Преобразуем дату
                     endDate: formatDate(defect.deadline), // Преобразуем дату
-                    isDone: apiColumn.columnID === 4,
-                    color: '#FF000080', // Красный цвет для дефектов
+                    isDone: apiColumn.title === 'Готово',
+                    color: 'rgba(145,53,53,0.5)', // Красный цвет для дефектов
                     type: 'defect',
                     createdAt: defect.dateCreated,
                     subtasks: defect.subTasks?.map((sub, index) => ({
@@ -230,6 +230,13 @@ export const useBoard = (getNextId?: () => number, boardId?: string, projectId?:
                     console.error('Ошибка при перемещении карточки:', error);
                 });
         }
+        else {
+            // Перемещаем карточку в колонку "В работе"
+            boardService.updateTaskColumn(parseInt(id.replace('task-', '')), 'В работе')
+                .catch(error => {
+                    console.error('Ошибка при перемещении карточки:', error);
+                });
+        }
 
         setColumns(prev => {
             const newColumns = [...prev];
@@ -251,20 +258,18 @@ export const useBoard = (getNextId?: () => number, boardId?: string, projectId?:
 
             const updatedCard = {...cardToUpdate, isDone};
 
-            if (isDone && newColumns[sourceColumnIndex].id !== 'done') {
+            if (isDone) {
                 newColumns[sourceColumnIndex].cards.splice(cardIndex, 1);
                 const doneColumnIndex = newColumns.findIndex(col => col.title === 'Готово');
                 if (doneColumnIndex !== -1) {
                     newColumns[doneColumnIndex].cards.push(updatedCard);
                 }
-            } else if (!isDone && newColumns[sourceColumnIndex].id === 'done') {
+            } else {
                 newColumns[sourceColumnIndex].cards.splice(cardIndex, 1);
                 const inWorkColumnIndex = newColumns.findIndex(col => col.title === 'В работе');
                 if (inWorkColumnIndex !== -1) {
                     newColumns[inWorkColumnIndex].cards.push(updatedCard);
                 }
-            } else {
-                newColumns[sourceColumnIndex].cards[cardIndex] = updatedCard;
             }
 
             return newColumns;
