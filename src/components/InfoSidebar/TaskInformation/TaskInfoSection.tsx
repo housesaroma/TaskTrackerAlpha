@@ -6,6 +6,7 @@ import "primeicons/primeicons.css";
 import axios from 'axios';
 import { Toast } from 'primereact/toast';
 import {host} from '../../../constants/host.ts'
+import {boardService} from "../../../services/board.service";
 
 interface TaskInfoSectionProps {
     cardId: string;
@@ -106,11 +107,10 @@ export const TaskInfoSection = ({
 
     const handlePriorityChange = async (e: { value: 'Важно' | 'Средне' | 'Незначительно' }) => {
         const newPriority = e.value;
+        const priorityId = priorityToId[newPriority].toString();
 
         // Обновляем на сервере
-        await updateTaskOnServer({
-            priorityId: priorityToId[newPriority]
-        });
+        boardService.updateTask(cardId, {priorityId: priorityId})
 
         // Обновляем локальное состояние
         onPriorityChange(cardId, newPriority);

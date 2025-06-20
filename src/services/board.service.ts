@@ -223,7 +223,7 @@ export const boardService = {
         }
     },
 
-    async updateTask(taskId: number, updates: { title?: string, description?: string }): Promise<void> {
+    async updateTask(taskId: string, updates: { title?: string, description?: string, priorityId?: string }): Promise<void> {
         try {
             const token = localStorage.getItem('token');
             await axios.put(
