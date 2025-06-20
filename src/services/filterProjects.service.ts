@@ -1,7 +1,8 @@
 import axios from 'axios'
 import { IProject, ITask } from '../types/types'
+import { host } from '../constants/host.ts'
 
-const API_URL = 'http://158.160.188.138/api'
+const API_URL = `${host}/api`
 const token = localStorage.getItem('token')
 
 export const filterProjectsService = {
@@ -43,10 +44,11 @@ export const filterProjectsService = {
 		taskId: string,
 		updateData: { isDone: boolean }
 	): Promise<ITask> {
+		console.log(`Отправил задачу ${taskId}, статус ${updateData.isDone}`)
 		try {
 			const response = await axios.put<ITask>(
 				`${API_URL}/Tasks`,
-				{ id: taskId, isDone: updateData.isDone },
+				{ taskId: taskId, isDone: updateData.isDone },
 				{
 					headers: {
 						Authorization: `Bearer ${token}`,
@@ -54,6 +56,7 @@ export const filterProjectsService = {
 					},
 				}
 			)
+			console.log(response.data)
 			return response.data
 		} catch (error) {
 			return Promise.reject(

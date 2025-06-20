@@ -32,6 +32,7 @@ export interface ITaskAction {
 
 export interface ITask {
 	id: string
+    taskId: string
 	title: string
 	description?: string
 	priority?: {

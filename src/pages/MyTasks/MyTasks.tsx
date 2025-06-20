@@ -126,33 +126,41 @@ const TaskPage = () => {
 	}
 
 	// Переключение статуса задачи
-	const handleTaskToggle = async (taskId: string) => {
+	const handleTaskToggle = async (taskId: string | undefined) => {
+		if (!taskId) {
+			console.error('ID задачи не определен')
+			return
+		}
+		const originalTasks = [...allTasks]
+
 		try {
-			const taskToUpdate = allTasks.find(task => task.id === taskId)
-			if (!taskToUpdate) return
-			const newStatus = !taskToUpdate.isDone
+			const taskIndex = originalTasks.findIndex(task => task.taskId === taskId)
 
-			setAllTasks(prevTasks =>
-				prevTasks.map(task =>
-					task.id === taskId ? { ...task, isDone: newStatus } : task
-				)
+			if (taskIndex === -1) {
+				throw new Error(`Задача с ID ${taskId} не найдена`)
+			}
+
+			const updatedTask = {
+				...originalTasks[taskIndex],
+				isDone: !originalTasks[taskIndex].isDone,
+			}
+
+			setAllTasks(prev =>
+				prev.map(task => (task.taskId === taskId ? updatedTask : task))
 			)
-
+			
+			// Отправка на сервер
 			await filterProjectsService.updateTask(taskId, {
-				isDone: newStatus,
+				isDone: updatedTask.isDone,
 			})
-		} catch (err) {
+	
+		} catch (error) {
+			setAllTasks(originalTasks)
 
-			setAllTasks(prevTasks =>
-				prevTasks.map(task =>
-					task.id === taskId ? { ...task, isDone: !task.isDone } : task
-				)
-			)
-
-			console.error('Ошибка при обновлении задачи:', err)
-			setError(
-				err instanceof Error ? err.message : 'Не удалось обновить задачу'
-			)
+			const errorMessage =
+				error instanceof Error ? error.message : 'Не удалось обновить задачу'
+			setError(errorMessage)
+			console.error('Ошибка обновления задачи:', error)
 		}
 	}
 
@@ -194,23 +202,29 @@ const TaskPage = () => {
 			/>
 			<div className={styles.taskContainer}>
 				{filteredSections.length > 0 ? (
-					filteredSections.map(section => (
-						<TaskSection key={section.title} title={section.title}>
-							{section.tasks.map(task => (
-								<TaskItem
-									key={task.id}
-									id={task.id}
-									title={task.title}
-									description={task.description}
-									isDone={task.isDone}
-									startDate={task.startDate}
-									endDate={task.endDate}
-									priority={task.priority?.title}
-									onToggleComplete={()=>handleTaskToggle(task.id)}
-								/>
-							))}
-						</TaskSection>
-					))
+					filteredSections.map(section => {
+						return (
+							<TaskSection key={section.title} title={section.title}>
+								{section.tasks.map(task => {
+									return (
+										<TaskItem
+											key={task.id}
+											id={task.taskId}
+											title={task.title}
+											description={task.description}
+											isDone={task.isDone}
+											startDate={task.startDate}
+											endDate={task.endDate}
+											priority={task.priority?.title}
+											onToggleComplete={() => {
+												handleTaskToggle(task.taskId)
+											}}
+										/>
+									)
+								})}
+							</TaskSection>
+						)
+					})
 				) : (
 					<div className={styles.noTasks}>
 						<i className='pi pi-inbox' style={{ fontSize: '2rem' }} />
