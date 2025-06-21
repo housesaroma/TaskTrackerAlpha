@@ -1,1 +1,1 @@
-export const host = 'http://158.160.188.138';
+export const host = 'https://alfa-tracker.ru';
