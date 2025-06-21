@@ -44,7 +44,7 @@ export const filterProjectsService = {
 		taskId: string,
 		updateData: { isDone: boolean }
 	): Promise<ITask> {
-		console.log(`Отправил задачу ${taskId}, статус ${updateData.isDone}`)
+		// console.log(`Отправил задачу ${taskId}, статус ${updateData.isDone}`)
 		try {
 			const response = await axios.put<ITask>(
 				`${API_URL}/Tasks`,
@@ -56,7 +56,7 @@ export const filterProjectsService = {
 					},
 				}
 			)
-			console.log(response.data)
+			// console.log(response.data)
 			return response.data
 		} catch (error) {
 			return Promise.reject(

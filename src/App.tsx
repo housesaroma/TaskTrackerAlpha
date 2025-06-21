@@ -40,7 +40,7 @@ function AppContent() {
 		<>
 			<Routes>
 				<Route path='/login' element={<Login />} />
-				<Route path='/register' element={<Register />} />
+				{/*<Route path='/register' element={<Register />} />*/}
 				<Route path='/' element={<Navigate to='/1/main/1' replace />} />
 
 				{/* Общий layout для всех страниц */}

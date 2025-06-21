@@ -31,6 +31,12 @@ const NavigationPanel = ({onThemeToggle}: NavigationPanelProps) => {
             try {
                 const projectsData = await projectService.getProjects();
                 setProjects(projectsData);
+
+                if (projectsData.length > 0) {
+                    const firstProject = projectsData[0];
+                    const firstBoardId = firstProject.boards?.[0]?.boardId || '1';
+                    navigate(`/${firstProject.projectId}/main/${firstBoardId}`);
+                }
             } catch (error) {
                 console.error('Failed to load projects:', error);
                 toast.current?.show({
@@ -82,7 +88,7 @@ const NavigationPanel = ({onThemeToggle}: NavigationPanelProps) => {
 
     const projectItems: MenuItem[] = projects.map(project => ({
         label: project.title,
-        command: () => navigate(`/${project.projectId}/main/${boardId || project.boards?.[0]?.projectId || '1'}`)
+        command: () => navigate(`/${project.projectId}/main/${boardId || project.boards?.[0]?.boardId || '1'}`)
     }));
 
     projectItems.push({

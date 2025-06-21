@@ -131,14 +131,14 @@ const Login = () => {
                 </div>
             </form>
 
-            <Divider className={styles.divider} />
+            {/*<Divider className={styles.divider} />*/}
 
-            <div className={styles.bottomWrapper}>
-                <p className={styles.text}>Еще нет аккаунта?</p>
-                <Link to="/register" className={styles.loginLink}>
-                    Регистрация
-                </Link>
-            </div>
+            {/*<div className={styles.bottomWrapper}>*/}
+            {/*    <p className={styles.text}>Еще нет аккаунта?</p>*/}
+            {/*    <Link to="/register" className={styles.loginLink}>*/}
+            {/*        Регистрация*/}
+            {/*    </Link>*/}
+            {/*</div>*/}
 
             <Toast ref={toast} />
         </div>

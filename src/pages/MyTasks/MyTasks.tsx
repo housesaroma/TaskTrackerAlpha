@@ -44,7 +44,6 @@ const TaskPage = () => {
 		setLoading(true)
 		try {
 			const tasks = await filterProjectsService.getTasksByProject(projectId)
-			console.log(tasks)
 			setAllTasks(tasks)
 		} catch (err) {
 			setError(err instanceof Error ? err.message : 'Неизвестная ошибка')
